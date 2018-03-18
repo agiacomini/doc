@@ -1,0 +1,216 @@
+﻿#######################################################################################
+#                                                                                     #
+# Sistema di versionamento Git - DVCS (Distributed Version Control System)            #
+# @A.G - indio1984@gmail.com														  #
+#                                                                                     #
+#######################################################################################
+
+# Nella Direcotry che si vuole controllare d:/Lavoro/MyRepo
+
+# Creare un Repository (Crea in automatico una subdirectory .git), fondamentalmente una cartella vuota
+# Workin Direcotry
+git init
+ 
+# Git vede un path sul FileSystem come un repository, dal quale possono poi partire differenti filoni di evoluzione del FileSystem chiamati Branch 
+
+# Aggiungere un file al Repository (Staging Area - Index), pronto per essere incluso nel prossimo commit
+git add
+
+# Visualizza la documentazione del comando "add"
+git add -h (visualizza documentazione)
+
+# Riportare un file allo stato Untracked come prima del comando "add", per non includerlo nel prossimo commit
+git reset HEAD <nome_file>
+
+# Cancellare completamente l'ultimo commit - Riportare il riferimento simbolico HEAD al precedente commit
+git reset --hard <nome_commit_precedente>
+
+#-------------------------------------- RIFERIMENTI/PUNTAMENTI SIMBOLICI ---------------------------------------------------#
+
+# N.B: I commit possono avere due parents nel caso in cui rappresenta il risultato di un merge.
+#	   Per esempio tra il branch Master e un secondo branch.
+
+# Operatori per Riferimenti al PASSATO. Possono essere anche usati insieme.
+- tilde ~ (il primo parent del commit)
+- caret ˆ (il secondo parent del commit)
+
+# Riporta il <riferimento> indietro di un passo
+git reset --hard <riferimento>~1
+
+exe. git reset --hard HEAD~1 				# E' l'equivalente di "git reset --hard <nome_commit_precedente>".   	
+exe. git reset --hard HEAD~3				# Riporta indietro di tre passi l'HEAD
+
+#---------------------------------------------------------------------------------------------------------------------------#
+
+# Rimuovere un file dall'Index e dal File System
+git rm <nome_file>
+
+# Visualizza la documentazione del comando "remove"
+git rm -h
+
+# Parametri possibili del comando "remove"
+# --cached option rimuove il file dall'Index MA NON dal File System
+git rm <nome_file> --cached
+
+# Controlla lo stato del Repository (Mette in evideza - rosso: file da aggiungere (perché nuovi o modificati), verde: file da committare)
+git status
+
+# Fissare le modifche, un nuovo branch è nato
+git commit -m "<messaggio>"
+
+# Visualizza la documentazione del comando "commit"
+git commit -h (visualizza documentazione)
+
+# Vedere la History dei "commit" eseguiti
+git log
+
+# Configurare gli oggetti di Git. 
+# Esistono 3 livelli di configurazione: SYSTEM (git config --system), GLOBAL (git config --global) e REPOSITORY (git config --local).
+# E' possibile usare i seguenti comandi oppure è anche possibile editare il file ".gitconfig".
+git configure <nome_oggetto>
+
+git config --global user.name "A.G"
+git config --global user.email indio1984@gmail.com
+
+exe. git configure user.name
+exe. git configure user.email
+exe. git configure merge.tool
+
+exe. git config --list 				# Comando per elencare tutte le configurazioni correntemente in uso
+exe. git config --list --system		# Comandi per elencare le configurazioni rispetto ai diversi livelli di configurazione
+exe. git config --list --global		# ...
+exe. git config --list --local		# ...
+
+# N.B: I parametri settati a livello --global sono elencati nel file di configurazione (.gitconfig) al path C:\Users\<UserName>\.gitconfig
+#	   I parametri settati a livello --system
+#	   I parametri settati a livello --local 
+
+# Parameters form:
+git config --<level_of_configuration> section.parameter_name
+
+exe. git config --global help.autocorrection 10 	# Comando che definisce quante decine di secondi Git aspetterà prima di eseguire il comando
+exe. git config --global push.default nothing		# Comando per NON settare un default o target branch su cui Uplodare le proprie modifiche locali
+exe. git config --global push.default simple		# Comando per permettere a Git di Uplodare le modifiche al branch locale solo se remotamente c'è un branch con lo stesso nome 
+exe. git config --global core.editor notepad++		# Comando per settare l'editor di testo di default per esempio per scrivere i commenti a fronte di un commit
+
+#------------------------------------- Classici Comandi Utili per creare Git ALIASIS ---------------------------------------
+
+# La sinstassi
+git config --<level>  alias.<alias_name> '<your sequence of git commands>'
+
+# Esempi
+exe. git config --global alias.tree 'log --graph --decorate --pretty=oneline --abbrev-commit'  # Alias che visualizza l'albero dei commit
+	 
+exe. git config --global alias.cm 'commit -m'												   # Alias del comando commit più inserimento commento
+
+exe. git config --global alias.unstage 'reset HEAD --'										   # Alias per rimuovere un file dall'indice
+
+exe. git config --global alias.last 'log -1 HEAD'											   # Alias per leggere il commento dell'utlimo commit
+
+exe. git config --global alias.difflast 'diff --cached HEAD^'								   # Alias per visualizzare le differenze rispetto all'ultimo commit
+
+# Rimuovere un Alias - La sintassi
+git config --<level> --unset alias.<alias_name> 
+
+# Esempi di rimozione
+exe. git config --global --unset alias.unstage
+
+#---------------------------------------------------------------------------------------------------------------------------#
+
+# Elencare i vari branch all'interno del Repository
+git branch
+
+# Visualizza la documentazione del comando "branch"
+git branch -h
+
+# Creare un nuovo Branch
+git branch <nome_branch>
+
+# Cancella un Branch locale
+git branch -d <nome_branch>
+
+# Cancellare un Branch remoto
+git push origin :<nome_branch>
+
+# Switch tra Branch
+git checkout <nome_branch>
+
+# Mergiare due branch. Posizionarsi (git checkout master) nel branch master
+# Mergiare significa unire tutte le modifiche di un branch nell'attuale branche in cui si si trova.
+# In questo caso significa unire le modifiche del branch "Network" al branch in cui mi trovo "master".
+git merge NewWork
+
+# Mettere a confronto due branch. Sintassi --> git diff <source_branch> .. <target_branch>
+# Le differenze sono descritte dal punto di vista del <target_branch>. Quindi in funzione del <target_branch>
+# può cambiare il punto di vista.
+git diff <nome_branch> <nome_branch>
+
+# E' un altro modo (oltre al diff) per mettere a confronto due branch diversi.
+# Mette in evidenza i commit fatti da un branch rispetto all'altro branch. Vale sempre la regole del punto di vista del <target_branch>. 
+git log <nome_branch> <nome_branch>
+
+# Serve per richiamare un tool esterno per evidenziare le differenze tra due branch.
+git mergetool
+
+# 
+git difftool
+
+# Serve per richiamare e consultare la documentazione on-line. Il comando in autonomia lancerà il browser di default.
+git help config
+
+# Comando per conservare delle modifiche non ancora committate (perché ancora instabili) in un box (temporanea)
+# dove conservarle per poter poi switchare nel branch master o in un altro branch. 
+# Questo perché non è possibile switchare in un altro branch se non si ha una situazione pulita.
+# Conservando le modifiche non ancora committate in un box temporaneo viene fatto un reverse della situazione prima delle modifiche in questione
+# ritornando così ad una situazione pulita e stabile. 
+git stash
+
+# Comando per elencare le box temporanea di modifiche in quel branch
+git stash list
+
+# Comando per applicare nuovamente le modifiche ai file del branch precedentemente conservate in un box temporaneo.
+git stash apply
+
+#------------------------------------------ Working Remotely ---------------------------------------------------------------------------#
+
+# GitHub: è un servizio online che offre dello spazio gratis dove conservare i propri open source repositories
+#         e ai quali possono accedere chiunque nel mondo.  
+
+# Comando per scaricarsi in locale un repository online, e tutti i suoi branchs.
+# Quando si scarica in locale un repository remoto (una sua copia), questo remoto repository diventa la nostra ORIGIN.  
+git clone <URL_of_repository_online>
+
+# Una volta fatte delle modifiche ai file nel proprio repository locale, scaricato (git clone) precedentemente dal repository online (remoto),
+# e per le quali è stato fatto il commit è possibile depositarle sempre sul repository remoto facendo push dello stesso.
+# Comando per depositare le modifiche committate localmente, ad uno dei file del repository locale, sul repository online remoto.
+# In questo modo tutte le modifiche fatte sul branch attuale vengono uploadate nella locazione di memoria remota selezionata. 
+# In questo caso il nostro GitHub repository.
+git push
+
+# Comando per visualizzare come è configurato il tuo repository remoto
+git remote
+
+exe. git remote -v (--verbose)
+exe. git remote show origin			# Comando per 
+exe. git remote add origin 			# Comando per aggiungere un repository locale su un repository remoto 
+
+# Comenado per scaricare (download) in locale le differenze rispetto al repository remoto.
+# Le scarica ma NON le applica. 
+git fetch
+
+# Comando per applicare/scaricare in locale le differenze rispetto al repository remoto.
+# Può essere considerato come la combinazione in sequenza dei comandi "git fetch" e "git merge".
+git pull
+
+#---------------------------------------------------------------------------------------------------------------------------#
+
+# Comando per aggiungere un repository remoto ad un repository locale
+# Viene creato prima un repositori locale e poi viene collegato ad un repository remoto (precedentemente creato VUOTO)
+git remote add origin <https://github.com/agiacomini/<nome_repository>.git
+
+# Cambiare l'URI (URL) del repository
+git remote set-url origin git://new.url.here
+
+# Dopo averlo aggiunto a quello remoto faccio l'upload del branch
+git push -u origin master
+
