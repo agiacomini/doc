@@ -1,0 +1,12 @@
+MySQL
+
+port: 3306
+MySQL root psw: root
+
+MySQL User
+username: agiacomini
+psq: 1234
+
+Windows Service Name:
+MySQL80
+
