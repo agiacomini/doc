@@ -1,12 +1,30 @@
 MySQL
 
-port: 3306
+/------------------------------------------------------------------------/
+
+Port Number: 3306
 MySQL root psw: root
 
+/------------------------------------------------------------------------/
+
+Use Strong Password Encryption for Authentication
+
+/------------------------------------------------------------------------/
+
 MySQL User
+
 username: agiacomini
-psq: 1234
+Host: All
+Role: DB Admin
+Authentication: MySQL
+psw: 1234
 
-Windows Service Name:
-MySQL80
+/------------------------------------------------------------------------/
 
+Windows Service
+
+Windows Service Name: MySQL80
+
+N.B: Run Windows Service as Standard System Account
+
+/------------------------------------------------------------------------/
