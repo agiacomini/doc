@@ -28,3 +28,7 @@ Windows Service Name: MySQL80
 N.B: Run Windows Service as Standard System Account
 
 /------------------------------------------------------------------------/
+
+N.B: Per creare la connessione tra "MySQL Workbench" e il "MySQL Server" aprire la shell di "MySQL Server" e lanciare il seguente comando:
+
+ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'root';
