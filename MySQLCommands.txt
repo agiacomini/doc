@@ -1,0 +1,16 @@
+MySQL - Istruzioni
+
+	N.B: (;) : simbolo di fine istruzione
+
+
+mysql> show databases;
+
+mysql> use <database_name>; (istruzione per accedere ad un DB diverso - Change database)
+
+mysql> show tables; (mostra le tabelle del database selezionato prima)
+
+mysql> describe <table_name>; (mostra i campi della tabella specificata - nomi e tipi)
+
+mysql> create database <nome_database>; (crea un database di nome <nome_database>)
+
+mysql> drop database <nome_database> (cancella il database)
