@@ -1,3 +1,6 @@
+-- DML statement conosciuti anche come CRUD (Create, Read, Update e Delete)
+-- sono statement che manipolano i dati all'interno del database senza toccare
+-- la struttura delle tabelle
 
 -- mydatabase.testTable
 create table userLogin
@@ -18,10 +21,16 @@ SELECT MD5('secretPassword');
 -- rappresenta i campi della tabella
 DESCRIBE user;
 
--- drop/canella
+-- drop/canella definitivamente la tabella dal database, i suoi indici e vincoli. 
+-- Vengono rimossi i dati e allo stesso momento anche la struttura della tabella
 DROP TABLE user;
 commit;
 
+ -- cancella la riga
+DELETE FROM user
+WHERE firstName = 'nome';
+
+-- elimina le righe della tabella
 TRUNCATE TABLE user;
 
 -- trigger on created column
