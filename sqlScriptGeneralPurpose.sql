@@ -8,9 +8,11 @@ create table testTable
     passwordField varchar(32),
     phone 		  int, 
     address 	  varchar(200),
+    foreignKeyId  int not null,
     created 	  datetime default current_timestamp,
     lastUpdate    datetime on update current_timestamp,
-    primary key   (id)
+    primary key   (id),
+    foreign key   (foreignKeyId) references userGroup
 );
 
 -- rappresenta i campi della tabella
