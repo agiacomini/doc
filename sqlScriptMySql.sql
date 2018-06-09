@@ -79,12 +79,3 @@ DROP FOREIGN KEY userlogin_ibfk_1;
 -- elimina una colonna dalla tabella
 ALTER TABLE userLogin
 DROP COLUMN userGroupId;
-
--- Oracle
-Select * From all_constraints;
-
-select constraint_name,
-       table_schema,
-       table_name
-from   information_schema.table_constraints
-where  constraint_schema = 'mydatabases';
