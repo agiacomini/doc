@@ -1,25 +1,45 @@
+-- DML (Date Manipulating Language) statement conosciuti anche come CRUD:
+--
+-- 		Operazione		SQL
+--
+-- 		Create 			INSERT
+-- 		Read			SELECT
+--		Update			UPDATE
+-- 		Delete(Destroy)	DELETE
+--
+-- sono statement che manipolano i dati all'interno del database senza toccare
+-- la struttura delle tabelle
 
 -- mydatabase.testTable
-create table testTable
-(
-	id 		      int not null auto_increment unique,
-    firstName     varchar(80) NULL,
-    lastName 	  varchar(80) NULL,
-    passwordField varchar(32),
-    phone 		  int, 
-    address 	  varchar(200),
-    foreignKeyId  int not null,
-    created 	  datetime default current_timestamp,
-    lastUpdate    datetime on update current_timestamp,
-    primary key   (id),
-    foreign key   (foreignKeyId) references userGroup
+CREATE TABLE testTable (
+    id 		  	  INT NOT NULL AUTO_INCREMENT UNIQUE,
+    firstName 	  VARCHAR(80) NULL,
+    lastName 	  VARCHAR(80) NULL,
+    passwordField VARCHAR(32),
+    phone 		  INT,
+    address 	  VARCHAR(200),
+    foreignKeyId  INT NOT NULL,
+    created 	  DATETIME DEFAULT CURRENT_TIMESTAMP,
+    createdBy	  VARCHAR(30),
+    lastUpdate 	  DATETIME ON UPDATE CURRENT_TIMESTAMP,
+    lastUpdateBy  VARCHAR(30),
+    PRIMARY KEY (id),
+    FOREIGN KEY (foreignKeyId)
+	REFERENCES userGroup
 );
 
 -- rappresenta i campi della tabella
 DESCRIBE testTable;
 
--- drop/canella
+-- drop/canella from db
 DROP TABLE testTable;
+
+-- cancel the content of table
+TRUNCATE TABLE testTable;
+
+/* --------------------------------------------------------------------------------------------------------
+	TRIGGER
+   -------------------------------------------------------------------------------------------------------- */
 
 -- trigger on "created" column
 CREATE TRIGGER insert_creation_trg BEFORE INSERT ON testTable
@@ -31,6 +51,32 @@ CREATE TRIGGER update_lastUpdate_trg BEFORE UPDATE ON testTable
 FOR EACH ROW 
 SET NEW.lastUpdate = NOW();
 
+DELIMITER |
+CREATE TRIGGER user_domain_IU_TRG 
+BEFORE INSERT ON user_domain
+FOR EACH ROW
+	BEGIN
+
+		DECLARE vUser VARCHAR(30);
+		
+		SELECT SUBSTRING_INDEX(USER(), '@', -1) INTO vUser;
+		
+		SET NEW.created = NOW();
+		SET NEW.lastUpdate = NOW();
+		SET NEW.createdBy = vUser;
+		SET NEW.lastUpdateBy = vUser;
+		
+	END;
+    
+|
+
+/* -------------------------------------------------------------------------------------------------------- */
+
+
+/* --------------------------------------------------------------------------------------------------------
+	SELECT
+   -------------------------------------------------------------------------------------------------------- */
+
 -- storing password with cryptography
 SELECT CHARACTER_LENGTH (MD5('myPassword'));  -- 32
 SELECT CHARACTER_LENGTH (SHA1('myPassword')); -- 40
@@ -40,30 +86,29 @@ SELECT MD5('myPassword');
 -- select
 SELECT * FROM mydatabase.testtable;
 
--- inser new row
-INSERT INTO testTable (firstName, lastName, passwordField, phone, address) 
-VALUES ('andrea', 'giacomini', MD5('1234'), 888-88888,'via Chiesa 4B');
-
 -- select by "userName" and "password"
 SELECT * FROM testTable WHERE userName = 'giacomini' AND passwordField = MD5('1234');
 
--- update row values
--- Edit-->Preferences-->SQL Editor-->Safe Updates (uncheck) update statements witout WHERE condition on KEY FIELD
-SET SQL_SAFE_UPDATES = 0;
+SELECT * FROM testTable WHERE UPPER(lastName) in ( UPPER('giacomini') );
 
-UPDATE testTable SET firstName = 'agiacomini2' WHERE id = 1;
-UPDATE testTable SET firstName = 'agiacomini2' WHERE firstName = 'andrea';
+/* -------------------------------------------------------------------------------------------------------- */
+
 
 /* --------------------------------------------------------------------------------------------------------
 	ALTER TABLE (DDL - Data Description Language) 
    -------------------------------------------------------------------------------------------------------- */
 
 -- update table schema, add new column
-ALTER TABLE testTable ADD newColumn int;
+ALTER TABLE testTable 
+ADD newColumn int;
 
 -- update table schema, delete column from table
-ALTER TABLE userLogin
+ALTER TABLE testTable
 DROP COLUMN userGroupId;
+
+-- update table schema, change data type of column in a table
+ALTER TABLE testTable
+MODIFY COLUMN firstName int;
 
 -- update table schema, add new FK on table
 ALTER TABLE testTable 
@@ -86,6 +131,40 @@ DROP FOREIGN KEY FK_constraintName;
 
 /* -------------------------------------------------------------------------------------------- */
 
+
+/* --------------------------------------------------------------------------------------------------------
+	UPDATE TABLE (DML - Data Manipulating Language) 
+   -------------------------------------------------------------------------------------------------------- */
+
+-- inser new row
+INSERT INTO user_domain (firstName, lastName, passwordField, phone, address) 
+VALUES ('beppe', 'falco', MD5('1234'), '+393280680074','via Bicocca 4');
+
+-- update row values
+-- Edit-->Preferences-->SQL Editor-->Safe Updates (uncheck) update statements witout WHERE condition on KEY FIELD
+SET SQL_SAFE_UPDATES = 0;
+
+UPDATE testTable SET firstName = 'agiacomini2' WHERE id = 1;
+UPDATE testTable SET firstName = 'agiacomini2' WHERE firstName = 'andrea';
+
+UPDATE user_domain SET phone = '+3932808888' WHERE firstName = 'beppe';
+
+UPDATE user_domain SET firstName = 'luchino' WHERE firstName = 'luca??????';
+
+-- replace the vale '-88000', in "phone" field, with the new value "+393388166712" 
+UPDATE testTable 
+SET phone = REPLACE(phone,'-88000','+393388166712'), 
+	lastName = REPLACE(lastName,'giacomini','Giacomini')
+WHERE address = 'via Chiesa 4B';
+
+-- replace the values (with regex) when find the following value (+39|+35|+85) 
+UPDATE testTable SET phone = REGEXP_REPLACE(phone,'+39|+35|+85','+33')					 
+WHERE (model LIKE '%Plugln%' OR model LIKE '%PLUGIN%' OR model LIKE '%plugin%' OR model LIKE '%Plugin%')
+AND model NOT IN ('AWN MR4 IN-OUT Plugin');
+
+/* -------------------------------------------------------------------------------------------- */
+
+
 /* ----------------------------------------------------------------------------------------------
 	QUERY DI SISTEMA, DI USO GENERALE
    ---------------------------------------------------------------------------------------------*/
@@ -102,5 +181,27 @@ WHERE  constraint_schema = 'mydatabase';
 SELECT *
 FROM   information_schema.table_constraints
 WHERE  constraint_schema = 'mydatabase';
+
+-- view the system date, like '2018-06-10 10:38:11'
+SELECT SYSDATE();
+SELECT NOW();
+
+-- view the user logged, like 'root@localhost'
+SELECT CURRENT_USER();
+-- find username of person performing INSERT into table
+SELECT USER();
+
+SELECT @@hostname;
+SHOW VARIABLES WHERE Variable_name LIKE '%host%';
+
+select host from information_schema.processlist;
+
+SHOW processlist;
+
+-- delivers the "remote_host" e.g. "localhost" 
+SELECT SUBSTRING_INDEX(USER(), '@', -1);
+
+-- delivers the user-name e.g. "myuser"
+SELECT SUBSTRING_INDEX(USER(), '@', 1);
 
 /* -------------------------------------------------------------------------------------------- */

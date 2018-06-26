@@ -1,7 +1,3 @@
--- DML statement conosciuti anche come CRUD (Create, Read, Update e Delete)
--- sono statement che manipolano i dati all'interno del database senza toccare
--- la struttura delle tabelle
-
 -- mydatabase.testTable
 create table userGroup
 (
@@ -41,41 +37,30 @@ CREATE TRIGGER update_lastUpdate_trg BEFORE UPDATE ON testTable
 FOR EACH ROW 
 SET NEW.lastUpdate = NOW();
 
--- select
-SELECT * FROM mydatabase.userLogin;
+-- In mySQL does not exist "CREATE OR REPLACE TRIGGER" paradigma, so the best practice is to lock the table
+-- drop the old trigger and add the new one while the table is locked
+LOCK TABLE userGroup WRITE;
+DROP TRIGGER IF EXISTS insert_creation_trg;
 
--- insert new 
-INSERT INTO userLogin (firstName, lastName, userName, userPassword) 
-VALUES ('andrea', 'giacomini', 'agiacomini', MD5('1234'));
+DELIMITER //
 
-SELECT * FROM userLogin WHERE userName = 'agiacomini' AND userPassword = MD5('1234');
+CREATE TRIGGER userGroup_IU_TRG BEFORE INSERT ON userGroup
+FOR EACH ROW
+BEGIN
 
-UPDATE user SET userName = 'agiacomini2' WHERE id = 1;
-UPDATE userLogin SET userName = 'agiacomini2' WHERE firstName = 'andrea';
+	DECLARE vUser VARCHAR(30) DEFAULT 0;
+    
+    SELECT current_user() INTO vUser;
+    
+	SET NEW.created = NOW();
+    SET NEW.lastUpdate = SYSDATE();
+    SET NEW.createdBy = vUser;
+    SET NEW.lastUpdateBy = vUser;
+    
+	-- SET NEW.lastUpdate = NOW();
+    -- SET NEW.lastUpdateBy = TMPVAR;
+    
+END;
 
-ALTER TABLE userLogin ADD userGroupIdNew int;
-
--- aggiunge una chiave esterna alla tabella
-ALTER TABLE userLogin 
-ADD FOREIGN KEY (userGroupIddddd) REFERENCES userGroup(id);
-
--- aggiunge una chiave esterna alla tabella ed aggiunge un nuome riconoscitivo al vincolo appena creato
-ALTER TABLE userLogin
-ADD CONSTRAINT FK_userGroupId
-FOREIGN KEY (userGroupId) REFERENCES userGroup(id);
-
--- aggiunge una chiave esterna alla tabella già esistente
--- associa un nome riconoscitivo al vincolo
--- e aggiunge un valore di dafault 0 alle righe già presenti in tabella e per le quali non era 
--- stato ancra dato un valore 
-ALTER TABLE userLogin ADD userGroupIdNewTest SMALLINT UNSIGNED NOT NULL DEFAULT 0,
-ADD CONSTRAINT FK_userGroupIdNew
-FOREIGN KEY (userGroupId) REFERENCES userGroup(id);
-
--- cancella un vincolo dalla tabella
-ALTER TABLE userLogin 
-DROP FOREIGN KEY userlogin_ibfk_1;
-
--- elimina una colonna dalla tabella
-ALTER TABLE userLogin
-DROP COLUMN userGroupId;
+DELIMITER //
+UNLOCK TABLE userGroup;
