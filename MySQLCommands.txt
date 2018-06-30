@@ -14,3 +14,6 @@ mysql> describe <table_name>; (mostra i campi della tabella specificata - nomi e
 mysql> create database <nome_database>; (crea un database di nome <nome_database>)
 
 mysql> drop database <nome_database> (cancella il database)
+
+-- lanciare uno script sql
+mysql> source D:/Lavoro/doc/sqlScript/01_DDL_PROJECT_USER.sql
