@@ -162,6 +162,16 @@ UPDATE testTable SET phone = REGEXP_REPLACE(phone,'+39|+35|+85','+33')
 WHERE (model LIKE '%Plugln%' OR model LIKE '%PLUGIN%' OR model LIKE '%plugin%' OR model LIKE '%Plugin%')
 AND model NOT IN ('AWN MR4 IN-OUT Plugin');
 
+-- Left Padded string
+UPDATE testTable
+SET lastName = lpad(lastName,10,'*')
+WHERE id IN (3,4);
+
+-- Righr Padded string
+UPDATE testTable
+SET lastName = rpad(lastName,10,'*')
+WHERE id IN (3,4);
+
 /* -------------------------------------------------------------------------------------------- */
 
 
