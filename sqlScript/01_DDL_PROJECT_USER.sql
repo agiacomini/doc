@@ -95,4 +95,3 @@ FOR EACH ROW
 DESCRIBE PROJECT_USER;
   
 spool off
-

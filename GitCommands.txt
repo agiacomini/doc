@@ -1,7 +1,7 @@
 ﻿#######################################################################################
 #                                                                                     #
 # Sistema di versionamento Git - DVCS (Distributed Version Control System)            #
-# @A.G - indio1984@gmail.com														  #
+# @A.G - andr3a.giacomini@gmail.com														  #
 #                                                                                     #
 #######################################################################################
 
@@ -11,7 +11,8 @@
 # Workin Direcotry
 git init
  
-# Git vede un path sul FileSystem come un repository, dal quale possono poi partire differenti filoni di evoluzione del FileSystem chiamati Branch 
+# Git vede un path sul FileSystem come un repository, dal quale possono poi partire differenti filoni di evoluzione del FileSystem 
+# chiamati Branch. 
 
 # Aggiungere un file al Repository (Staging Area - Index), pronto per essere incluso nel prossimo commit
 git add
@@ -194,7 +195,7 @@ exe. git remote -v (--verbose)
 exe. git remote show origin			# Comando per 
 exe. git remote add origin 			# Comando per aggiungere un repository locale su un repository remoto 
 
-# Comenado per scaricare (download) in locale le differenze rispetto al repository remoto.
+# Comando per scaricare (download) in locale le differenze rispetto al repository remoto.
 # Le scarica ma NON le applica. 
 git fetch
 
