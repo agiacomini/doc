@@ -1,0 +1,24 @@
+-- Ubuntu 18.04 Bionic Beaver Linux
+
+-- check version os linux
+$ cat /etc/os-release
+-- oppure in alternativa
+$ lsb_release -a
+
+-- create logic link (for example on Desktop)
+$ ln -s <path> ['/home/agiacomini/Documents/Lavoro']
+
+-- Check the update support duration of all packages
+$ ubuntu-support-status
+
+-- Update ubuntu packages to keep software packages up to date
+-- First: update the packages index list
+$ sudo apt update
+
+-- First+: list all packages which are scheduled for update
+$ apt list --upgradable
+
+-- Second: install update for ALL packages at once
+$ sudo apt upgrade
+-- Second: OR update individual packages
+$ apt install PACKAGE-NAME
