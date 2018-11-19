@@ -73,6 +73,9 @@ git configure <nome_oggetto>
 git config --global user.name "A.G"
 git config --global user.email indio1984@gmail.com
 
+# Editing del file di configurazione
+nano ~/.gitconfig
+
 exe. git configure user.name
 exe. git configure user.email
 exe. git configure merge.tool
