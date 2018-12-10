@@ -4,7 +4,7 @@
 ****                                                          ****
 ******************************************************************
 
-SCRIPT NAME      : 01_DDL_PROJECT_USER_GROUP.sql
+SCRIPT NAME      : 04_DDL_PROJECT_USER_PROFILE.sql
 
 AUTHOR           : 
 
@@ -33,21 +33,22 @@ SCHEMA           : mydatabase
 *****************************************************************
 **************************************************************** */
 
-CREATE TABLE PROJECT_USER_GROUP (
+CREATE TABLE PROJECT_USER_PROFILE (
     id 		  	  INT NOT NULL AUTO_INCREMENT UNIQUE,
-    groupName 	  VARCHAR(50) NULL,
-    description	  VARCHAR(80) NULL,
-	isAdmin	      BOOLEAN,
+    profileId 	  INT NOT NULL,
+	projectUserId INT NOT NULL,
     created 	  DATETIME DEFAULT CURRENT_TIMESTAMP,
 	createdBy	  VARCHAR(30),
     lastUpdate 	  DATETIME ON UPDATE CURRENT_TIMESTAMP,
 	lastUpdateBy  VARCHAR(30),
-    PRIMARY KEY  (id)
+    PRIMARY KEY   (id),
+	FOREIGN KEY   (profileId) REFERENCES profile(id),
+	FOREIGN KEY   (projectUserId) REFERENCES project_user(id)
 );
 
 DELIMITER |
-CREATE TRIGGER PROJECT_USER_GROUP_IU_TRG 
-BEFORE INSERT ON PROJECT_USER_GROUP
+CREATE TRIGGER PROJECT_USER_PROFILE_IU_TRG 
+BEFORE INSERT ON PROJECT_USER_PROFILE
 FOR EACH ROW
 	BEGIN
 
@@ -64,4 +65,4 @@ FOR EACH ROW
 	END;   
 |
 
-DESCRIBE PROJECT_USER_GROUP;
+DESCRIBE PROJECT_USER_PROFILE;

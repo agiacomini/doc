@@ -1,0 +1,20 @@
+# Installare Composer su Windows. E' il gestore di pacchetti usato dalle applicazioni PHP. 
+# Scaricare l'installer per piattaforma Windows (link: https://getcomposer.org/). 
+
+# Installare Symfony: verificare la compatibilità della versione PHP con i requisiti minimi di Symfony e creazione
+# di un nuovo progetto ($ composer create-project symfony/framework-standard-edition progetto/ ~2.4)
+
+# Posizionarsi nella spazio di progetto "progetto"
+
+# Eseguire il comando per assicurarsi che il sistema soddisfi i requisiti tecnici
+
+$ cd progetto
+$ php app/check.php
+$
+
+# Eseguire serpre da console il server web incluso in php
+ 
+$ php app/console server:run
+$
+
+# Aprire un browser e accedere all'URL http://localhost:8000

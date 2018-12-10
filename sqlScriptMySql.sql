@@ -42,8 +42,7 @@ SET NEW.lastUpdate = NOW();
 LOCK TABLE userGroup WRITE;
 DROP TRIGGER IF EXISTS insert_creation_trg;
 
-DELIMITER //
-
+DELIMITER |
 CREATE TRIGGER userGroup_IU_TRG BEFORE INSERT ON userGroup
 FOR EACH ROW
 BEGIN
@@ -61,6 +60,7 @@ BEGIN
     -- SET NEW.lastUpdateBy = TMPVAR;
     
 END;
+|
 
-DELIMITER //
+-- DELIMITER //
 UNLOCK TABLE userGroup;
