@@ -55,12 +55,33 @@ $ sudo apt install chromium-browser
 
 \----------------------------------- Chrome - END ------------------------------------------------\
 
-\--------------------------------- Process List --------------------------------------------------\
+\--------------------------------- Manage Processes --------------------------------------------------\
 
+-- The "top" command is the traditional way to view system resource usage
+$ top
+
+-- The "htop" command is an improved "top" command. It's not installed by default.
+-- "htop" displays the same information with an easier-to-understand layout.
 -- Install htop"
 $ sudo apt install htop
 
 -- Run "htop"
 $ htop
 
-\------------------------------- Process List END ------------------------------------------------\
+-- The "ps" command lists running processes on system.
+$ ps -A
+
+$ ps -A | grep <name_process>
+
+-- The "psgrep" command returns the process IDs that match it.
+$ pgrep <name_process>
+
+-- Kill the process
+$ kill PID
+
+-- The "pkill" and "killall" commands can kill a process, given its name.
+$ pkill <name_process>
+-- Or
+$ killall <name_process>
+
+\------------------------------- Manage Processes END ------------------------------------------------\
