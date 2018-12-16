@@ -5,6 +5,19 @@ $ cat /etc/os-release
 -- oppure in alternativa
 $ lsb_release -a
 
+-- check user you are
+$ sudo whoami
+
+-- N.B: When in your command prompt will change from $ to #
+--      which indicates that you are currently logged in as root
+
+-- Set password root
+$ sudo password
+
+-- Once the root password is set, you can login as root
+-- by using the "su" command
+$ su
+
 -- create logic link (for example on Desktop)
 $ ln -s <path> ['/home/agiacomini/Documents/Lavoro']
 
@@ -35,26 +48,6 @@ $ sudo apt install oracle-java8-set-default
 
 --Unpackage tar.gz
 $ tar xfz <nomeFileTarGx>.tar.gz
-
-\---------------------------------------------------------------------------------------------------------------- MySql --------------------------------------------------------------------------------------------------------------------------------------------------\
-
---Start MySql service
-$ sudo systemctl start mysql
-
--- Test if MySql service is on
-$ systemctl status mysql.service
-
--- Additional check to try connecting to the database using "mysqladmin" tool
--- This command says to connect to MySQL as root (-u root), prompt for a password (-p), and return the version
-$ sudo mysqladmin -p -u root version
-
--- Install MySql Workbanch extra package 
-$ sudo apt insatll mysql-workbench
-
--- Launching Workbanch
-$ /usr/bin/mysql-workbench --help
-
-\-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\
 
 \----------------------------------- Chrome -----------------------------------------------------\
 

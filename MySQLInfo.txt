@@ -29,6 +29,81 @@ N.B: Run Windows Service as Standard System Account
 
 /------------------------------------------------------------------------/
 
-N.B: Per creare la connessione tra "MySQL Workbench" e il "MySQL Server" aprire la shell di "MySQL Server" e lanciare il seguente comando:
+/------------------ Mettere in Sicurezza MySQL --------------------------/
 
-ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'root';
+-- Insert a root psw for the root user to access to MySQL Server
+$ sudo mysql_secure_installation
+
+-- N.B: insert "Y" to all following questions (remove remote user, disable root remote login, remove test databse, update rules)
+
+/------------------------------------------------------------------------/
+
+
+/------------ Modificare il metodo di autenticazione (Opzionale) --------/
+
+-- Autenticarsi
+$ mysql
+-- Or
+$ sudo mysql
+
+-- Verificare il metodo di autenticazione
+mysql> SELECT user,authentication_string,plugin,host FROM mysql.user;
+
+-- Esempio
+
+				+------------------+-------------------------------------------+-----------------------+-----------+
+				| user             | authentication_string                     | plugin                | host      |
+				+------------------+-------------------------------------------+-----------------------+-----------+
+				| root             |                                           | auth_socket           | localhost |
+				| mysql.session    | *THISISNOTAVALIDPASSWORDTHATCANBEUSEDHERE | mysql_native_password | localhost |
+				| mysql.sys        | *THISISNOTAVALIDPASSWORDTHATCANBEUSEDHERE | mysql_native_password | localhost |
+				| debian-sys-maint | *5852386AB32C5DAD5DDA4F5FED911A70DA342656 | mysql_native_password | localhost |
+				+------------------+-------------------------------------------+-----------------------+-----------+
+				4 rows in set (0.00 sec)
+				
+
+-- Per l'utente "root" è impostato di default il metodo di autenticazione "auth_socket"
+
+-- Per creare la connessione tra "MySQL Workbench" e il "MySQL Server" aprire la shell di "MySQL Server" e lanciare il seguente comando
+-- Per utilizzare l'autenticazione con password per l'account "root" effettuare la seguente modifica
+mysql> ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'root';
+
+-- Effettuare un refresh delle tabelle
+mysql> FLUSH PRIVILEGES;
+
+-- Veirifcare il nuovo metodo di autenticazione
+mysql> SELECT user,authentication_string,plugin,host FROM mysql.user;
+
+-- Esempio 
+
+				+------------------+-------------------------------------------+-----------------------+-----------+
+				| user             | authentication_string                     | plugin                | host      |
+				+------------------+-------------------------------------------+-----------------------+-----------+
+				| root             | *E6A3377941E640ADEDCC8907E390B06B0C863862 | mysql_native_password | localhost |
+				| mysql.session    | *THISISNOTAVALIDPASSWORDTHATCANBEUSEDHERE | mysql_native_password | localhost |
+				| mysql.sys        | *THISISNOTAVALIDPASSWORDTHATCANBEUSEDHERE | mysql_native_password | localhost |
+				| debian-sys-maint | *5852386AB32C5DAD5DDA4F5FED911A70DA342656 | mysql_native_password | localhost |
+				+------------------+-------------------------------------------+-----------------------+-----------+
+				4 rows in set (0.00 sec)
+				
+-- Uscire dal prompt di MySQL
+mysql> exit;
+
+-- Ora per effetturare il login al server MySQL sarà necessario inserire una password
+-- Se si è loggati come root
+$ mysql -u root -p
+
+-- Altrimenti, se si è loggati come altro utente con privilegi sudo
+$ sudo mysql -u root -p
+
+/------------------------------------------------------------------------/
+
+/-------- Creare un nuovo Utente per il server MySQL (Opzionale) --------/
+
+mysql> CREATE USER 'nuovo_utente'@'localhost' IDENTIFIED BY 'nuova_password';
+
+mysql> GRANT ALL PRIVILEGES ON *.* TO 'nuovo_utente'@'localhost' WITH GRANT OPTION;
+
+mysql> exit;
+
+/------------------------------------------------------------------------/
