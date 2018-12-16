@@ -54,3 +54,13 @@ $ tar xfz <nomeFileTarGx>.tar.gz
 $ sudo apt install chromium-browser
 
 \----------------------------------- Chrome - END ------------------------------------------------\
+
+\--------------------------------- Process List --------------------------------------------------\
+
+-- Install htop"
+$ sudo apt install htop
+
+-- Run "htop"
+$ htop
+
+\------------------------------- Process List END ------------------------------------------------\
