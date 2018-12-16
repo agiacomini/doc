@@ -3,8 +3,8 @@
 -- 		Operazione		SQL
 --
 -- 		Create 			INSERT
--- 		Read			SELECT
---		Update			UPDATE
+-- 		Read			SELECT (DQL - Data Query Language)
+-- 		Update			UPDATE
 -- 		Delete(Destroy)	DELETE
 --
 -- sono statement che manipolano i dati all'interno del database senza toccare
@@ -17,6 +17,7 @@ CREATE TABLE testTable (
     lastName 	  VARCHAR(80) NULL,
     passwordField VARCHAR(32),
     phone 		  INT,
+    booleanValue  BOOLEAN,
     address 	  VARCHAR(200),
     foreignKeyId  INT NOT NULL,
     created 	  DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -25,7 +26,7 @@ CREATE TABLE testTable (
     lastUpdateBy  VARCHAR(30),
     PRIMARY KEY (id),
     FOREIGN KEY (foreignKeyId)
-	REFERENCES userGroup
+	REFERENCES userGroup(id)
 );
 
 -- rappresenta i campi della tabella
@@ -59,7 +60,8 @@ FOR EACH ROW
 
 		DECLARE vUser VARCHAR(30);
 		
-		SELECT SUBSTRING_INDEX(USER(), '@', -1) INTO vUser;
+		-- SELECT SUBSTRING_INDEX(USER(), '@', -1) INTO vUser;  -- localhost
+        SELECT USER() INTO vUser;							    -- root@localhost
 		
 		SET NEW.created = NOW();
 		SET NEW.lastUpdate = NOW();
@@ -78,8 +80,8 @@ FOR EACH ROW
    -------------------------------------------------------------------------------------------------------- */
 
 -- storing password with cryptography
-SELECT CHARACTER_LENGTH (MD5('myPassword'));  -- 32
-SELECT CHARACTER_LENGTH (SHA1('myPassword')); -- 40
+SELECT CHARACTER_LENGTH (MD5('myPassword'));  -- 32 
+SELECT CHARACTER_LENGTH (SHA1('myPassword')); -- 40 
  
 SELECT MD5('myPassword');
 
@@ -94,8 +96,29 @@ SELECT * FROM testTable WHERE UPPER(lastName) in ( UPPER('giacomini') );
 /* -------------------------------------------------------------------------------------------------------- */
 
 
+-- DDL (Data Definition Language)
+-- 
+-- 		Operazioni SQL
+-- 
+-- 			-Create Domain
+-- 			-Drop Domain
+-- 
+-- 			-Create Schema
+-- 			-Drop Schema
+-- 
+-- 			-Create Database
+-- 			-Alter Database
+-- 			-Drop Database
+-- 	
+-- 			-Create Table
+-- 			-Alter Table
+-- 			-Drop Table
+-- 			-Rename
+--
+-- 			-Create Index
+-- 			-Drop Index
 /* --------------------------------------------------------------------------------------------------------
-	ALTER TABLE (DDL - Data Description Language) 
+	ALTER TABLE
    -------------------------------------------------------------------------------------------------------- */
 
 -- update table schema, add new column
@@ -109,6 +132,10 @@ DROP COLUMN userGroupId;
 -- update table schema, change data type of column in a table
 ALTER TABLE testTable
 MODIFY COLUMN firstName int;
+
+-- update table schema, rename a column
+ALTER TABLE testTable
+CHANGE COLUMN old_column_name new_column_name data_type;
 
 -- update table schema, add new FK on table
 ALTER TABLE testTable 

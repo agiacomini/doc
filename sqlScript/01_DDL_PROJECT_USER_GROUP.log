@@ -1,0 +1,22 @@
+mysql> source D:/Lavoro/doc/sqlScript/01_DDL_PROJECT_USER_GROUP.sql
+Query OK, 0 rows affected (0.24 sec)
+
+Query OK, 0 rows affected (0.05 sec)
+
++--------------+-------------+------+-----+-------------------+-----------------------------+
+| Field        | Type        | Null | Key | Default           | Extra                       |
++--------------+-------------+------+-----+-------------------+-----------------------------+
+| id           | int(11)     | NO   | PRI | NULL              | auto_increment              |
+| groupName    | varchar(50) | YES  |     | NULL              |                             |
+| description  | varchar(80) | YES  |     | NULL              |                             |
+| isAdmin      | tinyint(1)  | YES  |     | NULL              |                             |
+| created      | datetime    | YES  |     | CURRENT_TIMESTAMP |                             |
+| createdBy    | varchar(30) | YES  |     | NULL              |                             |
+| lastUpdate   | datetime    | YES  |     | NULL              | on update CURRENT_TIMESTAMP |
+| lastUpdateBy | varchar(30) | YES  |     | NULL              |                             |
++--------------+-------------+------+-----+-------------------+-----------------------------+
+8 rows in set (0.01 sec)
+
+mysql> notee;
+    -> ^C
+mysql> notee

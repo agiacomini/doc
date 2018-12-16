@@ -4,7 +4,7 @@
 ****                                                          ****
 ******************************************************************
 
-SCRIPT NAME      : 01_DDL_PROJECT_USER_GROUP.sql
+SCRIPT NAME      : 05_DDL_FUNCTIONALITY.sql
 
 AUTHOR           : 
 
@@ -33,21 +33,20 @@ SCHEMA           : mydatabase
 *****************************************************************
 **************************************************************** */
 
-CREATE TABLE PROJECT_USER_GROUP (
-    id 		  	  INT NOT NULL AUTO_INCREMENT UNIQUE,
-    groupName 	  VARCHAR(50) NULL,
-    description	  VARCHAR(80) NULL,
-	isAdmin	      BOOLEAN,
-    created 	  DATETIME DEFAULT CURRENT_TIMESTAMP,
-	createdBy	  VARCHAR(30),
-    lastUpdate 	  DATETIME ON UPDATE CURRENT_TIMESTAMP,
-	lastUpdateBy  VARCHAR(30),
-    PRIMARY KEY  (id)
+CREATE TABLE FUNCTIONALITY (
+    id 		  	  		INT NOT NULL AUTO_INCREMENT UNIQUE,
+    description   		VARCHAR(80) NULL,,
+	functionalityName 	VARCHAR(50) NULL,,
+    created 	  		DATETIME DEFAULT CURRENT_TIMESTAMP,
+	createdBy	  		VARCHAR(30),
+    lastUpdate 	  		DATETIME ON UPDATE CURRENT_TIMESTAMP,
+	lastUpdateBy  		VARCHAR(30),
+    PRIMARY KEY   		(id),
 );
 
 DELIMITER |
-CREATE TRIGGER PROJECT_USER_GROUP_IU_TRG 
-BEFORE INSERT ON PROJECT_USER_GROUP
+CREATE TRIGGER FUNCTIONALITY_IU_TRG 
+BEFORE INSERT ON FUNCTIONALITY
 FOR EACH ROW
 	BEGIN
 
@@ -64,4 +63,4 @@ FOR EACH ROW
 	END;   
 |
 
-DESCRIBE PROJECT_USER_GROUP;
+DESCRIBE FUNCTIONALITY;
