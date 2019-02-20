@@ -1,0 +1,6 @@
+Path Temp:
+(esegui/run win+R)
+
+	- %temp%
+
+	- %windir%\temp
