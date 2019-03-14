@@ -4,7 +4,7 @@
 ****                                                          ****
 ******************************************************************
 
-SCRIPT NAME      : 04_DDL_PROJECT_USER_PROFILE.sql
+SCRIPT NAME      : 03_DDL_PROJECTNAME_PROPERTY.sql
 
 AUTHOR           : 
 
@@ -33,36 +33,39 @@ SCHEMA           : mydatabase
 *****************************************************************
 **************************************************************** */
 
-CREATE TABLE PROJECT_USER_PROFILE (
-    id 		  	  INT NOT NULL AUTO_INCREMENT UNIQUE,
-    profileId 	  INT NOT NULL,
-	projectUserId INT NOT NULL,
-    created 	  DATETIME DEFAULT CURRENT_TIMESTAMP,
-	createdBy	  VARCHAR(30),
-    lastUpdate 	  DATETIME ON UPDATE CURRENT_TIMESTAMP,
-	lastUpdateBy  VARCHAR(30),
-    PRIMARY KEY   (id),
-	FOREIGN KEY   (profileId) REFERENCES profile(id),
-	FOREIGN KEY   (projectUserId) REFERENCES project_user(id)
+CREATE TABLE PROJECTNAME_PROPERTY (
+    id 		  	   	INT NOT NULL AUTO_INCREMENT UNIQUE,
+    name 	       	VARCHAR(80),
+    value          	VARCHAR(80),
+    type           	VARCHAR(32),
+    description    	VARCHAR(200),
+	code			VARCHAR(32),
+	
+    created 		DATETIME DEFAULT CURRENT_TIMESTAMP,
+	createdBy	  	VARCHAR(30),
+    lastUpdate 	  	DATETIME ON UPDATE CURRENT_TIMESTAMP,
+	lastUpdateBy  	VARCHAR(30),
+	
+    PRIMARY KEY  (id)
 );
 
 DELIMITER |
-CREATE TRIGGER PROJECT_USER_PROFILE_IU_TRG 
-BEFORE INSERT ON PROJECT_USER_PROFILE
+CREATE TRIGGER PROJECTNAME_PROPERTY_IU_TRG 
+BEFORE INSERT ON PROJECTNAME_PROPERTY
 FOR EACH ROW
 	BEGIN
 
 		DECLARE vUser VARCHAR(30);
 		
 		-- SELECT SUBSTRING_INDEX(USER(), '@', -1) INTO vUser;  -- localhost
-        SELECT USER() INTO vUser;								-- root@localhost
+		SELECT USER() INTO vUser;								-- root@localhost
 		
 		SET NEW.created = NOW();
 		SET NEW.lastUpdate = NOW();
 		SET NEW.createdBy = vUser;
 		SET NEW.lastUpdateBy = vUser;
 		
-	END;   
+	END;
 |
 
-DESCRIBE PROJECT_USER_PROFILE;
+DESCRIBE PROJECTNAME_PROPERTY;

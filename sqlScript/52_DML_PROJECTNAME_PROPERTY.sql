@@ -4,7 +4,7 @@
 ****                                                          ****
 ******************************************************************
 
-SCRIPT NAME      : 52_DML_PROJECT_PROPERTY.sql
+SCRIPT NAME      : 52_DML_PROJECTNAME_PROPERTY.sql
 
 AUTHOR           : 
 
@@ -26,9 +26,9 @@ CONSTRAINT       :
 
 WARNING          :
 
-DATABASE         : rmt
+DATABASE         : mydatabase
 
-SCHEMA           : rmt
+SCHEMA           : mydatabase
          
 *****************************************************************
 *****************************************************************/
@@ -41,15 +41,15 @@ SCHEMA           : rmt
 *****************************************************************/
 
 
-SELECT 'ATTENTION This update x records !!!' AS ' ';
+SELECT 'ATTENTION This update 5 records !!!' AS ' ';
 SELECT 'Press CTRL C to interrupt' AS ' ';
 
-INSERT INTO PROJECT_PROPERTY (NAME,VALUE,TYPE,DESCRIPTION) VALUES ('priorityToSync10','10','priorityToSyncType','Define the priority assign to element');
-INSERT INTO PROJECT_PROPERTY (NAME,VALUE,TYPE,DESCRIPTION) VALUES ('priorityToSync20','20','priorityToSyncType','Define the priority assign to element');
+INSERT INTO PROJECTNAME_PROPERTY (NAME,VALUE,TYPE,DESCRIPTION) VALUES ('priorityToSync10','10','priorityToSyncType','Define the priority assign to element');
+INSERT INTO PROJECTNAME_PROPERTY (NAME,VALUE,TYPE,DESCRIPTION) VALUES ('priorityToSync20','20','priorityToSyncType','Define the priority assign to element');
 
-INSERT INTO PROJECT_PROPERTY (NAME,VALUE,TYPE,DESCRIPTION,CODE) VALUES ('trunkTypeFixed','Fixed','typeOfTrunk','Define the type assign to Trunk','F');
-INSERT INTO PROJECT_PROPERTY (NAME,VALUE,TYPE,DESCRIPTION,CODE) VALUES ('trunkTypeMobile','Mobile','typeOfTrunk','Define the type assign to Trunk','M');
-INSERT INTO PROJECT_PROPERTY (NAME,VALUE,TYPE,DESCRIPTION,CODE) VALUES ('trunkTypeFixedAndMobile','Fixed+Mobile','typeOfTrunk','Define the type assign to Trunk','FM');
+INSERT INTO PROJECTNAME_PROPERTY (NAME,VALUE,TYPE,DESCRIPTION,CODE) VALUES ('trunkTypeFixed','Fixed','typeOfTrunk','Define the type assign to Trunk','F');
+INSERT INTO PROJECTNAME_PROPERTY (NAME,VALUE,TYPE,DESCRIPTION,CODE) VALUES ('trunkTypeMobile','Mobile','typeOfTrunk','Define the type assign to Trunk','M');
+INSERT INTO PROJECTNAME_PROPERTY (NAME,VALUE,TYPE,DESCRIPTION,CODE) VALUES ('trunkTypeFixedAndMobile','Fixed+Mobile','typeOfTrunk','Define the type assign to Trunk','FM');
 
 
 SELECT 'REMEMBER to commit, if everything is O.K.' AS ' ';

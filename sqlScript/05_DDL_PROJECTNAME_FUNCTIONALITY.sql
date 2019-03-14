@@ -4,7 +4,7 @@
 ****                                                          ****
 ******************************************************************
 
-SCRIPT NAME      : 03_DDL_PROJECT_PROPERTY.sql
+SCRIPT NAME      : 05_DDL_PROJECTNAME_FUNCTIONALITY.sql
 
 AUTHOR           : 
 
@@ -33,37 +33,34 @@ SCHEMA           : mydatabase
 *****************************************************************
 **************************************************************** */
 
-CREATE TABLE PROJECT_PROPERTY (
-    id 		  	   INT NOT NULL AUTO_INCREMENT UNIQUE,
-    name 	       VARCHAR(80),
-    value          VARCHAR(80),
-    type           VARCHAR(32),
-    description    VARCHAR(200),
-	code           VARCHAR(32),
-    created 	  DATETIME DEFAULT CURRENT_TIMESTAMP,
-	createdBy	  VARCHAR(30),
-    lastUpdate 	  DATETIME ON UPDATE CURRENT_TIMESTAMP,
-	lastUpdateBy  VARCHAR(30),
-    PRIMARY KEY  (id)
+CREATE TABLE PROJECTNAME_FUNCTIONALITY (
+    id 		  	  		INT NOT NULL AUTO_INCREMENT UNIQUE,
+    description   		VARCHAR(80) NULL,,
+	functionalityName 	VARCHAR(50) NULL,,
+    created 	  		DATETIME DEFAULT CURRENT_TIMESTAMP,
+	createdBy	  		VARCHAR(30),
+    lastUpdate 	  		DATETIME ON UPDATE CURRENT_TIMESTAMP,
+	lastUpdateBy  		VARCHAR(30),
+    PRIMARY KEY   		(id),
 );
 
 DELIMITER |
-CREATE TRIGGER PROJECT_PROPERTY_IU_TRG 
-BEFORE INSERT ON PROJECT_PROPERTY
+CREATE TRIGGER PROJECTNAME_FUNCTIONALITY_IU_TRG 
+BEFORE INSERT ON PROJECTNAME_FUNCTIONALITY
 FOR EACH ROW
 	BEGIN
 
 		DECLARE vUser VARCHAR(30);
 		
 		-- SELECT SUBSTRING_INDEX(USER(), '@', -1) INTO vUser;  -- localhost
-		SELECT USER() INTO vUser;								-- root@localhost
+        SELECT USER() INTO vUser;								-- root@localhost
 		
 		SET NEW.created = NOW();
 		SET NEW.lastUpdate = NOW();
 		SET NEW.createdBy = vUser;
 		SET NEW.lastUpdateBy = vUser;
 		
-	END;
+	END;   
 |
 
-DESCRIBE PROJECT_PROPERTY;
+DESCRIBE PROJECTNAME_FUNCTIONALITY;

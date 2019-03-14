@@ -4,7 +4,7 @@
 ****                                                          ****
 ******************************************************************
 
-SCRIPT NAME      : 51_DML_PROJECT_USER.sql
+SCRIPT NAME      : 51_DML_PROJECTNAME_USER.sql
 
 AUTHOR           : 
 
@@ -26,9 +26,9 @@ CONSTRAINT       :
 
 WARNING          :
 
-DATABASE         : rmt
+DATABASE         : mydatabase
 
-SCHEMA           : rmt
+SCHEMA           : mydatabase
          
 *****************************************************************
 *****************************************************************/
@@ -41,13 +41,13 @@ SCHEMA           : rmt
 *****************************************************************/
 
 
-SELECT 'ATTENTION This update x records !!!' AS ' ';
+SELECT 'ATTENTION This update 2 records !!!' AS ' ';
 SELECT 'Press CTRL C to interrupt' AS ' ';
 
-INSERT INTO PROJECT_USER (firstName,lastName,userName,userPassword,enabled,idUserGroup,eMail) 
+INSERT INTO PROJECTNAME_USER (firstName,lastName,userName,userPassword,enabled,idUserGroup,eMail) 
 VALUES ('andrea','giacomini','agiacomini',MD5('123'),true, (SELECT id FROM project_user_group Where groupName = 'admin'),'andr3a.giacomini@gmail.com');
 
-INSERT INTO PROJECT_USER (firstName,lastName,userName,userPassword,enabled,idUserGroup,eMail) 
+INSERT INTO PROJECTNAME_USER (firstName,lastName,userName,userPassword,enabled,idUserGroup,eMail) 
 VALUES ('mario','rossi','mrossi',MD5('123'),true, (SELECT id FROM project_user_group Where groupName = 'superUser'),'mario.rossi@gmail.com');
 
 
