@@ -1,0 +1,530 @@
+//---------------------------- "Class Path" or "CLASSPATH" or "PATH" ------------------------------------------------//
+
+INFO: https://docs.oracle.com/javase/tutorial/essential/environment/paths.html
+
+Variabili d'ambiente - Environment Variable (Windows e Linux).
+
+N.B: The PATH environment variable is a series of directories separated by semicolons (;).
+
+Check la variabile d'ambiente PATH (Piattaforma Windows)
+
+	c:> echo %PATH%
+	
+	C:\Program Files (x86)\Common Files\Oracle\Java\javapath;
+	C:\ProgramData\Oracle\Java\javapath;
+	C:\Program Files (x86)\Intel\iCLS Client\;
+	C:\Program Files\Intel\iCLS Client\;
+	C:\WINDOWS\system32;C:\WINDOWS;
+	C:\WINDOWS\System32\Wbem;
+	C:\WINDOWS\System32\WindowsPowerShell\v1.0\;
+	C:\Program Files (x86)\Windows Live\Shared;
+	C:\xampp\php;
+	C:\Program Files\Microsoft\Web Platform Installer\;
+	C:\Program Files\Intel\WiFi\bin\;
+	C:\Program Files\Common Files\Intel\WirelessCommon\;
+	C:\Program Files\Intel\Intel(R) Management Engine Components\DAL;
+	C:\Program Files\Intel\Intel(
+	Management Engine Components\IPT;
+	C:\Program Files (x86)\Intel\Intel(R) Management Engine Components\DAL;
+	C:\Program Files (x86)\Intel\Inte
+	) Management Engine Components\IPT;
+	D:\Lavoro\tool\apache-maven-3.6.0\bin;
+	D:\Program Files\Git\cmd;
+	C:\Users\Andrea\AppData\Local\atom\bin
+	
+File .classpath; ???
+
+Adding Jar files to IntellijIdea classpath ???
+
+//--------------------------------------------- log4j-1.2.17 ----------------------------------------------------//
+
+Log4j is a "Logging Framework" of Apache Foundation.
+
+keyWorks: intellij how to integrate log4j in project, Set Up Log4j (Log for Java) in Intellij IDEA,
+		  Logging in Java applications using Log4j
+
+Links: 
+		- https://logging.apache.org/log4j/2.x/download.html 
+		- http://logging.apache.org/log4j/1.2/manual.html
+		- http://logging.apache.org/log4j/1.2/faq.html#noconfig
+		- https://www.mkyong.com/logging/log4j-hello-world-example/
+
+Log4j properties files:
+
+	Types of Logging ways:
+		1- Using "log4j.properties" file;
+		2- Using "log4j.xml" file;
+
+Level of Logging:
+
+	1- TRACE
+	2- DEBUG
+	3- INFO 
+	4- WARM
+	5- ERROR 
+	6- FATAL
+
+	N.B: For standalone Java app, make sure the "log4j.properties" file is under the project/classes directory
+		 For Java web applications, make sure the "log4j.properties" file is under the WEB-INF/classes directory
+
+
+Intialize a logger Object:
+
+	- private static final Logger log = Logger.getLogger(Log4jTestClass.class);	[Better]
+	
+	or
+	
+	- private static final Logger log2 = Logger.getLogger("Log4jTestClass");
+	
+
+(After Initialization) Configure "log4j.properties" inside project:
+
+	- PropertyConfigurator.configure("log4j.properties");
+
+
+Examples of "log4j.properties" file:
+	
+	Versione 1-
+	
+		#log4j.properties
+		# TRACE < DEBUG < INFO < WARM < ERROR < FATAL
+		
+		#LOGGER
+		log4j.rootLogger=DEBUG, APPENDER_OUT, APPENDER_FILE, toFile
+
+		#APPENDER_OUT
+		log4j.appender.APPENDER_OUT=org.apache.log4j.ConsoleAppender
+		log4j.appender.APPENDER_OUT.layout=org.apache.log4j.PatternLayout
+		#log4j.appender.APPENDER_OUT.layout.ConversionPattern=%5p [%t] (%F:%L) - %m%n
+		log4j.appender.APPENDER_OUT.layout.ConversionPattern=%d{yyyy-MM-dd HH:mm:ss} %p [%C:%L] - %m%n
+
+		#APPENDER_FILE
+		log4j.appender.APPENDER_FILE=org.apache.log4j.RollingFileAppender
+		log4j.appender.APPENDER_FILE.File=mioLog.log
+		log4j.appender.APPENDER_FILE.MaxFileSize=100KB
+		log4j.appender.APPENDER_FILE.MaxBackupIndex=1
+		log4j.appender.APPENDER_FILE.layout=org.apache.log4j.PatternLayout
+		log4j.appender.APPENDER_FILE.layout.ConversionPattern=%d{yyyy-MM-dd HH:mm:ss} %p [%C:%L] - %m%n
+
+		#CONSOLE - Redirect log messages to console
+		log4j.appender.toConsole=org.apache.log4j.ConsoleAppender
+		log4j.appender.toConsole.layout=org.apache.log4j.PatternLayout
+		log4j.appender.toConsole.layout.ConversionPattern=%d{yyyy-MM-dd HH:mm:ss} %p [%C:%L] - %m%n
+		
+		#DAILYROLLINGFILE - Redirect log messages to a log file, support file rolling
+		log4j.appender.toFile=org.apache.log4j.DailyRollingFileAppender
+		log4j.appender.toFile.File=./log/logFile.log
+		log4j.appender.toFile.DatePattern='.'yyyy-MM-dd
+		log4j.appender.toFile.layout=org.apache.log4j.PatternLayout
+		log4j.appender.toFile.layout.ConversionPattern=%d{yyyy-MM-dd HH:mm:ss} %p [%C:%L] - %m%n
+		
+	NOTE: understand the symbols ( Link to API specification: http://logging.apache.org/log4j/1.2/apidocs/org/apache/log4j/PatternLayout.html )
+	
+		- %d{yyyy-MM-dd HH:mm:ss} = Date and time format
+		- %p = the logging priority
+		- [%C:%L] = the fully qualified class name of the caller issuing the logging request : the line number from where the logging request was issued
+		- %m%n = (%m) the message associated with the logging event and (%n) line separator character or characters (= line break, like '\n')
+
+//--------------------------------------------- ./log4j-1.2.17 --------------------------------------------------//
+
+//--------------------------------------------- Hibernate ORM ---------------------------------------------------//
+
+What is JPA (Java Persistence API)?: - The Java ORM (Object/Relational Mapping) standard for storing, accessing, 
+									   and managing Java objects in a relational database.
+	
+	The Java Persistence API (JPA) is concerned with persistence, which loosely means (riguarda) any mechanism by which Java object outlive (sopravvivono)
+	the application process that created them. Not all Java object need to be persisted. The JPA specification lets you define which 
+	objects should be persisted, and "how" those objects should be persisted in your Java applications.
+	
+	JPA is not a tool or framework; rather, it define a set of concepts that can be implemented by any tool or framework. While JPA's Object-Relationsl 
+	Mapping (ORM) was originally based on Hibernate, it has since (da allora/ da quel momento) evolved.
+
+		Note: JPA 2.2 in Jakarta EE -
+			  The Java Persistence API (JPA) was first released as a subset of the EJB 3.0 specification in Java EE 5. It has since evolved as its 
+			  own spec, starting with the release of JPA 2.0 in Java EE 6.
+			  
+	JPA and Hibernate
+		Hibernate and JPA are frequently conflated (fusi tra loro). JPA has spawned (ha generato) many compatible tools and framework; 
+		Hibernate is just one of them.
+		Developed by Gavin King and released in early 2002, Hibernate is an ORM library for Java. King developed Hibernate as an 
+		alternative to entity beans for persistence. The framework was so popular, and so needed at the time, that many of its
+		ideas were adopted and codifed in the first JPA specification.
+		Today Hibernate is one of the most mature JPA implementations, and still a popular option for ORM Java.
+		
+		Note: JPA and EJB -
+			  As noted earlier, JPA was introduced as a subset of EJB 3.0, but has since evolved as its own specification. EJB is a specification
+			  with a different focus from JPA, and is implemented in a EJB container. Each EJB container includes a persistence layer,
+			  which is defined by the JPA specification.
+	
+	What is Java ORM?
+		While they differ in execution, every JPA implementation provides some kind of ORM layer. In order to understand JPA and JPA-compatible tools,
+		you need to have a good grasp (comprensione) on ORM.
+		Object-relational mapping (ORM) is a task-one that developers have good reason to avoid doin manually. A framework like Hibernate ORM or
+		EclipseLink codifies the task into a library or framework, an ORM layer. As part of the application architecture, the ORM layer is
+		responsible for managing the conversion of software objects to interact with the tables and columns in a relational database.
+		In Java, the ORM layer converts Java classes and objects so that they can be stored and managed in a relational database.
+		By default, the name of the object being persisted (che viene persistito) becomes the name of the table, and fields become columns.
+		One the table is set up, each table row correspond to an object in the application.
+		
+		Note: JPA with NoSQL -
+			  Now a variety of NoSQL databases are available to Java developers. Soma JPA implementations have evolved to embrace (abbracciare)
+			  NoSQL including Hibernate OGM and Eclipse Link.
+			  
+		The figure below illustrates the role of JPA and the ORM layer in application development.
+		
+			--   Application Code  --
+			
+			--      JPA Layer      --
+			
+			--  JDBC (SQL) Layer   --
+			
+			*************************
+			
+			-- Relational Database --
+			
+		Configuring the Java ORM Layer
+			When you set up a new project to use JPA, you will need to configure the datastore and JPA provider. You'll configure a "datastore
+			connector" to connect to your chosen database (SQL or NoSQL). You'll also include and configure the JPA "provider", which is a 
+			framework such as "Hibernate" or "EclipseLink". While you can configure JPA manually, many developers choose to use Spring's out-of-the-box
+			support. See "JPA installation and setup" below for a demonstration of both manual and Spring-based JPA installation and setup.
+				
+			Note: Java Data Object -
+				  Java Data Object (JDO) is a standardized persistence framework that differs from JPA primarily by supporting persistence logic in
+				  object, and by its longstanding (di lunga data) for working with non-relational data source.
+				  
+	Data Persistence in Java
+		From a programming perspective, the ORM layer is an "adapter layer": it adapts the language of object graphs to the language of SQL and
+		relational tables. The ORM layer allows object-oriented developers to build software that persists data without ever leaving (senza mai abbandonare
+		o lasciare) the object-oriented paradigm.
+		
+		When you use JPA, you create a "map" from the datasource to your application's data model objects. Instead of defining how objects are
+		saved and retrieved, you define the mapping between objects and your database, that invoke JPA to persist them. If you're using a 
+		relational database, much of the actual (effettive) connection between your application code and the database will then be handled 
+		by JDBC (Java DataBase Connectivity API).
+		
+		As a spec, JPA provide "metadata annotation", which you use to define the mapping between objects and datasource. Each JPA implementation
+		provides its own engine (motore) for JPA annotation. The JPA spec also provide the "PersistenceManger" or "EntityManager", which are the key 
+		points of contact with the JPA system (wherein (attraverso i quali) your business logic code tells the system what to do with the mapped objects).
+		
+		Consider the listing below, which is a simple data class (in Java) for modeling a musician:
+		
+				Listing 1. A simple data class in Java
+		
+				public class Musician{
+				
+					private Long id;
+					private String name;
+					private Instrument mainInstrument;
+					private ArrayList performances = new ArrayList<Performance>();
+					
+					public Musician(Long id, String name){ /* Constructor setters... */ }
+					
+					public void setName(String name){
+						this.name = name;
+					}
+					
+					public String getName(){
+						return this.name;
+					}
+					
+					public void setMainInstrument(Instrument instr){
+						this.mainInstrument = instr;
+					}
+					
+					public Instrument getMainInstrument(){
+						return this.mainInstrument;
+					}
+					
+					/*... Other getter and setter ...*/
+				
+				}
+			
+		The class "Musician" is used to hold (contenere) data. It can contain primitive data such as the "name" field. It can hold relational
+		to other class such as "mainInstrument" and "performance".
+		
+		"Musician"'s reasonfor being is to contain data. This type of class is sometimes known as a DTO (Data Transfert Object).
+		DTOs are a common feature of software development. While they hold many kinds of data, they do not contain any business logic.
+		Persisting data object is a ubiquitous (onnipresente) challenge is software development.
+		
+		Data Persistence with JDBC -
+			One way to save an instance of the "Musiciant" class to a relational database would be to use the JDBC library.
+			JDBC is a layer of abstraction that lets (permette) an application issue (emettere) SQL commands without thinking about 
+			the underlying database	implementation.
+			
+			Below we show how you could persist the "Musiciant" class using JDBC (JDBC inserting a record).
+			
+				Listing 2. JDBC inserting a record
+				
+				Musiciant georgeHarrison = new Musiciant(0, "Geroge Harrison");
+				
+				String myDriver = "org.gjt.mm.mysql.Driver";
+				String myUrl = "jdbc:mysql://localhost/test";
+				Class.forName(myDriver);
+				Connection conn = DriverManager.getConnection(myUrl, "root", "")
+				
+				String query = "insert into users (id, name) values (?, ?)";
+				PreparedStatement preparedStmt = conn.prepareStatement(query);
+				preparedStmt.setInt (1, 0);
+				preparedStmt.setString (2, "George Harrison");
+				preparedStmt.setString (2, "Rubble");
+				
+				preparedStmt..execute();
+				conn.close();
+				
+				// Error handling removed for brevity
+				
+			The code in this listing is fairly (abbastanza) self-documenting. The "georgeHarrison" object could come from anywhere (front-end submit,
+			external service, etc), and has its ID and name fields set. The fields on the object are then used to supply (fornire) the
+			value of an SQL "insert" statement. (The "PreparedStatement" class is part of JDBC, offering a way to safely (in modo sicuro) 
+			apply values to an SQL query).
+			
+			While JDBC allows the control that comes with manual configuration, it is cumbersome (scomodo) compared to JPA.
+			In order to modify the database, your first need to create an SQL query that maps from your java object to the tables in a relational
+			database. You then have to modify the SQL whenever (ogni volta che) an object signature change. With JDBC, maintaining the SQL 
+			becomes a task in itself.
+			
+		Data Persistence with JPA -
+			Now considering an other listing where we persist the "Musiciant" class using JPA.
+			
+			Below we show how you could persist the "Musiciant" class using JPA
+			
+				Listing 3. Persisting George Harrison with JPA
+			
+				Musiciant georgeHarrison = new Musiciant(0, "George Harrison");
+				musicinatManager.save(georgeHarrison);
+				
+			The listing above replace the manual SQL from previous listing with a single line, "sessione.save()", which instructs JPA
+			to persist the object. From then one (da quel momento in poi), the SQL conversion is handled by the framework, so you never 
+			have to leave the object-oriented paradigm.
+			
+
+	Metadata annotation in JPA
+		The magic in the last listing is the result of a "configuration", which is created using JPA's "annotation". Developers use 
+		annotations to inform JPA which objects should be persisted, and how they should be persisted.
+		
+		The listing below shows the "Musiciant" class with a single JPA annotation.
+		
+				Listng 4. JPA's @Entity annotation
+				
+				@Entity
+				public class Musicinat {
+					// ..class body
+				}
+
+		Persistent objects are sometimes called "entities", Attaching "@Entity" to a class like "Musiciant" informs JPA that
+		this class and its objects should be persisted.
+		
+		Note: XML Vs annotation-based configuration -
+			  JPA also supports using external XML files, instead of annotations, to define class metadata.But why would you do
+			  that to yourself?
+			  
+	Configuring JPA
+		Like most modern framework, JPA embrace "coding by convention" (also known as convention over configuration), in which
+		the framework provides a default configuration based on industry best practices. As one example, a class named "Musiciant"
+		would be mapped by default table called "Musiciant".
+		
+
+Introduction:  
+	
+	- Hibernate is an ORM library for Java. Hibernate ORM is one of the most mature JPA implementation. 
+	  In fact, Hibernate ORM (version 5.3.8) implements JPA 2.2 
+
+Links:
+	- https://www.javatpoint.com/example-to-create-hibernate-application-in-eclipse-ide
+	- https://www.javaworld.com/article/3379043/what-is-jpa-introduction-to-the-java-persistence-api.html
+	- (King Gaving - Interview) http://www.javaperformancetuning.com/news/interview041.shtml
+
+Object/Relational Mapping (ORM):
+
+	Hibernate ORM enables developers to more easily write applications whose (i cui) data outlives (sopravvivere) the application process.
+	Hibernate is an "Object/Relational Mapping" (ORM) Framework, concerned with data persistence as it applies to relational database (via JDBC).
+
+	"Hibernate ORM" is a library providing Object/Relational Mapping (ORM) support to applications, libraries and frameworks.
+	It also provides an implementation of the JPA specification, which is the standard Java specification for ORM. 
+
+	Notion of ORM:
+
+		What means "Persistence"?
+			- Hibernate ORM is concerned (si preoccupa) with helping your application to achieve (raggiungere/realizzare) persistence.
+			  Persistence simply means that we would like our application's data to outlive (sopravvivere) the applications process.
+			  In Java terms, we would like the state of (some of) our objects to live beyond the scope of the JVM so that the same state is 
+			  available later.
+			  
+		Relational Database:
+			- Specifically, Hibernate ORM is concerned (si preoccupa) with data persistence as it applies to relational database (RDBMS).
+			  Suffice (è sufficente) it to say that RDBMS remain a very popular persistence mechanism and will so for the foreseeable (prevedibile) future.
+
+		The Object-Relational Impedance Mismatch:
+			- "Object-Relational Impedance Mismatch" (sometimes called the "paradigm mismatch") is just a fancy (raffinato) way of saying that object models and 
+			  relational models do not work very well together. RDBMSs represent data in a tabular format, wherease (mentre) object-oriented language,
+			  such as Java, represent it as an interconnected graph of objects. Loading and storing graphs of objects using a tabular relational
+			  database exposes us to 5 mismatch problems.
+			  
+			  Problem 1 - Granularity:
+				-- Sometimes you will have an object model which has more classes than the number of corresponding tables in the database (we says
+				   the object model is more granular than the relational model). 
+			  
+			  Problem 2 - Subtype (inheritance):
+				-- Inheritance is a natural paradigm in object-oriented pragramming languages. However, RDBMSs do not define anything similar "on the
+				   whole" (nel complesso).
+			  
+			  Problem 3 - Indentity:
+				-- A RDBMS define exactly one notion of "sameness" (monotono): the primery key. Java, however, defines both object identity a==b and
+				   object equality a.equals(b).
+			  
+			  Problem 4 - Associations:
+				-- Associations are represented as unidirectional references in Object Oriented languages whrease RDBMSs use the notion of foreign key.
+				   If you need bidirectional relationships in Java, you must define the association twice.
+				   Likewise (analogamente), you cannot determine the multiplicity of a relationship by looking at the object domain model.
+			  
+			  Problem 5 - Data navigation:
+				-- The way you access data in Java is fundamentally different than the way you do it in a relational database. In Java, you navigate
+				   from one association to an other walking the object network.
+				   This is not an efficient way of retrieving data from a relational database. You typically want to minimize the number of SQL queries and
+				   thus load several entities via JOIN and select the targeted entities before you start walking the object network.
+				   
+JPA Provider:
+
+	In addition to its own "native" API, Hibernate is also an implementation of the Java Persistence API (JPA) specification. As such, it can be easily used
+	in any environment supporting JPA including Java SE applications, Java EE applications server, Enterprise OSGI containers, ecc.
+
+
+Idiomatic (Peculiare/Caratteristico) persistence:
+
+	Hibernate enables you to develop persistence classes following natural Object-oriented idioms including inheritance, polymorphism, association,
+	and the Java collections framework (Set, List, Queue, Map). Hibernate requires no interfaces or base classes for persistence classes and enables any class or data
+	structure to be persistence.
+	
+	
+High Performance:
+
+	Hibernate support lazy (pigro/lento) initialization, numerous fetching (andare a prendere) strategies and optimistic locking with automatic 
+	versioning and time stamping. Hibernate requires no spcecial database tables or fields and generates much of the SQL at system initialization time
+	instead of at runtime. 
+	Hibernate consistently offers superior performance over straight (diretto/franco/sincero) JDBC code, both in terms of developer productivity 
+	and runtime performance.
+	
+	
+Scalability:
+
+	Hibernate was designed to work in an application server cluster and deliver a highly scalable architecture. Hibernate scales well in any
+	environment: Use it to drive your in-house Intranet that serves hundreds of users or for mission-critical applications that serve 
+	hundreds of thousands.
+	
+
+Reliable (Affidabilità):
+
+	Hibernate is well know for its excellent stability and quality, proven (dimostrato) by the acceptance (accettazione/approvazione) and use 
+	by tens of thousands of java developers.
+	
+
+Extensibility:
+
+	Hibernate is highly configurable and extensible.
+	
+
+
+Steps to use Hibernate Librarie:
+
+	1- Add jar files for Hibertane (or add Hibernate Dependency to POM file of Maven Project) into lib folder inside the Project; 
+
+	1- Create the "Persistence Class". It should have the same field of table that represent. The fields have to be declared "private" and the 
+		methods (setter/getter) should be declared like "public";
+		
+	2- Create the "Mappaing File" for "Persistence Class";
+	
+	3- Create di Configuration File. This file contains all the information for the database such as connection_url, driver_class, username, password, ecc.
+	
+
+//--------------------------------------------- ./Hibernate ORM -------------------------------------------------//
+
+//--------------------------------------------------- Eclipse ---------------------------------------------------//
+
+Add new Libraries to Project Java:
+
+	- Create (if not existi yet) a "lib" folder (right click on project name: New -> Folder);
+	- Copy&Paste libraries into this folder;
+	- Select all libraries just copied e right click on these (Build Path -> Add to Build Path);
+	- Under "JRE System Library" it will appears a new folder "Referenced Libraries"; 
+
+//------------------------------------------------- ./Eclipse ---------------------------------------------------//
+
+//---------------------------- (Jet Brains) Intellij IDEA Community --------------------------------------------//
+
+keyWords: Can I develop Java Enterprise application in IntelliJ Community Edition?, Configuring Module Dependencies and Libraries,
+		  intellij how to view classpath in java project, Adding Jar files to IntellijIdea classpath,
+
+
+PlugIn: 
+	- Smart Tomcat plugin
+
+
+N.B: Intellij Community does not offer Java application server integration. Your alternatives are:
+
+	- buying Intellij licence,
+	- switching to Eclipse ;)
+	- installing Smart Tomcat plugin https://plugins.jetbrains.com/plugin/9492
+	- installing IDEA Jetty Runner plugin https://plugins.jetbrains.com/plugin/7505
+	- running the application server from Maven, Gradle, whatever, as outlined in the other answers.
+	
+How to create a Java WebDynamic project in Intellij (like Eclipse) ????
+	
+Add new Libraries to Project Java:
+
+	Click on
+		File -> Project Structure -> Libraries -> + (New Project Libraries) -> Java
+	
+//---------------------------------- (Apache) Maven Archetype --------------------------------------------------//
+
+mvn archetype:generate 
+	-DarchetypeGroupId=org.apache.maven.archetypes 
+	-DarchetypeArtifactId=maven-archetype-webapp 
+	-DarchetypeVersion=1.4
+	
+mvn archetype:generate -DarchetypeGroupId=org.apache.maven.archetypes -DarchetypeArtifactId=maven-archetype-webapp -DarchetypeVersion=1.4
+
+mvn archetype:generate -DarchetypeGroupId=org.apache.maven.archetypes -DarchetypeArtifactId=maven-archetype-webapp -DgroupId=com.giacomini.andrea -DartifactId=testDioCane -DinteractiveMode=false
+
+project
+|-- pom.xml
+`-- src
+    `-- main
+        `-- webapp
+            |-- WEB-INF
+            |   `-- web.xml
+            `-- index.jsp
+
+
+//---------------------------------- wildfly-12.0.0.Final ----------------------------------------------------//
+
+Add User / Update existing "Admin" User
+
+	- %PATH%\wildfly-12.0.0.Final\bin\add-user (Windows "add-user.batch" or Linux "add-user.sh" script)
+
+Administration Console (http://localhost:9990/console/App.html)
+
+	Admin User:
+
+		- user/#123*admin
+			
+//--------------------------------------------------------------------------------------------------------------//
+
+
+	- Dropbox
+	- Mozilla ThunderBird
+	- Oracle Virtual Box
+	- MarkdownPad 2
+	- Microsoft OneDrive
+	- XiaomMiTool versione 0.3.0
+	- XiaoMiFlash
+	- Mi PC Suite
+	- EaseUse Partition Master 
+	- WinMerge
+	
+	RegEdit
+	
+		- %systemroot%\sysWOW64\regedit
+			Computer\HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion
+			
+		- regedit
+			Computer\HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion

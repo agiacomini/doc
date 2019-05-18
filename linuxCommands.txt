@@ -46,16 +46,36 @@ $ apt search oracle-java
 -- Command to install Java 8
 $ sudo apt install oracle-java8-set-default
 
---Unpackage tar.gz
+-- Unpackage tar.gz
 $ tar xfz <nomeFileTarGx>.tar.gz
 
-\----------------------------------- Chrome -----------------------------------------------------\
+//----------------------- File compression and decompression tools ------------------------//
+
+-- Install Bzip2 tool [Ubuntu/Debian]
+$ sudo apt install bzip2
+
+-- Compress files into archive
+$ bzip2 [option(s)] <nameFile>
+
+-- Example
+$ bzip2 nomeDump.dmp
+
+-- DeCompress files .bz2
+$ bzip2 -d nomeFileZippato.bz2
+or 
+$ bzip2 --decompress nomeFileZippato.bz2
+
+$ bunzip2 <nameFile>.bz2   ?????? Verificare
+
+//----------------------- ./File compression and decompression tools END ------------------------//
+
+//----------------------------------- Chrome -----------------------------------------------------//
 
 $ sudo apt install chromium-browser
 
-\----------------------------------- Chrome - END ------------------------------------------------\
+//----------------------------------- ./Chrome END ------------------------------------------------//
 
-\--------------------------------- Manage Processes --------------------------------------------------\
+//-------------------------------- Manage Processes --------------------------------------------------//
 
 -- The "top" command is the traditional way to view system resource usage
 $ top
@@ -84,4 +104,4 @@ $ pkill <name_process>
 -- Or
 $ killall <name_process>
 
-\------------------------------- Manage Processes END ------------------------------------------------\
+//------------------------------- ./Manage Processes END ------------------------------------------------//
