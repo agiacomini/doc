@@ -247,20 +247,27 @@ What is JPA (Java Persistence API)?: - The Java ORM (Object/Relational Mapping) 
 		Persisting data object is a ubiquitous (onnipresente) challenge is software development.
 		
 		Data Persistence with JDBC -
-			One way to save an instance of the "Musiciant" class to a relational database would be to use the JDBC library.
+			One way to save an instance of the "Musician" class to a relational database would be to use the JDBC library.
 			JDBC is a layer of abstraction that lets (permette) an application issue (emettere) SQL commands without thinking about 
 			the underlying database	implementation.
 			
-			Below we show how you could persist the "Musiciant" class using JDBC (JDBC inserting a record).
+			Below we show how you could persist the "Musician" class using JDBC (JDBC inserting a record).
 			
 				Listing 2. JDBC inserting a record
 				
-				Musiciant georgeHarrison = new Musiciant(0, "Geroge Harrison");
+				Musician georgeHarrison = new Musician(0, "Geroge Harrison");
 				
-				String myDriver = "org.gjt.mm.mysql.Driver";
-				String myUrl = "jdbc:mysql://localhost/test";
+				String myDriver = "com.mysql.cj.jdbc.Driver";
+				/* N.B: This "myDriver" value of variable resolve the following java problem:
+				
+						Loading class `com.mysql.jdbc.Driver'. This is deprecated. 
+						The new driver class is `com.mysql.cj.jdbc.Driver'. 
+						The driver is automatically registered via the SPI and manual loading of the driver class is generally unnecessary.
+				*/
+				
+				String myUrl = "jdbc:mysql://localhost:3306/mydatabase?autoReconnect=true&useSSL=false&useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC";
 				Class.forName(myDriver);
-				Connection conn = DriverManager.getConnection(myUrl, "root", "")
+				Connection conn = DriverManager.getConnection(myUrl, "root", "");
 				
 				String query = "insert into users (id, name) values (?, ?)";
 				PreparedStatement preparedStmt = conn.prepareStatement(query);
@@ -268,7 +275,7 @@ What is JPA (Java Persistence API)?: - The Java ORM (Object/Relational Mapping) 
 				preparedStmt.setString (2, "George Harrison");
 				preparedStmt.setString (2, "Rubble");
 				
-				preparedStmt..execute();
+				preparedStmt.execute();
 				conn.close();
 				
 				// Error handling removed for brevity
@@ -284,13 +291,13 @@ What is JPA (Java Persistence API)?: - The Java ORM (Object/Relational Mapping) 
 			becomes a task in itself.
 			
 		Data Persistence with JPA -
-			Now considering an other listing where we persist the "Musiciant" class using JPA.
+			Now considering an other listing where we persist the "Musician" class using JPA.
 			
-			Below we show how you could persist the "Musiciant" class using JPA
+			Below we show how you could persist the "Musician" class using JPA
 			
 				Listing 3. Persisting George Harrison with JPA
 			
-				Musiciant georgeHarrison = new Musiciant(0, "George Harrison");
+				Musician georgeHarrison = new Musician(0, "George Harrison");
 				musicinatManager.save(georgeHarrison);
 				
 			The listing above replace the manual SQL from previous listing with a single line, "sessione.save()", which instructs JPA
@@ -302,7 +309,7 @@ What is JPA (Java Persistence API)?: - The Java ORM (Object/Relational Mapping) 
 		The magic in the last listing is the result of a "configuration", which is created using JPA's "annotation". Developers use 
 		annotations to inform JPA which objects should be persisted, and how they should be persisted.
 		
-		The listing below shows the "Musiciant" class with a single JPA annotation.
+		The listing below shows the "Musician" class with a single JPA annotation.
 		
 				Listng 4. JPA's @Entity annotation
 				
@@ -311,7 +318,7 @@ What is JPA (Java Persistence API)?: - The Java ORM (Object/Relational Mapping) 
 					// ..class body
 				}
 
-		Persistent objects are sometimes called "entities", Attaching "@Entity" to a class like "Musiciant" informs JPA that
+		Persistent objects are sometimes called "entities", Attaching "@Entity" to a class like "Musician" informs JPA that
 		this class and its objects should be persisted.
 		
 		Note: XML Vs annotation-based configuration -
@@ -320,8 +327,177 @@ What is JPA (Java Persistence API)?: - The Java ORM (Object/Relational Mapping) 
 			  
 	Configuring JPA
 		Like most modern framework, JPA embrace "coding by convention" (also known as convention over configuration), in which
-		the framework provides a default configuration based on industry best practices. As one example, a class named "Musiciant"
-		would be mapped by default table called "Musiciant".
+		the framework provides a default configuration based on industry best practices. As one example, a class named "Musician"
+		would be mapped by default to a database table called "Musician".
+		
+		The conventional configuration is a timesaver (un risparmio di tempo), and in many case it works well enough. 
+		It is also possible to customize your JPA configuration. As an example, you could use JPA's @Table annotation to specify 
+		the table where the "Musician" class should be stored.
+		
+				Listing 5. JPA's @Table annotation
+				
+				@Entity
+				@Table(name="musician")
+				public class Musician {
+					// ..class body
+				}
+				
+		The Listing 5 tells JPA to persist the entity ("Musiciant" class) to the "musician" table.
+		
+		Primary Key -
+			In JPA, the "primary key" is the field used to uniquely identify each object in the database. The primary key
+			is useful for referencing and relating (collegare/mettere in relazione) objects to other entities. Whenever you 
+			store an object in table, you will also specify the filed to use as its primary key.
+			
+			In the Linsting 6, we tell JPA what field to use as "Musician"'s primary key.
+			
+				Listing 6. Specifying the primary key
+				
+				@Entity
+				public class Musician {
+					@Id
+					private Long id;
+				}
+				
+			In this case, we've used JPA's @Id annotation to specify the "id" field as "Musician"'s primary key.
+			By default, this configuration assumes the primary key will be set by the database -- for instance, when the
+			field is set to auto-increment on the table.
+			
+			JPA supports other strategies for generating an object's primary key. It also has annotation for changing 
+			individual field name. In general, JPA is flexible enough to adapt to any persistence mapping you might need.
+			
+		CRUD operations (Create(INSERT)-Read(SELECT)-Update(UPDATE)-Delete(DELETE)) -
+			Once you've mapped a class to a database table and established its primary key, you have everything you need 
+			to create, retrieve, delete, and update that class in the database. Calling "session.save()" will create or
+			update the specified class, depending on whether (se) the primary-key field is null or applies to en existing 
+			entity. Calling "entityManager.remove()" will delete the specified class.
+			
+	Entity Relationships in JPA
+		Simply persisting an object with a primitive field is only half the equation. JPA also has the capability to manage 
+		entities in relation to one another. Four kinds od entity relationships are possible in both tables and objects:
+		
+			1. One-to-many
+			2. Many-to-one
+			3. Many-to-many
+			4. one-to-one
+			
+		Each type of relationships describes how an entity relates (si relaziona) to other entities. For example,
+		the "Musician" entity could have a "one-to-many" relationship with "Performance", an entity represented by a
+		collection such as "List" or "Set".
+		
+		If the "Musician" included a "Band" filed, the relationship between these entities could be "many-to-one",
+		implying collection of "Musician" on the single "Band" class. (Assuming each musician only performs in a single band.)
+		
+		If the "Musician" included a "BandMates" (un collega, membro di una banda) field, that could represent a many-to-many 
+		relationship with other "Musician" entities.
+		
+		Finally, "Musician" might have a "one-to-one" relationship with a "Quote" entity, used to represent a famous quote:
+		Quote famousQuote = new Quote();
+		
+		Defining relationship types -
+			JPA has annotations for each of its relationship mapping types. Listing 7 shows how you might annotate the one-to-many
+			relationship between "Musician" and "Performance".
+			
+				Listing 7. Annotating a one-to-many relationship
+				
+				public class Musician {
+				
+					@OneToMany
+					@JoinColumn(name="musicianId")
+					private List<Performance> permformances = new ArrayList<Performance>();
+				}
+				
+			One thing to notice is that the "@JoinColumn" tells JPA what column on the "Performance" table will map to the 
+			"Musician" entity. Each performance will be associated to a single "Musician", which is tracked by this column.
+			When JPA loads a "Musician" or a "Performance" into databse, it will use this information to reconstitute the 
+			object graph.
+			
+	Fetching strategies (strategie di recupero) in JPA
+		In addition to knowing "where" to place related entities in the database, JPA needs to know "how" you want them loaded.
+		"Fetching strategies" tell JPA how to load related entities. When loading and saving objects, a JPA framework must
+		provide the ability to finetune () how object graphs are handled. For instance, if the "Musician" class has a "bandMate"
+		fileds (as shown in Listing 7), loading "george" could cause the entire "Musician" table to be loaded from the database!
+		
+		What is needed is the ability to define "lazy loading" of related entities -- recognizing, of course, that "relationships in 
+		JPA can be eager or lazy". You can use annotations to customize your fetching strategies, but JPA's default configuration
+		often works out of the box (pronta all'uso), without changes:
+		
+			1. One-to-many: Lazy
+			2. Many-to-one: Eager
+			3. Many-to-many: Lazy
+			4. One-to-one: Eager
+			
+		Note: Transaction in JPA -
+			  While outside the scope of this short introduction, "transactions" allow the developer to write to the database. 
+			  In Listing 1, we achieved (realizzato) a simple transaction with the line: "em.getTransaction().commit();".
+			  Transactions can be defined in a variety of ways, from explicit interactions via the API, to using annotations to
+			  define transactional boundaries (linea di confine), to using Spring AOP to define transactions.
+		
+	JPA installation and setup
+		We'll conclude with a quick look at installing and setting up JPA for your Java applications. For this demostration i'll
+		use "EclipseLink", the JPA reference implementation.
+		The common way to install JPA is to include a JPA provider into your project. Listing 8 shows how you would include
+		"EclipseLink" as a dependency in your Maven "pom.xml" file.
+		
+			Listing 8. Include EclipseLink as a Maven dependency
+			
+				org.eclipse.persistence
+				eclipselink
+				2.5.0-RC1
+				
+		You will also need to include the driver for your database, as shown in Listing 9.
+		
+			Listing 9. Maven dependency for a MySQL connector
+				
+				mysql
+				mysql-connector-java
+				5.1.32
+				
+		Next, you'll need to tell the system about your database and provider. This is done in the "persistence.xml" file,
+		as shown in Listing 10.
+		
+			Listing 10. Persistence.xml
+			
+				http://xmlns.jcp.org/xml/ns/persistence http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd">
+					<persistence-unit name="MyUnit" transaction-type="RESOURCE_LOCAL">
+						<properties>
+							<property name="javax.persistence.jdbc.url" value="jdbc:mysql://localhost:3306/foo_bar"/>
+							<property name="javax.persistence.jdbc.user" value=""/>
+							<property name="javax.persistence.jdbc.password" value=""/>
+							<property name="javax.persistence.jdbc.driver" value="com.mysql.jdbc.Driver"/>
+						</properties>
+					</persistence-unit>
+				</persistence>
+				
+		There are other ways to provide this information to the system, including programmatically. I recommend using the
+		"persistence.xml" file because storing dependencies this way makes it very easy ti update your application without 
+		modifying code.
+		
+		Spring configuration for JPA
+			Using "Spring" will greatly ease the integration of JPA into your application. As an example, placing the
+			@SpringBootApplication annotation in your application header instructs "Spring" to automatically scan for
+			classes and inject the "EntityManager" as required, based on the configuration you've specified.
+			
+			Listing 11 shows the dependencies to include if you want Spring's JPA support for your application.
+			
+				Listing 11. Adding Spring JPA support in Maven
+				
+				org.springframework.boot
+				spring-boot-starter
+				2.1.3.RELEASE
+
+				org.springframework.boot
+				spring-boot-starter-data-jpa
+				2.1.3.RELEASE
+				
+	Conclusion
+		Every application that deals with a database should define an application layer whose sole purpose is to isolate
+		persistence code. As you've seen in this article, the Java Persistence API (JPA) introdices a range of capabilities 
+		and support for Java object persistence. Simple applications may not require all of JPA's capabilities, and in some case
+		the overhead of configuring the framework may not be merited. As an application grows, however, JPA's structure and
+		encapsulation really earn their keep. Using JPA keeps your object code simple and provides a conventional framework
+		for accessing data in Java application.
+			
 		
 
 Introduction:  
