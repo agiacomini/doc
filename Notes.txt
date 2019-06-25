@@ -129,6 +129,7 @@ Examples of "log4j.properties" file:
 
 //--------------------------------------------- Hibernate ORM ---------------------------------------------------//
 
+(https://www.javaworld.com/article/3379043/what-is-jpa-introduction-to-the-java-persistence-api.html?page=1)
 What is JPA (Java Persistence API)?: - The Java ORM (Object/Relational Mapping) standard for storing, accessing, 
 									   and managing Java objects in a relational database.
 	
@@ -498,6 +499,92 @@ What is JPA (Java Persistence API)?: - The Java ORM (Object/Relational Mapping) 
 		encapsulation really earn their keep. Using JPA keeps your object code simple and provides a conventional framework
 		for accessing data in Java application.
 			
+
+(https://www.javaworld.com/article/3388036/what-is-jdbc-introduction-to-java-database-connectivity.html)
+What is JDBC (Java DataBase Connectivity)? - Get to Know Java's low-level API for making databse connections and handling SQL
+											 queries and responses
+											 
+	JDBC (Jaca DataBase Connectivity) is the Java API that manages connecting to a databse, issuing queries and commands,
+	and handling result sets obtained from database. Released as part of JDK 1.1 in 1997, JDBC was one of the first
+	components developed for the Java persistence layer.
+
+	JDBS was initially conceived as a client-side API, enabling a Java client to interact with a data source. 
+	That changed with JDBC 2.0, which included an optional package supporting server-side JDBC connections. 
+	Every new JDBC release since then has featured updates to both the client-side package (java.sql) and the 
+	server-side package (javax.sql). JDBC 4.3, the most current version as of this writing, was released as part of
+	Java SE 9 in September 2017.
+	
+	This article presents an overview of JDBC, followed by a hands-on introduction to using the JDBC API to connect
+	a Java client with SQLLite , a lightweight relational databse.
+	
+	How JDBC works
+		Developed as an alternative to the C-based ODBC (Open DataBase Connectivity) API, JDBC offers a programming-level
+		interface that handles the mechanism of Java application communicating with a database or RDBMS. The JDBC interface
+		consists of two layers:
+		
+			1- The JDBC API supports communication between the Java application and the JDBC manager;
+			
+			2- The JDBC driver support communications between the JDBC manager and databse driver;
+			
+		JDBC is the common API that your application code interacts with. Beneath (al di sotto) that is the JDBC-compliant driver
+		for the database you are using.
+		
+		Figure 1 - Is an architectural overview of JDBC in the Java persistence layer.
+		
+				*****************************************
+				*										*
+				*			Application Code			*
+				*										*
+				*				JDBC API				*
+				*										*
+				*			JDBC DB driver				*
+				*										*				
+				*				 ˄˄˄					*
+				*										*
+				*  		  SQL Commands + Data			*
+				*										*
+				*				 ˅˅˅					*
+				*										*
+				*    MySQL / PostGres / Oracle / Etc.	*
+				*										*
+				*****************************************
+				
+		One of the fortunate facts of programming in the Java ecosystem is that you will likely find a stable JDBC databse connector
+		for whatever databse you choose. In this tutorial we'll use SQLite to get to know JDBC, mainly because it's so easy
+		to use.
+		
+		The steps for connecting to a databse with JDBC are as follows:
+
+			1. Install or locate the database you want to access;
+			
+			2. Include the JDBC library;
+			
+			3. Ensure the JDBC driver you need is on your classpath;
+			
+			4. Use the JDBC library to obtain a connecttion to the databse;
+			
+			5. Use the connecttion to issue (fornire / emettere) SQL command;
+			
+			6. Close the connecttion when  you'are finished;
+			
+		We'll go through these steps together.
+		
+			Note: Finding a JDBC driver -
+				  To find a driver for the database you want to use, simply do a web search for your database and JDBC.
+				  For instance, typing in "mysql jdbc driver" will turn up a driver for MySQL (MySQL Connector/J 8.0 is a JDBC driver
+				  for communicating with MySQL servers). If you want installing Connector/J you can also use Maven dependencies manager
+				  to install and configure the Connector/J in your project.
+				  
+					<dependency>
+						<groupId>mysql</groupId>
+						<artifactId>mysql-connector-java</artifactId>
+						<version>x.y.z</version>
+					</dependency>
+					
+				  I challenge you to find a Java-compatible database without a JDBC driver.
+				   
+		
+		
 		
 
 Introduction:  
