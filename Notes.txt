@@ -127,7 +127,7 @@ Examples of "log4j.properties" file:
 
 //--------------------------------------------- ./log4j-1.2.17 --------------------------------------------------//
 
-//--------------------------------------------- Hibernate ORM ---------------------------------------------------//
+// ------
 
 (https://www.javaworld.com/article/3379043/what-is-jpa-introduction-to-the-java-persistence-api.html?page=1)
 What is JPA (Java Persistence API)?: - The Java ORM (Object/Relational Mapping) standard for storing, accessing, 
@@ -500,6 +500,8 @@ What is JPA (Java Persistence API)?: - The Java ORM (Object/Relational Mapping) 
 		for accessing data in Java application.
 			
 
+//------------------------------------ JDBC (Java DataBase Connectivity) ----------------------------------------//
+
 (https://www.javaworld.com/article/3388036/what-is-jdbc-introduction-to-java-database-connectivity.html)
 What is JDBC (Java DataBase Connectivity)? - Get to Know Java's low-level API for making databse connections and handling SQL
 											 queries and responses
@@ -549,6 +551,7 @@ What is JDBC (Java DataBase Connectivity)? - Get to Know Java's low-level API fo
 				*										*
 				*****************************************
 				
+	Using JDBC to connect to a DataBase
 		One of the fortunate facts of programming in the Java ecosystem is that you will likely find a stable JDBC databse connector
 		for whatever databse you choose. In this tutorial we'll use SQLite to get to know JDBC, mainly because it's so easy
 		to use.
@@ -583,9 +586,45 @@ What is JDBC (Java DataBase Connectivity)? - Get to Know Java's low-level API fo
 					
 				  I challenge you to find a Java-compatible database without a JDBC driver.
 				   
+		Step 1. Downloading and install SQLite
+			SQLite is a very compact database. It isn't intended for production use, but is a great choice for quickly trying things out.
+			SQLite use a file as its functional database, without requiring any service or daemon installations.
+			
+			To get started with this demo, go ahead and download the SQLite sample database. Unzip the .db file and save it somewhere
+			you won't forget.
+			
+			This file contains both a functional file-based database and sample schema and data we can use.
+			
+			Note: SQL and JDBC
+				  NoSQL has grown popular over the past decade, but relational databases remain the most common type of datastore in use.
+				  A "relational database" is a structured repository consisting of tables with columns and rows. SQL (Structured Query
+				  Language) is the language data architects use to do things like create, read, update, and delete new records in a
+				  relational database. JDBC is an adapter layer form Java to SQL: it gives Java developers a common interface for connecting
+				  to a database, issuing queries and commands, and managing responses.
 		
-		
-		
+		Step 2. Import JDBC Into your Java application
+			We could do our coding in a IDE, but coding directly in a text editor will better demostrate JDBC's simplicity.
+			To begin, you will need to have a compatible JDK (Java Development Kit) installation for your operating system.
+			
+			Assuming you have the Java platform developer tools installed, we can start by creating a simple Java program. 
+			In your text editor, paste in the code shown in Listing 1. Call this file "WhatIsJdbc.java".
+			
+			Listing 1. A simple Java Program
+			
+				class WhatIsJdbc
+				{
+					public static void main ( String args[] )
+					{
+						System.out.println( "Hello JavaWorld" );
+					}
+				}
+				
+			Now compile the code by entering the command: javac WhatIsJdbc.java 
+			Compiling will output the WhatIsJdbc.class file. Execute this file from the command line with the call: java WhatIsJdbc
+			
+//----------------------------------- ./JDBC (Java DataBase Connectivity) ---------------------------------------//			
+
+//--------------------------------------------- Hibernate ORM ---------------------------------------------------//		
 
 Introduction:  
 	
