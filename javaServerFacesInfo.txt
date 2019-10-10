@@ -6,4 +6,89 @@
 
 La programmazione web con Servlet e JavaServer Pages (JSP) è poco intuitiva e molto tediosa.
 La JavaServe Faces (JSF) invece promette di essere più friendly, permettendo ai programmatori
-di pensare in termini di text fields e menu piuttosto che avere a che fare con "request parameters". 
+di pensare in termini di text fields e menu piuttosto che avere a che fare con "request parameters".
+
+Story
+
+	- JSF 1.0 specification and reference implementation ( 2004 )
+
+	- JSF 1.1, bug fix release
+
+	- JSF 1.2, incremental release ( 2006 ) [ JSF 1.2 è parte delle specifiche Java EE 5 ]
+
+Oggi JSF è il più eminente server-side Java web framework. E' possibile progettare interfacce utente 
+mettendo i componenti in una form e collegandoli a degli oggetti Java, senza dover mixare codice
+e markup ( <HTML> </HTML> ). Un punto di forza di JSF è il suo modello di componenti estendibile,
+e un ampio numbero di componenti di terze parti che sono resi disponibili. Il desgin
+flessibile del framework gli ha permesso di crescere e di adattarsi alle nuove tecnologie come Ajax.
+Infine, a differenza delle altre tecnologie concorrenti, JSF supporta la separazione tra presentation
+e business logic, navigazione, connessione con servizi esterni e gestione della configurazione.
+
+JSF è costruito on top ( sopra ) alle Servlet e JSP, ma dal punto di vista dello sviluppatore JSF
+queste tecnologie rappresentano solo l'insfrastruttura di basso livello.
+
+Required Software
+
+	- Java SE Software Development Kit ( JDK ) 5.0 o superiore
+	- Application Server ( che supporta JSF ) : Apache Tomcat, GlassFish
+	- IDE ( Integrated Development Environment ) : NetBeans, Eclipse
+
+
+//------------------------------------------ Getting Start ---------------------------------------//
+
+Esistono due tecniche popolari nello sviluppo di applicazioni web:
+
+	- lo stile "rapd development", come Microsoft ASP.NET, in cui si usa un'ambiente di sviluppo visuale;
+	
+	- lo stile "hard-core coding", come Java EE (Java Enterpise Edition), in cui si scrive codice per supportare
+	  un'applicazione backend ad alte prestazioni;
+	  
+Per i team di sviluppo la scelta è molto ardua. Java EE è una piattaforma altamente scalabile, portabile 
+e multi piattaforma, supportata da molti vendor. Dall'altro lato ASP.NET rende facile creare interfacce 
+utente attrattive/allettanti senza troppa programmazione tediosa. 
+Naturalmente gli sviluppatori desiderano/vorrebbero entrambe gli aspetti: un back-end alte prestazioni e
+una facile programmazione dell'interfaccia utente. 
+La promessa di JSF è quella di portare ad un rapido sviluppo dell'interfaccia utente lato server Java.
+
+In JSF si troverà gran parte dell'infrastruttura di basso livello che gli sviluppatori JSP devono implmentare
+a mano, come la navigazione delle pagine e la validazione. Si può pensare alle Servlet e JSP come il linguaggio
+"assemply" che sta sotto il cofano del framework JSF di alto livello.
+
+JSF ha tre parti:
+
+	- Un set ( insieme ) di componenti UI ( user interface ) prefabbricati;
+	
+	- Un modello di programmazione guidato dagli eventi ( event-driven );
+	
+	- Un modello di componenti che abilita lo sviluppo di componenti addizionali di terze parti;
+	
+JSF è parte dello standard Java EE. JSF è incluso in ogni Server Applicativo Java EE, e può essere facilmente
+aggiunto ad un web container standalone come Apache Tomcat.
+
+	
+//-------------------------------------- Software Installation -----------------------------------//
+	
+
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
