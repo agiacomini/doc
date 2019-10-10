@@ -1,7 +1,7 @@
 ﻿#######################################################################################
 #                                                                                     #
 # Sistema di versionamento Git - DVCS (Distributed Version Control System)            #
-# @A.G - andr3a.giacomini@gmail.com														  #
+# @A.G - andr3a.giacomini@gmail.com													  #
 #                                                                                     #
 #######################################################################################
 
@@ -38,8 +38,11 @@ git reset --hard <nome_commit_precedente>
 # Riporta il <riferimento> indietro di un passo
 git reset --hard <riferimento>~1
 
-exe. git reset --hard HEAD~1 				# E' l'equivalente di "git reset --hard <nome_commit_precedente>".   	
-exe. git reset --hard HEAD~3				# Riporta indietro di tre passi l'HEAD
+# E' l'equivalente di "git reset --hard <nome_commit_precedente>".
+exe. git reset --hard HEAD~1 				   	
+
+# Riporta indietro di tre passi l'HEAD
+exe. git reset --hard HEAD~3				
 
 #---------------------------------------------------------------------------------------------------------------------------#
 
@@ -71,7 +74,7 @@ git log
 git configure <nome_oggetto>
 
 git config --global user.name "A.G"
-git config --global user.email indio1984@gmail.com
+git config --global user.email andr3a.giacomini@gmail.com
 
 # Editing del file di configurazione
 nano ~/.gitconfig
@@ -92,26 +95,39 @@ exe. git config --list --local		# ...
 # Parameters form:
 git config --<level_of_configuration> section.parameter_name
 
-exe. git config --global help.autocorrection 10 	# Comando che definisce quante decine di secondi Git aspetterà prima di eseguire il comando
-exe. git config --global push.default nothing		# Comando per NON settare un default o target branch su cui Uplodare le proprie modifiche locali
-exe. git config --global push.default simple		# Comando per permettere a Git di Uplodare le modifiche al branch locale solo se remotamente c'è un branch con lo stesso nome 
-exe. git config --global core.editor notepad++		# Comando per settare l'editor di testo di default per esempio per scrivere i commenti a fronte di un commit
+# Comando che definisce quante decine di secondi Git aspetterà prima di eseguire il comando
+exe. git config --global help.autocorrection 10 	
 
-#------------------------------------- Classici Comandi Utili per creare Git ALIASIS ---------------------------------------
+# Comando per NON settare un default o target branch su cui Uplodare le proprie modifiche locali
+exe. git config --global push.default nothing		
+
+# Comando per permettere a Git di Uplodare le modifiche al branch locale solo se remotamente c'è un branch con lo stesso nome 
+exe. git config --global push.default simple		
+
+# Comando per settare l'editor di testo di default per esempio per scrivere i commenti a fronte di un commit
+exe. git config --global core.editor notepad++		
+
+#------------------------------------- Classici Comandi Utili per creare Git ALIASIS ---------------------------------------#
 
 # La sinstassi
 git config --<level>  alias.<alias_name> '<your sequence of git commands>'
 
 # Esempi
-exe. git config --global alias.tree 'log --graph --decorate --pretty=oneline --abbrev-commit'  # Alias che visualizza l'albero dei commit
-	 
-exe. git config --global alias.cm 'commit -m'												   # Alias del comando commit più inserimento commento
 
-exe. git config --global alias.unstage 'reset HEAD --'										   # Alias per rimuovere un file dall'indice
+# Alias che visualizza l'albero dei commit
+exe. git config --global alias.tree 'log --graph --decorate --pretty=oneline --abbrev-commit'
 
-exe. git config --global alias.last 'log -1 HEAD'											   # Alias per leggere il commento dell'utlimo commit
+# Alias del comando commit più inserimento commento	 
+exe. git config --global alias.cm 'commit -m'												   
 
-exe. git config --global alias.difflast 'diff --cached HEAD^'								   # Alias per visualizzare le differenze rispetto all'ultimo commit
+# Alias per rimuovere un file dall'indice
+exe. git config --global alias.unstage 'reset HEAD --'										   
+
+# Alias per leggere il commento dell'utlimo commit
+exe. git config --global alias.last 'log -1 HEAD'											   
+
+# Alias per visualizzare le differenze rispetto all'ultimo commit
+exe. git config --global alias.difflast 'diff --cached HEAD^'								   
 
 # Rimuovere un Alias - La sintassi
 git config --<level> --unset alias.<alias_name> 
@@ -150,7 +166,8 @@ git merge NewWork
 git diff <nome_branch> <nome_branch>
 
 # E' un altro modo (oltre al diff) per mettere a confronto due branch diversi.
-# Mette in evidenza i commit fatti da un branch rispetto all'altro branch. Vale sempre la regole del punto di vista del <target_branch>. 
+# Mette in evidenza i commit fatti da un branch rispetto all'altro branch. Vale sempre la regole del punto 
+# di vista del <target_branch>. 
 git log <nome_branch> <nome_branch>
 
 # Serve per richiamare un tool esterno per evidenziare le differenze tra due branch.
@@ -165,8 +182,8 @@ git help config
 # Comando per conservare delle modifiche non ancora committate (perché ancora instabili) in un box (temporanea)
 # dove conservarle per poter poi switchare nel branch master o in un altro branch. 
 # Questo perché non è possibile switchare in un altro branch se non si ha una situazione pulita.
-# Conservando le modifiche non ancora committate in un box temporaneo viene fatto un reverse della situazione prima delle modifiche in questione
-# ritornando così ad una situazione pulita e stabile. 
+# Conservando le modifiche non ancora committate in un box temporaneo viene fatto un reverse della situazione prima 
+# delle modifiche in questione ritornando così ad una situazione pulita e stabile. 
 git stash
 
 # Comando per elencare le box temporanea di modifiche in quel branch
