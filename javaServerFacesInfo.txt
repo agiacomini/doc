@@ -1,0 +1,9 @@
+#################################################################
+#																#
+#	Java Server Faces (JSF) http://www.javaserverfaces.org/		#
+#																#
+#################################################################
+
+La programmazione web con Servlet e JavaServer Pages (JSP) è poco intuitiva e molto tediosa.
+La JavaServe Faces (JSF) invece promette di essere più friendly, permettendo ai programmatori
+di pensare in termini di text fields e menu piuttosto che avere a che fare con "request parameters". 
