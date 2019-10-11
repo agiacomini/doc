@@ -1,8 +1,15 @@
-#################################################################
-#																#
-#	Java Server Faces (JSF) http://www.javaserverfaces.org/		#
-#																#
-#################################################################
+#############################################################################################
+#																							#
+#	andr3a.giacomini@gmailcom																#
+#																							#
+#	Java Server Faces (JSF) http://www.javaserverfaces.org/									#
+#																							#
+#	URL: http://corejsf.com/																#
+#		 https://www.oracle.com/technetwork/java/javaee/javaserverfaces-139869.html			#
+#																							#
+#############################################################################################
+
+								Chapter:	GETTING START
 
 La programmazione web con Servlet e JavaServer Pages (JSP) è poco intuitiva e molto tediosa.
 La JavaServe Faces (JSF) invece promette di essere più friendly, permettendo ai programmatori
@@ -34,7 +41,7 @@ Required Software
 	- IDE ( Integrated Development Environment ) : NetBeans, Eclipse
 
 
-//------------------------------------------ Getting Start ---------------------------------------//
+//-------------------------------- Why JavaServer Faces? -----------------------------------------//
 
 Esistono due tecniche popolari nello sviluppo di applicazioni web:
 
@@ -66,29 +73,271 @@ JSF è parte dello standard Java EE. JSF è incluso in ogni Server Applicativo J
 aggiunto ad un web container standalone come Apache Tomcat.
 
 	
-//-------------------------------------- Software Installation -----------------------------------//
+//----------------------------------- Software Installation --------------------------------------//
+	
+Dal momento che JSF 1.2 è parte della specifica Java EE 5, il modo più semplice per provare JSF è usare un application
+server che è compatibile con Java EE 5, per esempio "GlassFish" ( https://javaee.github.io/glassfish/download ).
+
+In alternativa, è possibile anche usare un application server non completo di default della specifica Java EE 5 e di
+conseguenza della specfica JSF 1.2. Un'esempio di questo caso è l'Apache Tomcat. Sarà necessario scaricare separatamente 
+l'application server Tomcat e le librerie JSF. Di seguito un link utile con alcune indicazioni sulla procedura
+da seguire ( http://horstmann.com/bigj2/tomcat-jsf.html ).
+
+
+//-------------------------------------- A simple Example ----------------------------------------//
+
+Questo esempio descrive una pagina di login ed è rappresentato essenzialmente da un file HTML con alcuni 
+tag addizionali.
+
+Nome file: login/web/index.jsp ( Listato1-1 )
+
+	<html>
+		<%@ taglib uri="http://java.sun.com/jsf/core" prefix="f" %>
+		<%@ taglib uri="http://java.sun.com/jsf/html" prefix="h" %>
+		<f:view>
+			<head>
+				<title>A Simple JavaServer Faces Application</title>
+			</head>
+			<body>
+				<h:form>
+					<h3>Please enter your name and password.</h3>
+					<table>
+						<tr>
+							<td>Name:</td>
+							<td>
+								<h:inputText value="#{user.name}"/>
+							</td>
+						</tr>
+						<tr>
+							<td>Password:</td>
+							<td>
+								<h:inputSecret value="#{user.password}"/>
+							</td>
+						</tr>
+					</table>
+					<p>
+						<h:commandButton value="Login" action="login"/>
+					</p>
+				</h:form>
+			</body>
+		</f:view>
+	</html>
 	
 
+Si noti che:
+
+	- Un numero di tag standard HTML - "body", "table", ... ;
 	
+	- Alcuni tag hanno un "prefix" ( prefisso ), come f:view e h:inputText.
+	  Queste librerie di tag JSF sono importati con il "taglib" in testa al file;
 	
+	- I campi di input sono collegati ( linked ) con le proprietà di un'oggetto. L'attributo value="#{user.name}"
+	  dice all'implementazione JSF di collegare il campo testo con la proprietà "name" dell'oggetto "user";
+
+Quando l'utente inserisce il "nome" e la "password", al click sul bottone "Login" viene visualizzata la pagina di Welcome.
+
+Nome file: login/web/welcome.jsp ( Listato1-2 )
+
+	<html>
+		<%@ taglib uri="http://java.sun.com/jsf/core" prefix="f" %>
+		<%@ taglib uri="http://java.sun.com/jsf/html" prefix="h" %>
+
+		<f:view>
+			<head>
+				<title>A Simple JavaServer Faces Application</title>
+			</head>
+			<body>
+				<h:form>
+					<h3>
+						Welcome to JavaServer Faces,
+						<h:outputText value="#{user.name}"/>!
+					</h3>
+				</h:form>
+			</body>
+		</f:view>
+	</html>
+
+
+INGREDIENTS - L'esempio precedente consiste in:
+
+	- Le pagine di "Login" ( index.jsp ) e "Welcome" ( welcome.jsp );
 	
+	- Un "managed bean" ( UserBean.java ) che gestisce i dati dell'utente ( "username" e "password" );
+	  N.B: Un "bean" è una classe Java con i campi ( proprieta ) "name" e "password".
+	  
+	- Un file di configurazione che elenca le risorse bean e le regole di navigazione. Di default il file è chiamato "faces-config.xml";
 	
+	- Una serie di file per il "servelt container": "web.xml" e "index.html" che reindirizzano l'utente al corretto URL della pagina di login;
 	
+Nome file: login/src/java/com/corejsf/UserBean.java
 	
+	package com.corejsf;
+
+	public class UserBean 
+	{
+		private String name;
+		private String password;
+
+		// PROPERTY: name
+		public String getName() { return name; }
+		public void setName(String newValue) { name = newValue; }
+
+		// PROPERTY: password
+		public String getPassword() { return password; }
+		public void setPassword(String newValue) { password = newValue; }
+	}
+
+
+DIRECTORY STRUCTURE - Un'applicazione JSF viene deploiata ( deploy ) come un file WAR: è un file zippato con estensione ".war" e 
+una struttura di directory che segue il seguente standard:
+
+	WEB_INF/
+	|
+	|_______ configuration files
+	|_______ classes/
+	|		 |
+	|		 |______ class files
+	|
+	|_______ lib/
+			 |
+			 |______ library files
+			 
+
+La struttura delle directory del WAR file dell'esempio precedente:
+
+	( folder )login.war
+	|
+	|_______ ( folder ) META_INF
+	|					|_______ ( file ) MANIFEST.MF
+	|
+	|_______ ( folder ) WEB-INF
+	|					|_______ ( folder ) classes
+	|										|
+	|										|_______ (folder) com
+	|										|				  |
+	|										|				  |_______ ( folder ) corejsf
+	|										|									  |
+	|										|									  |_______ ( file ) UserBean.class
+	|										|
+	|										|_______ ( file ) faces-config.xml
+	|										|
+	|										|_______ ( file ) web.xml
+	|
+	|_______ ( file ) index.html
+	|
+	|_______ ( file ) index.jsp
+	|
+	|_______ ( file ) welcome.jsp
 	
+
+La struttura del progetto Java in Eclipse prevede il codice sorgente contenuto nella directory "/src/java", mentre le pagine
+JSF e i file di configurazione contenuti nella directory "web":
+
+	( folder ) login
+	|
+	|_______ ( folder ) src
+	|					|
+	|					|_______ ( folder ) java
+	|										|
+	|										|_______ ( folder ) com
+	|															|
+	|															|_______ ( folder ) corejsf
+	|																				|
+	|																				|_______ ( file ) UserBean.java
+	|
+	|_______ ( folder ) web
+						|
+						|_______ ( file ) index.html
+						|
+						|_______ ( file ) index.jsp
+						|
+						|_______ ( file ) welcome.jsp
+						|
+						|_______ ( folder ) WEB-INF
+											|
+											|_______ ( file ) faces-config.xml
+											|
+											|_______ ( file ) web.xml
+											
+
+
+//------------------------------------ Sample Application Analysis -------------------------------//
+
+Un'applicazione Web è costituita da due parti: il "presentation layer" e la "business logic".
+Il "presentation layer" riguarda il look dell'applicazione e il look dell'applicazione viene determinato
+dai tag HTML che specificano il layout, le immagini e altro. La "business logic" invece viene implementata dal 
+codice Java che determina il comportamento dell'applicazione.
+
+Alcune tecnologie Web mixano HTML e codice. Questo approccio però, pur sembrando facile da seguire per produrre
+singoli file che contengono sia la parte grafica che la parte di business, non va bene per applicazioni complesse
+in quando mixare codice e markup può portare a problemi futuri.
+
+Per questo motivo per progettare applicazioni web professionali è importante "separare" la parte di presentazione 
+da quella di business logic. 
+
+In JSF il codice applicativo è contanuto nei bean mentre il design è contenuto nelle pagine web.
+
+BENAS - Un Java Bean è una classe Java che espone proprietà e eventi ad un'ambiente come JSF. Una proprietà è un
+valore di un certo tipo identificato da un nome ( variabile ) che può essere letta e/o scritta.
+Il modo più semplice di definire una proprietà è usare una "naming convention standard" per i metodi che leggono
+e scrivono, più comunemente conosciuti come "getter/setter convention".
+
+	public class UserBean 
+	{
+		private String name;
+		private String password;
 	
+		public String getName() { . . . }
+		public void setName(String newValue) {. . . }
+		public String getPassword() { . . . }
+		public void setPassword(String newValue) { . . . }
+		. . .
+	}
+
+Nelle applicazioni JSF i Beans vengono usati per tutti quei dati che necessitano di essere acceduti dalle pagine web.
+I Beans sono il canale di comunicazione tra l'interfaccia utente e il backend dell'applicazione.
+
+
+JSF PAGES - Le pagine JSF tipicamente hanno l'estensione ".jsp" o ".jsf" ( L'estensione ".jsp" richiede meno forzo per 
+la configurazione ) anche se l'estensione delle pagine URLs è ".faces". Quando il browser richiede 
+l'URL http://localhost:8080/login/index.faces l'estensione ".faces" dell'URL viene mappato sull'estensione ".jsp" e il 
+servelt container carica la pagina ".jsp". Questo processo è conseguenza dell'implementazione della tecnologia 
+JSF sopra ( on top ) a quella delle servelt.
+
+Tornando all'esempio dimostrativo del "Listato 1-1" ( la pagina JSF di login ), la pagina inizia con i tag di dichiarazione
+delle librerie:
+
+	<%@ taglib uri="http://java.sun.com/jsf/core" prefix="f" %>
+	<%@ taglib uri="http://java.sun.com/jsf/html" prefix="h" %>
 	
+L'implementazione JSF dinifisce due insiemi di tag. I tag HTML generano markup HTML specific.
+Se si vuole usare una tecnologia client alternativa allora si devono usare differenti tag library. 
+I tag "core" sono indipendenti dalla tecnologia di rendering, infatti il tag "f:view" viene usato sia per pagine HTML
+che per pagine che sono visualizzate via telefono cellulare.
+E' possibile usare qualsiasi prefisso si voglia per i tag ( basta dichiarali all'inizio della pagina ):
+
+	- f:view or faces:view
+	- h:inputText or html:inputText
 	
+La pagina del "Listato 1-1" è molto simile ad un form HTML. Di seguito le differenze:
+
+	- Tutti i tag JSF sono contenuti in un tag "f:view"
+	- Invece di usare il tag HTML "form", si sono racchiusi tutti i componenti JSF in un tag "h:form";
+	- Invece di usare i famigliare tag HTML "input", sono stati usati "h:inputText", "h:inputSecret" e "h:commandButton";
+
+I valori dei campi di input sono stati legati alle proprietà ( campi/field ) del Bean Java "user":
+
+	<h:inputText value="#{user.name}"/>
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+I delimitatori "#{}" saranno spiegati più avanti ( Capitolo 2 ) Syntax of Value Expression.
+
+Quando la pagina viene visualizzata, il framework chiama il metodo "getName()" per ottenere il valore corrente della proprietà.
+Quando invece la pagina viene submitted, il framework invoca il metodo "setName()" per settare/impostare il valore che l'utente
+ha inserito. 
+
+Il tag "h:commandButton" ha un'attributo "action", il cui valore viene usato quando quando si specificano le regole
+di navigazione. Mentre invece l'attributo "value" specifica la stringa visualizzata sul bottone:
+
+	<h:commandButton value="Login" action="login"/>
+
+pag35 Libro
