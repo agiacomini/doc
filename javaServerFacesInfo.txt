@@ -136,7 +136,7 @@ Si noti che:
 
 Quando l'utente inserisce il "nome" e la "password", al click sul bottone "Login" viene visualizzata la pagina di Welcome.
 
-Nome file: login/web/welcome.jsp ( Listato1-2 )
+Nome file: login/web/welcome.jsp ( Listato1-3 )
 
 	<html>
 		<%@ taglib uri="http://java.sun.com/jsf/core" prefix="f" %>
@@ -169,7 +169,7 @@ INGREDIENTS - L'esempio precedente consiste in:
 	
 	- Una serie di file per il "servelt container": "web.xml" e "index.html" che reindirizzano l'utente al corretto URL della pagina di login;
 	
-Nome file: login/src/java/com/corejsf/UserBean.java
+Nome file: login/src/java/com/corejsf/UserBean.java ( Listato1-2 )
 	
 	package com.corejsf;
 
@@ -277,6 +277,8 @@ da quella di business logic.
 
 In JSF il codice applicativo è contanuto nei bean mentre il design è contenuto nelle pagine web.
 
+
+
 BENAS - Un Java Bean è una classe Java che espone proprietà e eventi ad un'ambiente come JSF. Una proprietà è un
 valore di un certo tipo identificato da un nome ( variabile ) che può essere letta e/o scritta.
 Il modo più semplice di definire una proprietà è usare una "naming convention standard" per i metodi che leggono
@@ -296,6 +298,7 @@ e scrivono, più comunemente conosciuti come "getter/setter convention".
 
 Nelle applicazioni JSF i Beans vengono usati per tutti quei dati che necessitano di essere acceduti dalle pagine web.
 I Beans sono il canale di comunicazione tra l'interfaccia utente e il backend dell'applicazione.
+
 
 
 JSF PAGES - Le pagine JSF tipicamente hanno l'estensione ".jsp" o ".jsf" ( L'estensione ".jsp" richiede meno forzo per 
@@ -340,4 +343,132 @@ di navigazione. Mentre invece l'attributo "value" specifica la stringa visualizz
 
 	<h:commandButton value="Login" action="login"/>
 
-pag35 Libro
+Nel Listato1-3 viene usato "h:outputText" per visualizzare il nome dell'utente che l'utente ha inserito nella pagina "login.jsp".
+
+
+
+NAVIGATION - Una regola di navigazione indica all'implementazione JSF quale pagina far visualizzare al browser dopo che
+un form è stato spedito/sottomesso.
+Nell'esempio riportato sopra, quando l'utente fa click sul pulsante di login si vuole che la navigazione porti dalla pagina
+"login.jsp" alla pagina "welcome.jsp". Questa regola di navigazione viene specificata nel file "faces-config.xml":
+
+	<navigation-rule>
+		<from-view-id>/index.jsp</from-view-id>
+		<navigation-case>
+			<from-outcome>login</from-outcome>
+			<to-view-id>/welcome.jsp</to-view-id>
+		</navigation-case>
+	</navigation-rule>
+	
+Il valore di "from-outcome" match con l'attributo "action" del "command button" della pagina "index.jsp" ( Listato1-1 ).
+
+	<h:commandButton value="Login" action="login"/>
+	
+Oltre alle regole di navigazione, il file "faces-config.xml" contiene anche la definizione dei bean. Di seguito la definizione 
+del bean "user":
+
+	<managed-bean>
+		<managed-bean-name>user</managed-bean-name>
+		<managed-bean-class>
+			com.corejsf.UserBean
+		</managed-bean-class>
+		<managed-bean-scope>session</managed-bean-scope>
+	</managed-bean>
+	
+Sarà possibile usare il nome del bean, "user", negli attributi dei componenti dell'interfaccia utente. Per esempio
+la pagina "index.jsp" ( Listato1-1 ) contiene il tag:
+
+	<h:inputText value="#{user.name}"/>
+	
+L'attributo "value" si riferisce alla proprietà "name" del bean "user".
+
+Il tag "managed-bean-class" specifica invece la classe bean "com.corejsf.UserBean".
+Infine lo "scope" del bean è settato a "session", che significa che l'oggetto bean "user" sarà disponibile per un solo utente
+lungo tutta la navigazione delle pagine. Differenti utenti che usano la web application avranno differenti istanze
+dello stesso oggetto bean. 
+
+Nome file: login/web/WEB-INF/faces-config.xml ( Listato1-4 )
+
+	<?xml version="1.0"?>
+	<faces-config xmlns="http://java.sun.com/xml/ns/javaee"
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xsi:schemaLocation="http://java.sun.com/xml/ns/javaee
+		http://java.sun.com/xml/ns/javaee/web-facesconfig_1_2.xsd"
+		version="1.2">
+		<navigation-rule>
+			<from-view-id>/index.jsp</from-view-id>
+			<navigation-case>
+				<from-outcome>login</from-outcome>
+				<to-view-id>/welcome.jsp</to-view-id>
+			</navigation-case>
+		</navigation-rule>
+
+		<managed-bean>
+			<managed-bean-name>user</managed-bean-name>
+			<managed-bean-class>com.corejsf.UserBean</managed-bean-class>
+			<managed-bean-scope>session</managed-bean-scope>
+		</managed-bean>
+	</faces-config>
+	
+	
+SERVLET CONFIGURATION - Quando viene deplyata un'applicazione JSF dentro ad un "application server" si deve fornire un file di
+configurazione chiamato "web.xml". Fortunatamente, si può usare lo stesso file "web.xml" per più applicazioni JSF.
+
+Nome file: login/web/WEB-INF/web.xml ( Listato1-5 )
+
+	<?xml version="1.0"?>
+	<web-app xmlns="http://java.sun.com/xml/ns/javaee"
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xsi:schemaLocation="http://java.sun.com/xml/ns/javaee
+		http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+		version="2.5">
+		
+		<servlet>
+			<servlet-name>Faces Servlet</servlet-name>
+			<servlet-class>javax.faces.webapp.FacesServlet</servlet-class>
+			<load-on-startup>1</load-on-startup>
+		</servlet>
+		
+		<servlet-mapping>
+			<servlet-name>Faces Servlet</servlet-name>
+			<url-pattern>*.faces</url-pattern>
+		</servlet-mapping>
+
+		<welcome-file-list>
+			<welcome-file>index.html</welcome-file>
+		</welcome-file-list>
+	</web-app>
+	
+L'unico aspetto da tener presente di questo file è "<servlet-mapping>". Tutte le pagine JSF sono processate da una speciale servlet che
+è parte dell'implementazione JSF. Per assicurare che la corretta servlet venga attivata quando una pagine JSF viene richiesta, 
+le URLs JSF hanno uno speciale formato. Nell'esempio precedente hanno un'estensione ".faces".
+
+Non è possibile far puntare il browser direttamente a "http://localhost:8080/login/index.jsp" ma l'URL deve essere 
+"http://localhost:8080/login/index.faces". Il servelt container dell'application Server usa queste regole di mapping "<servlet-mapping>"
+per attivare la servelet JSF, la quale sostituisce il suffisso ".faces" e carica la pagina ".jsp".
+
+
+
+THE WELCOME FILE - Quando l'utente inserisce una directory URL come "http://localhost:8080/login" all'interno del browser l'application 
+server carica automaticamente la pagina "index.jsp" quando presente. Sfortunatamente, questo meccanismo non funziona con la pagine JSF.
+Per superare questo problema, è possibile fornire un file "index.html" che automaticamente redirect l'utente alla pagina JSF.
+
+Nome File: login/web/index.html ( Listato1-6 )
+
+	<html>
+		<head>
+			<meta http-equiv="Refresh" content= "0; URL=index.faces"/>
+			<title>Start Web Application</title>
+		</head>
+		<body>
+			<p>Please wait for the web application to start.</p>
+		</body>
+	</html>
+	
+
+Infine, è una buona idea specificare "index.html" come pagina "welcome" nel file "web.xml" all'interno dei tag "<welcome-file>" ( vedi Listato1-5 ).
+
+NOTE: 
+
+//--------------------------------- Development Environments for JSF -----------------------------//
+
