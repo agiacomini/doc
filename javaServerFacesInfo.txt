@@ -17,11 +17,17 @@ di pensare in termini di text fields e menu piuttosto che avere a che fare con "
 
 Story
 
-	- JSF 1.0 specification and reference implementation ( 2004 )
+	JSF Version						Release Date		Java EE Version
 
-	- JSF 1.1, bug fix release
+	- JSF 1.0 			 				2004				J2EE 1.4
 
-	- JSF 1.2, incremental release ( 2006 ) [ JSF 1.2 è parte delle specifiche Java EE 5 ]
+	- JSF 1.1 ( bug fix release )
+
+	- JSF 1.2 ( incremental release )  	2006 				Java EE 5
+	
+	- JSF 2.0 							2009				Java EE 6
+	
+	- JSF 2.2 ( la più recente )		2013				Java EE 7
 
 Oggi JSF è il più eminente server-side Java web framework. E' possibile progettare interfacce utente 
 mettendo i componenti in una form e collegandoli a degli oggetti Java, senza dover mixare codice
@@ -37,8 +43,9 @@ queste tecnologie rappresentano solo l'insfrastruttura di basso livello.
 Required Software
 
 	- Java SE Software Development Kit ( JDK ) 5.0 o superiore
-	- Application Server ( che supporta JSF ) : Apache Tomcat, GlassFish
-	- IDE ( Integrated Development Environment ) : NetBeans, Eclipse
+	- Application Server Support Java EE 7 ( che supporta JSF ) : Apache Tomcat 8 ( add JSF libraries ), GlassFish 4, JBoss Wildfly 8
+	- Java IDE ( Integrated Development Environment ) : NetBeans, Eclipse IDE for Java EE Developers
+	- JSF JAR files ( opzionale se si usa un Java IDE che integra automaticamente le API di JSF nel progetto );
 
 
 //-------------------------------- Why JavaServer Faces? -----------------------------------------//
@@ -67,7 +74,14 @@ JSF ha tre parti:
 	
 	- Un modello di programmazione guidato dagli eventi ( event-driven );
 	
-	- Un modello di componenti che abilita lo sviluppo di componenti addizionali di terze parti;
+	- Un modello di componenti che consente a sviluppatori di terze parti di fornire componenti addizionali
+	
+		- OpenFaces
+		
+		- RichFaces 
+		
+		- PrimeFaces
+		
 	
 JSF è parte dello standard Java EE. JSF è incluso in ogni Server Applicativo Java EE, e può essere facilmente
 aggiunto ad un web container standalone come Apache Tomcat.
@@ -88,6 +102,29 @@ da seguire ( http://horstmann.com/bigj2/tomcat-jsf.html ).
 
 Questo esempio descrive una pagina di login ed è rappresentato essenzialmente da un file HTML con alcuni 
 tag addizionali.
+
+Nome file: hello-world.xhtml
+
+	<!DOCTYPE html>
+	<html xmlns="http://www.w3.org/1999/xhtml"						 |
+		  xmlns:f="http://java.sun.com/jsf/core"					<|	JSF UI Components ( componenti importati automaticamente )
+		  xmlns:h="http://java.sun.com/jsf/html"					 |
+		  xmlns:a="http://java.sun.com/jsf/passthrough">			 |
+		  
+		<h:head>
+		  <title>Hello World - Input Form</title>
+		</h:head>
+
+		<h:body>
+			
+			<h:form>
+				<h:inputText id="name" value="#{user.name}" a:placeholder="What's your name?"></h:inputText>
+				<h:commandButton value="Submit" action="myresponse"/>
+			</h:form>
+			
+		</h:body>
+
+	</html>
 
 Nome file: login/web/index.jsp ( Listato1-1 )
 
@@ -134,7 +171,7 @@ Si noti che:
 	- I campi di input sono collegati ( linked ) con le proprietà di un'oggetto. L'attributo value="#{user.name}"
 	  dice all'implementazione JSF di collegare il campo testo con la proprietà "name" dell'oggetto "user";
 
-Quando l'utente inserisce il "nome" e la "password", al click sul bottone "Login" viene visualizzata la pagina di Welcome.
+Quando l'utente inserisce il "nome" e la "password", al click sul bottone "Login" viene visualizzata la pagina di "Welcome".
 
 Nome file: login/web/welcome.jsp ( Listato1-3 )
 
@@ -160,14 +197,19 @@ Nome file: login/web/welcome.jsp ( Listato1-3 )
 
 INGREDIENTS - L'esempio precedente consiste in:
 
-	- Le pagine di "Login" ( index.jsp ) e "Welcome" ( welcome.jsp );
+	- Un'insieme di pagine web:
+		
+		- Le pagine di "Login" ( index.jsp ) e "Welcome" ( welcome.jsp );
 	
 	- Un "managed bean" ( UserBean.java ) che gestisce i dati dell'utente ( "username" e "password" );
 	  N.B: Un "bean" è una classe Java con i campi ( proprieta ) "name" e "password".
 	  
 	- Un file di configurazione che elenca le risorse bean e le regole di navigazione. Di default il file è chiamato "faces-config.xml";
 	
-	- Una serie di file per il "servelt container": "web.xml" e "index.html" che reindirizzano l'utente al corretto URL della pagina di login;
+	- Una serie di file per il "servelt container": 
+	
+		- "web.xml" ( web deployment descriptor );
+		- "index.html" che reindirizzano l'utente al corretto URL della pagina di login;
 	
 Nome file: login/src/java/com/corejsf/UserBean.java ( Listato1-2 )
 	
@@ -268,7 +310,7 @@ Il "presentation layer" riguarda il look dell'applicazione e il look dell'applic
 dai tag HTML che specificano il layout, le immagini e altro. La "business logic" invece viene implementata dal 
 codice Java che determina il comportamento dell'applicazione.
 
-Alcune tecnologie Web mixano HTML e codice. Questo approccio però, pur sembrando facile da seguire per produrre
+Alcune tecnologie Web mixano tag HTML e codice. Questo approccio però, pur sembrando facile da seguire per produrre
 singoli file che contengono sia la parte grafica che la parte di business, non va bene per applicazioni complesse
 in quando mixare codice e markup può portare a problemi futuri.
 
@@ -279,7 +321,7 @@ In JSF il codice applicativo è contanuto nei bean mentre il design è contenuto
 
 
 
-BENAS - Un Java Bean è una classe Java che espone proprietà e eventi ad un'ambiente come JSF. Una proprietà è un
+BEANS - Un Java Bean è una classe Java che espone proprietà e eventi ad un'ambiente come JSF. Una proprietà è un
 valore di un certo tipo identificato da un nome ( variabile ) che può essere letta e/o scritta.
 Il modo più semplice di definire una proprietà è usare una "naming convention standard" per i metodi che leggono
 e scrivono, più comunemente conosciuti come "getter/setter convention".
@@ -312,6 +354,8 @@ delle librerie:
 
 	<%@ taglib uri="http://java.sun.com/jsf/core" prefix="f" %>
 	<%@ taglib uri="http://java.sun.com/jsf/html" prefix="h" %>
+	
+	N.B: JSF 2.2 <html xmlns:f="http://xmlns.jcp.org/jsf/core" xmlns:h="http://xmlns.jcp.org/jsf/html">
 	
 L'implementazione JSF dinifisce due insiemi di tag. I tag HTML generano markup HTML specific.
 Se si vuole usare una tecnologia client alternativa allora si devono usare differenti tag library. 
@@ -364,7 +408,7 @@ Il valore di "from-outcome" match con l'attributo "action" del "command button" 
 
 	<h:commandButton value="Login" action="login"/>
 	
-Oltre alle regole di navigazione, il file "faces-config.xml" contiene anche la definizione dei bean. Di seguito la definizione 
+Oltre alle regole di navigazione, il file "faces-config.xml" contiene anche la definizione dei bean usati. Di seguito la definizione 
 del bean "user":
 
 	<managed-bean>
@@ -411,7 +455,7 @@ Nome file: login/web/WEB-INF/faces-config.xml ( Listato1-4 )
 	</faces-config>
 	
 	
-SERVLET CONFIGURATION - Quando viene deplyata un'applicazione JSF dentro ad un "application server" si deve fornire un file di
+SERVLET CONFIGURATION - Quando viene deployata un'applicazione JSF dentro ad un "Application Server" si deve fornire un file di
 configurazione chiamato "web.xml". Fortunatamente, si può usare lo stesso file "web.xml" per più applicazioni JSF.
 
 Nome file: login/web/WEB-INF/web.xml ( Listato1-5 )
@@ -444,7 +488,7 @@ L'unico aspetto da tener presente di questo file è "<servlet-mapping>". Tutte l
 le URLs JSF hanno uno speciale formato. Nell'esempio precedente hanno un'estensione ".faces".
 
 Non è possibile far puntare il browser direttamente a "http://localhost:8080/login/index.jsp" ma l'URL deve essere 
-"http://localhost:8080/login/index.faces". Il servelt container dell'application Server usa queste regole di mapping "<servlet-mapping>"
+"http://localhost:8080/login/index.faces". Il servelt container dell'Application Server usa queste regole di mapping "<servlet-mapping>"
 per attivare la servelet JSF, la quale sostituisce il suffisso ".faces" e carica la pagina ".jsp".
 
 
