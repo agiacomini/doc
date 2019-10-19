@@ -622,6 +622,103 @@ What is JDBC (Java DataBase Connectivity)? - Get to Know Java's low-level API fo
 			Now compile the code by entering the command: javac WhatIsJdbc.java 
 			Compiling will output the WhatIsJdbc.class file. Execute this file from the command line with the call: java WhatIsJdbc
 			
+			Once you have a basic Java program, you can include the JDBC libraries. Paste in the code from Listing 2 at the head
+			of your simple Java program.
+				
+			Listing 2. JDBC imports
+			
+				import java.sql.Connection;
+				import java.sql.DriverManager;
+				import java.sql.SQLException;
+				import java.sql.ResultSet;
+				import java.sql.Statement;
+				
+			Each of these imports provides access to a class that facilitates the standard Java database connection:
+			
+				- Connection: represent the connecction to the database;
+				
+				- DriverManager: obtain the connection to the database. (Another option is "DataSource", used for connection pooling.)
+				
+				- SQLException: handle SQL errors between the Java application and the database;
+				
+				- ResultSet and Statement: model the data result sets and SQL statements;
+				
+			
+			We'll see each of these in action shortly.
+			
+		Step 3. Add the JDBC driver to your "classpath"
+			Next, you'll add the SQLite driver to your classpath. A JDBC driver is a class that implements the JDBC API
+			for a specific database.
+			
+			Downloading the SQLite driver for GitHub. Be sure to get the most recent .jar file and store it somewhere
+			you'll remember.
+			
+			The next time you execute your Java program, you will pull  that .jar file in via the classpath. 
+			There are several ways to set the classpath. Listing 3 shows how to do it using a command-line switch.
+			
+			Listing 3. Executing SQLite driver on the Java classpath
+			
+				java.exe -classpath /path-to-driver/sqlite-jdbc-3.23.1.jar:. WhatIsJdbc
+				
+			Notice that we've set the classpath to point at the driver and the local directory; this way Java will 
+			still find our class file.
+			
+		Step 4. Obtain a database connection
+			The classpath now has access to the driver. Now, change your simple java application file to look like
+			the programm in Listing 4.
+			
+			Listing 4. Using the JDBC Connection class to connect to SQLite
+			
+				import java.sql.Connection;
+				import java.sql.DriverManager;
+				import java.sql.SQLException;
+				import java.sql.ResultSet;
+				import java.sql.Statement;
+				
+				class WhatIsJdbc 
+				{
+					public static void main( String args[] )
+					{
+						Connection conn = null;
+						
+						try
+						{
+							String url = "jdbc:sqlite:path-to-db/chinook/chinook.db";
+							conn = DriverManager.getConnection( url );
+							
+							System.out.println( "Got it!" );
+						}
+						catch( SQLException e )
+						{
+							throw new Error( "Problem", e );
+						}
+						finally
+						{
+							try
+							{
+								if( conn != null )
+								{
+									conn.close();
+								}
+							}
+							catch( SQLException ex )
+							{
+								System.out.println( ex.getMessage() );
+							}
+						}
+					}
+				}
+				
+			Compile and execute this code. Assuming all goes well, you will get an affirming message.
+			
+			Note: No Suitable driver found?
+				  If you've received an error that looks like "No suitable driver found for jdbc:sqlite",
+				  then you need to revisit the classpath and make sure it points to the driver you downloaded.
+				  Failed driver connection is the most common stumbling block for beginners using JDBC.
+				  Don't swea it; just for fix.
+				  
+			Now we're ready for some SQL commands.
+			
 //----------------------------------- ./JDBC (Java DataBase Connectivity) ---------------------------------------//			
 
 //--------------------------------------------- Hibernate ORM ---------------------------------------------------//		
@@ -808,6 +905,16 @@ Administration Console (http://localhost:9990/console/App.html)
 	Admin User:
 
 		- user/#123*admin
+		
+Start/Stop
+
+	Start:
+	
+		- ./standalone.sh
+		
+	Stop:
+	
+		- ./shutdown.sh
 			
 //--------------------------------------------------------------------------------------------------------------//
 
