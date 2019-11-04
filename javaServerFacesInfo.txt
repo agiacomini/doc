@@ -106,10 +106,10 @@ tag addizionali.
 Nome file: hello-world.xhtml
 
 	<!DOCTYPE html>
-	<html xmlns="http://www.w3.org/1999/xhtml"						 |
-		  xmlns:f="http://java.sun.com/jsf/core"					<|	JSF UI Components ( componenti importati automaticamente )
-		  xmlns:h="http://java.sun.com/jsf/html"					 |
-		  xmlns:a="http://java.sun.com/jsf/passthrough">			 |
+	<html xmlns="http://www.w3.org/1999/xhtml"					|
+		  xmlns:f="http://xmlns.jcp.org/jsf/core"				|	JSF UI Components ( componenti importati automaticamente )
+		  xmlns:h="http://xmlns.jcp.org/jsf/html"				|
+		  xmlns:a="http://xmlns.jcp.org/jsf/passthrough">		|
 		  
 		<h:head>
 		  <title>Hello World - Input Form</title>
@@ -382,7 +382,7 @@ Quando la pagina viene visualizzata, il framework chiama il metodo "getName()" p
 Quando invece la pagina viene submitted, il framework invoca il metodo "setName()" per settare/impostare il valore che l'utente
 ha inserito. 
 
-Il tag "h:commandButton" ha un'attributo "action", il cui valore viene usato quando quando si specificano le regole
+Il tag "h:commandButton" ha un'attributo "action", il cui valore viene usato quando si specificano le regole
 di navigazione. Mentre invece l'attributo "value" specifica la stringa visualizzata sul bottone:
 
 	<h:commandButton value="Login" action="login"/>
@@ -435,10 +435,34 @@ Nome file: login/web/WEB-INF/faces-config.xml ( Listato1-4 )
 
 	<?xml version="1.0"?>
 	<faces-config xmlns="http://java.sun.com/xml/ns/javaee"
-		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		xsi:schemaLocation="http://java.sun.com/xml/ns/javaee
-		http://java.sun.com/xml/ns/javaee/web-facesconfig_1_2.xsd"
-		version="1.2">
+				  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+				  xsi:schemaLocation="http://java.sun.com/xml/ns/javaee
+				  http://java.sun.com/xml/ns/javaee/web-facesconfig_1_2.xsd"
+				  version="1.2">
+		<navigation-rule>
+			<from-view-id>/index.jsp</from-view-id>
+			<navigation-case>
+				<from-outcome>login</from-outcome>
+				<to-view-id>/welcome.jsp</to-view-id>
+			</navigation-case>
+		</navigation-rule>
+
+		<managed-bean>
+			<managed-bean-name>user</managed-bean-name>
+			<managed-bean-class>com.corejsf.UserBean</managed-bean-class>
+			<managed-bean-scope>session</managed-bean-scope>
+		</managed-bean>
+	</faces-config>
+	
+	
+Nome file: login/web/WEB-INF/faces-config.xml ( JSF Version 2.2 )
+	
+	<?xml version="1.0"?>
+	<faces-config xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+				  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+				  xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee
+				  http://xmlns.jcp.org/xml/ns/javaee/web-facesconfig_2_2.xsd"
+				  version="2.2">
 		<navigation-rule>
 			<from-view-id>/index.jsp</from-view-id>
 			<navigation-case>
