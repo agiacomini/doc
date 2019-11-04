@@ -68,7 +68,7 @@ Level of Logging:
 		 For Java web applications, make sure the "log4j.properties" file is under the WEB-INF/classes directory
 
 
-Intialize a logger Object:
+Declare and Intialize a logger Object:
 
 	- private static final Logger log = Logger.getLogger(Log4jTestClass.class);	[Better]
 	
@@ -169,7 +169,7 @@ What is JPA (Java Persistence API)?: - The Java ORM (Object/Relational Mapping) 
 		
 		Note: JPA with NoSQL -
 			  Now a variety of NoSQL databases are available to Java developers. Soma JPA implementations have evolved to embrace (abbracciare)
-			  NoSQL including Hibernate OGM and Eclipse Link.
+			  NoSQL including Hibernate ORM and Eclipse Link.
 			  
 		The figure below illustrates the role of JPA and the ORM layer in application development.
 		
@@ -218,23 +218,15 @@ What is JPA (Java Persistence API)?: - The Java ORM (Object/Relational Mapping) 
 					private Instrument mainInstrument;
 					private ArrayList performances = new ArrayList<Performance>();
 					
-					public Musician(Long id, String name){ /* Constructor setters... */ }
+					public Musician( Long id, String name ){ /* Constructor setters... */ }
 					
-					public void setName(String name){
-						this.name = name;
-					}
+					public void setName( String name ){ this.name = name;	}
 					
-					public String getName(){
-						return this.name;
-					}
+					public String getName(){ return this.name; }
 					
-					public void setMainInstrument(Instrument instr){
-						this.mainInstrument = instr;
-					}
+					public void setMainInstrument( Instrument instr ){	this.mainInstrument = instr; }
 					
-					public Instrument getMainInstrument(){
-						return this.mainInstrument;
-					}
+					public Instrument getMainInstrument(){ return this.mainInstrument; }
 					
 					/*... Other getter and setter ...*/
 				
@@ -245,9 +237,9 @@ What is JPA (Java Persistence API)?: - The Java ORM (Object/Relational Mapping) 
 		
 		"Musician"'s reasonfor being is to contain data. This type of class is sometimes known as a DTO (Data Transfert Object).
 		DTOs are a common feature of software development. While they hold many kinds of data, they do not contain any business logic.
-		Persisting data object is a ubiquitous (onnipresente) challenge is software development.
+		Persisting data object is a ubiquitous (onnipresente) challenge in software development.
 		
-		Data Persistence with JDBC -
+		Data Persistence with JDBC (Java DataBase Connectivity API) -
 			One way to save an instance of the "Musician" class to a relational database would be to use the JDBC library.
 			JDBC is a layer of abstraction that lets (permette) an application issue (emettere) SQL commands without thinking about 
 			the underlying database	implementation.
@@ -256,25 +248,27 @@ What is JPA (Java Persistence API)?: - The Java ORM (Object/Relational Mapping) 
 			
 				Listing 2. JDBC inserting a record
 				
-				Musician georgeHarrison = new Musician(0, "Geroge Harrison");
+				Musician georgeHarrison = new Musician( 0, "Geroge Harrison" );
 				
 				String myDriver = "com.mysql.cj.jdbc.Driver";
-				/* N.B: This "myDriver" value of variable resolve the following java problem:
 				
-						Loading class `com.mysql.jdbc.Driver'. This is deprecated. 
-						The new driver class is `com.mysql.cj.jdbc.Driver'. 
-						The driver is automatically registered via the SPI and manual loading of the driver class is generally unnecessary.
-				*/
+				/*****************************************************************************************************************************
+				/* N.B: This "myDriver" value of variable resolve the following java problem:												*/
+				/*																															*/
+				/*		Loading class `com.mysql.jdbc.Driver'. This is deprecated. 															*/	
+				/*		The new driver class is `com.mysql.cj.jdbc.Driver'. 																*/
+				/*		The driver is automatically registered via the SPI and manual loading of the driver class is generally unnecessary.	*/
+				/****************************************************************************************************************************/
 				
 				String myUrl = "jdbc:mysql://localhost:3306/mydatabase?autoReconnect=true&useSSL=false&useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC";
-				Class.forName(myDriver);
-				Connection conn = DriverManager.getConnection(myUrl, "root", "");
+				Class.forName( myDriver );
+				Connection conn = DriverManager.getConnection( myUrl, "root", "" );
 				
-				String query = "insert into users (id, name) values (?, ?)";
-				PreparedStatement preparedStmt = conn.prepareStatement(query);
-				preparedStmt.setInt (1, 0);
-				preparedStmt.setString (2, "George Harrison");
-				preparedStmt.setString (2, "Rubble");
+				String query = "INSERT INTO USERS ( id, name ) VALUES ( ?, ? )";
+				PreparedStatement preparedStmt = conn.prepareStatement( query );
+				preparedStmt.setInt ( 1, 0 );
+				preparedStmt.setString ( 2, "George Harrison" );
+				preparedStmt.setString ( 2, "Rubble" );
 				
 				preparedStmt.execute();
 				conn.close();
@@ -282,8 +276,8 @@ What is JPA (Java Persistence API)?: - The Java ORM (Object/Relational Mapping) 
 				// Error handling removed for brevity
 				
 			The code in this listing is fairly (abbastanza) self-documenting. The "georgeHarrison" object could come from anywhere (front-end submit,
-			external service, etc), and has its ID and name fields set. The fields on the object are then used to supply (fornire) the
-			value of an SQL "insert" statement. (The "PreparedStatement" class is part of JDBC, offering a way to safely (in modo sicuro) 
+			external service, etc), and has its ID and NAME fields set. The fields on the object are then used to supply (fornire) the
+			value of an SQL "INSERT" statement. (The "PreparedStatement" class is part of JDBC, offering a way to safely (in modo sicuro) 
 			apply values to an SQL query).
 			
 			While JDBC allows the control that comes with manual configuration, it is cumbersome (scomodo) compared to JPA.
@@ -298,8 +292,8 @@ What is JPA (Java Persistence API)?: - The Java ORM (Object/Relational Mapping) 
 			
 				Listing 3. Persisting George Harrison with JPA
 			
-				Musician georgeHarrison = new Musician(0, "George Harrison");
-				musicinatManager.save(georgeHarrison);
+				Musician georgeHarrison = new Musician( 0, "George Harrison" );
+				musicinatManager.save( georgeHarrison );
 				
 			The listing above replace the manual SQL from previous listing with a single line, "sessione.save()", which instructs JPA
 			to persist the object. From then one (da quel momento in poi), the SQL conversion is handled by the framework, so you never 
@@ -622,6 +616,103 @@ What is JDBC (Java DataBase Connectivity)? - Get to Know Java's low-level API fo
 			Now compile the code by entering the command: javac WhatIsJdbc.java 
 			Compiling will output the WhatIsJdbc.class file. Execute this file from the command line with the call: java WhatIsJdbc
 			
+			Once you have a basic Java program, you can include the JDBC libraries. Paste in the code from Listing 2 at the head
+			of your simple Java program.
+				
+			Listing 2. JDBC imports
+			
+				import java.sql.Connection;
+				import java.sql.DriverManager;
+				import java.sql.SQLException;
+				import java.sql.ResultSet;
+				import java.sql.Statement;
+				
+			Each of these imports provides access to a class that facilitates the standard Java database connection:
+			
+				- Connection: represent the connecction to the database;
+				
+				- DriverManager: obtain the connection to the database. (Another option is "DataSource", used for connection pooling.)
+				
+				- SQLException: handle SQL errors between the Java application and the database;
+				
+				- ResultSet and Statement: model the data result sets and SQL statements;
+				
+			
+			We'll see each of these in action shortly.
+			
+		Step 3. Add the JDBC driver to your "classpath"
+			Next, you'll add the SQLite driver to your classpath. A JDBC driver is a class that implements the JDBC API
+			for a specific database.
+			
+			Downloading the SQLite driver for GitHub. Be sure to get the most recent .jar file and store it somewhere
+			you'll remember.
+			
+			The next time you execute your Java program, you will pull  that .jar file in via the classpath. 
+			There are several ways to set the classpath. Listing 3 shows how to do it using a command-line switch.
+			
+			Listing 3. Executing SQLite driver on the Java classpath
+			
+				java.exe -classpath /path-to-driver/sqlite-jdbc-3.23.1.jar:. WhatIsJdbc
+				
+			Notice that we've set the classpath to point at the driver and the local directory; this way Java will 
+			still find our class file.
+			
+		Step 4. Obtain a database connection
+			The classpath now has access to the driver. Now, change your simple java application file to look like
+			the programm in Listing 4.
+			
+			Listing 4. Using the JDBC Connection class to connect to SQLite
+			
+				import java.sql.Connection;
+				import java.sql.DriverManager;
+				import java.sql.SQLException;
+				import java.sql.ResultSet;
+				import java.sql.Statement;
+				
+				class WhatIsJdbc 
+				{
+					public static void main( String args[] )
+					{
+						Connection conn = null;
+						
+						try
+						{
+							String url = "jdbc:sqlite:path-to-db/chinook/chinook.db";
+							conn = DriverManager.getConnection( url );
+							
+							System.out.println( "Got it!" );
+						}
+						catch( SQLException e )
+						{
+							throw new Error( "Problem", e );
+						}
+						finally
+						{
+							try
+							{
+								if( conn != null )
+								{
+									conn.close();
+								}
+							}
+							catch( SQLException ex )
+							{
+								System.out.println( ex.getMessage() );
+							}
+						}
+					}
+				}
+				
+			Compile and execute this code. Assuming all goes well, you will get an affirming message.
+			
+			Note: No Suitable driver found?
+				  If you've received an error that looks like "No suitable driver found for jdbc:sqlite",
+				  then you need to revisit the classpath and make sure it points to the driver you downloaded.
+				  Failed driver connection is the most common stumbling block for beginners using JDBC.
+				  Don't swea it; just for fix.
+				  
+			Now we're ready for some SQL commands.
+			
 //----------------------------------- ./JDBC (Java DataBase Connectivity) ---------------------------------------//			
 
 //--------------------------------------------- Hibernate ORM ---------------------------------------------------//		
@@ -808,6 +899,16 @@ Administration Console (http://localhost:9990/console/App.html)
 	Admin User:
 
 		- user/#123*admin
+		
+Start/Stop
+
+	Start:
+	
+		- ./standalone.sh
+		
+	Stop:
+	
+		- ./shutdown.sh
 			
 //--------------------------------------------------------------------------------------------------------------//
 
