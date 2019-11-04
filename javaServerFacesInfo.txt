@@ -540,3 +540,97 @@ NOTE:
 
 //--------------------------------- Development Environments for JSF -----------------------------//
 
+INTEGRATED DEVELOPMENT ENVIRONMENTS
+
+VISUAL BUILDER TOOLS
+
+AUTOMATION OF THE BUILD PROCESS WITH ANT
+
+//------------------------------------------ JSF Framework Service -------------------------------//
+
+Il Framework JSF è responsabile dell'interazione con i device client, e fornisce gli strumenti per legare insieme la "visual presentation",
+la logica applicativa e la business logic di una applicazione web. Comunque, lo scope di JSF è ristretto allo strato di presentazione.
+
+Figura 1-12 High-level overview of JSF Framework
+
+La peristenza del DataBase, i Web service e le altre connessioni con il backend sono fuori dallo scope di JSF.
+Di seguito i più importanti servizi che il Framework JSF fornisce:
+
+	- Architettura "Model-View-Controller": 
+	Tutte le applicazioni software permettono agli utenti di manipolare determinati dati,
+	come carrelli della spesa, itinerari di viaggio o qualsiasi altro dato che viene richiesto in un particolare dominio.
+	Questi dati sono chiamati "Model". Esattamente come un artista crea un dipinto di un modello, lo sviluppatore software
+	produce una "Views" del modello dei dati. In una applicazione web, l'HTML viene usato per disegnare queste "Views".
+	
+	JSF connette la "View" con il "Model". Come si è visto, un componente view può essere legato alla proprietà di un oggetto, come
+
+		<h:inputText value="#{user.name}"/>
+		
+	Inoltre, JSF opera come "Controller" che reagisce all'utente processando azioni e valutando eventi di cambio valore, indirizzandole al codice
+	che aggiorna il modello o la vista. Per esempio, se si vuole invocare un metodo per controllare se all'utente è permesso
+	accedere alla applicazione web viene usato il seguente tag JSF:
+	
+		<h:commandButton value="Login" action="#{user.check}"/>
+		
+	Quando l'utente clicca il bottone e il form viene sottomesso al server, l'implementazione JSF invoca il metodo "check" per il bean "user".
+	Questo metodo può eseguire azioni arbitrarie per aggiornare il modello, e ritornare l'ID di navigazione della pagina da visualizzare
+	successivamente all'elaborazione ( "Dynamic Navigation" - Chapter 3 ).
+	
+	Per questo il Framework JSF implementa la classica architettura "Model-View-Controller".
+	
+	- Data Conversion: 
+	Gli utenti inseriscono i dati in un form come testo. Mentre invece gli oggetti di business vogliono dati come numeri, date o altri
+	tipi di dato. JSF rende facile questo processo di conversione specificando e personalizzando le regole di conversione ( Chapter 6 ).
+	
+	- Validazione e gestione degli errori: 
+	Con JSF è facile aggiungere regole di validazione per i campi come "required" o "number". Naturalmente, quando l'utente inserisce 
+	un dato non valido, è possibile visualizzare messaggi di errore appropriati ( Chapter 6 ).
+	
+	- Internationalization: 
+	JSF gestisce anche le questioni di internazionalizzazione quali la codifica dei caratteri e la selezione di pacchetti di risorse.
+	
+	- Custom component:
+	Gli sviluppatori di componenti possono sviluppare componenti sofisticati che i progettisti delle pagine usano nelle loro pagine.
+	
+	- Alternative Renderers:
+	Di default, JSF genera markup per pagine HTML. Ma è facile estendere il framework JSF per produrre markup per altri linguaggi di
+	marcatura come WML e XUL.
+	
+	- Tool support:
+
+//--------------------------------------------- Behind the Scene ---------------------------------//
+
+Diamo uno sguardo dietro alle scene dell'applicazione di esempio. 
+Il punto di partenza è quando l'utente dal browser si connette a "http://localhost:8080/login/index.faces". La servlet JSF inizializza il
+codice JSF e legge la pagina "index.jsp". Questa pagina contiene tag come "f:form" e "h:inputText". Ognuno di questi tag ha associato una
+classe "tag handler". Quando la pagina viene letta, i "tag handler" vengono eseguiti. I "tag handler" JSF collaborano tra di loro
+per costruire un'albero dei componenti ( Figura 1-3 ).
+
+														-------------
+														|  UIForm	|
+														-------------
+												
+									-------------		-------------		-----------------
+									|	UIInput	|		|	UIInput	|		|	UICommand	|
+									-------------		-------------		-----------------
+	
+L'albero dei componenti è una struttura dati che contiene oggetti Java per tutti gli elementi delle interfacce utente presenti nelle pagine JSF.
+Per esempio i due oggetti Java "UIInput" corrispondono ai campi "h:inputText" e "h:inputSecret" presenti nel file JSF.
+
+RENDERING PAGES
+Successivamente, la pagina HTML viene renderizzata ( rappresentata ). Tutto il testo che non è un tag JSF viene ignorato. I tag "h:form", "h:inputTest" e
+"h:commandButton" vengono convertiti in tag HTML. Come si è appena discusso, ognuno di questi tag da origine ad un componente associato. Ognuno di questi
+componenti ( che sono oggetti Java ) ha un suo "renderer" ( visualizzatore ) che produce l'output HTML, che riflette lo stato del componente. 
+Per esempio, il "renderer" per il componente che corrisponde al tag "h:inputText" produce il seguente output:
+
+	<input type="text" name="unique ID" value="current value"/>
+	
+Questo processo viene cbhiamato "encoding" ( codifica ). Il "renderer" dell'oggetto "UIInput" chiede al framework di cercare l'ID univoco e il valore corrente
+dell'espressione "user.name". Di default, le stringhe ID vengono assegnate dal framework. Gli ID possono sembrare piuttosto randomici, come per esempio
+"_id_id12:_id_id21".
+La pagina codificata ( encoded ) viene spedita al browser, e il browser la visualizza.
+
+DECODING REQUEST
+
+THE LIFE CYCLE 
+
