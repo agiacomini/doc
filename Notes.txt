@@ -68,7 +68,7 @@ Level of Logging:
 		 For Java web applications, make sure the "log4j.properties" file is under the WEB-INF/classes directory
 
 
-Intialize a logger Object:
+Declare and Intialize a logger Object:
 
 	- private static final Logger log = Logger.getLogger(Log4jTestClass.class);	[Better]
 	
@@ -169,7 +169,7 @@ What is JPA (Java Persistence API)?: - The Java ORM (Object/Relational Mapping) 
 		
 		Note: JPA with NoSQL -
 			  Now a variety of NoSQL databases are available to Java developers. Soma JPA implementations have evolved to embrace (abbracciare)
-			  NoSQL including Hibernate OGM and Eclipse Link.
+			  NoSQL including Hibernate ORM and Eclipse Link.
 			  
 		The figure below illustrates the role of JPA and the ORM layer in application development.
 		
@@ -218,23 +218,15 @@ What is JPA (Java Persistence API)?: - The Java ORM (Object/Relational Mapping) 
 					private Instrument mainInstrument;
 					private ArrayList performances = new ArrayList<Performance>();
 					
-					public Musician(Long id, String name){ /* Constructor setters... */ }
+					public Musician( Long id, String name ){ /* Constructor setters... */ }
 					
-					public void setName(String name){
-						this.name = name;
-					}
+					public void setName( String name ){ this.name = name;	}
 					
-					public String getName(){
-						return this.name;
-					}
+					public String getName(){ return this.name; }
 					
-					public void setMainInstrument(Instrument instr){
-						this.mainInstrument = instr;
-					}
+					public void setMainInstrument( Instrument instr ){	this.mainInstrument = instr; }
 					
-					public Instrument getMainInstrument(){
-						return this.mainInstrument;
-					}
+					public Instrument getMainInstrument(){ return this.mainInstrument; }
 					
 					/*... Other getter and setter ...*/
 				
@@ -245,9 +237,9 @@ What is JPA (Java Persistence API)?: - The Java ORM (Object/Relational Mapping) 
 		
 		"Musician"'s reasonfor being is to contain data. This type of class is sometimes known as a DTO (Data Transfert Object).
 		DTOs are a common feature of software development. While they hold many kinds of data, they do not contain any business logic.
-		Persisting data object is a ubiquitous (onnipresente) challenge is software development.
+		Persisting data object is a ubiquitous (onnipresente) challenge in software development.
 		
-		Data Persistence with JDBC -
+		Data Persistence with JDBC (Java DataBase Connectivity API) -
 			One way to save an instance of the "Musician" class to a relational database would be to use the JDBC library.
 			JDBC is a layer of abstraction that lets (permette) an application issue (emettere) SQL commands without thinking about 
 			the underlying database	implementation.
@@ -256,25 +248,27 @@ What is JPA (Java Persistence API)?: - The Java ORM (Object/Relational Mapping) 
 			
 				Listing 2. JDBC inserting a record
 				
-				Musician georgeHarrison = new Musician(0, "Geroge Harrison");
+				Musician georgeHarrison = new Musician( 0, "Geroge Harrison" );
 				
 				String myDriver = "com.mysql.cj.jdbc.Driver";
-				/* N.B: This "myDriver" value of variable resolve the following java problem:
 				
-						Loading class `com.mysql.jdbc.Driver'. This is deprecated. 
-						The new driver class is `com.mysql.cj.jdbc.Driver'. 
-						The driver is automatically registered via the SPI and manual loading of the driver class is generally unnecessary.
-				*/
+				/*****************************************************************************************************************************
+				/* N.B: This "myDriver" value of variable resolve the following java problem:												*/
+				/*																															*/
+				/*		Loading class `com.mysql.jdbc.Driver'. This is deprecated. 															*/	
+				/*		The new driver class is `com.mysql.cj.jdbc.Driver'. 																*/
+				/*		The driver is automatically registered via the SPI and manual loading of the driver class is generally unnecessary.	*/
+				/****************************************************************************************************************************/
 				
 				String myUrl = "jdbc:mysql://localhost:3306/mydatabase?autoReconnect=true&useSSL=false&useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC";
-				Class.forName(myDriver);
-				Connection conn = DriverManager.getConnection(myUrl, "root", "");
+				Class.forName( myDriver );
+				Connection conn = DriverManager.getConnection( myUrl, "root", "" );
 				
-				String query = "insert into users (id, name) values (?, ?)";
-				PreparedStatement preparedStmt = conn.prepareStatement(query);
-				preparedStmt.setInt (1, 0);
-				preparedStmt.setString (2, "George Harrison");
-				preparedStmt.setString (2, "Rubble");
+				String query = "INSERT INTO USERS ( id, name ) VALUES ( ?, ? )";
+				PreparedStatement preparedStmt = conn.prepareStatement( query );
+				preparedStmt.setInt ( 1, 0 );
+				preparedStmt.setString ( 2, "George Harrison" );
+				preparedStmt.setString ( 2, "Rubble" );
 				
 				preparedStmt.execute();
 				conn.close();
@@ -282,8 +276,8 @@ What is JPA (Java Persistence API)?: - The Java ORM (Object/Relational Mapping) 
 				// Error handling removed for brevity
 				
 			The code in this listing is fairly (abbastanza) self-documenting. The "georgeHarrison" object could come from anywhere (front-end submit,
-			external service, etc), and has its ID and name fields set. The fields on the object are then used to supply (fornire) the
-			value of an SQL "insert" statement. (The "PreparedStatement" class is part of JDBC, offering a way to safely (in modo sicuro) 
+			external service, etc), and has its ID and NAME fields set. The fields on the object are then used to supply (fornire) the
+			value of an SQL "INSERT" statement. (The "PreparedStatement" class is part of JDBC, offering a way to safely (in modo sicuro) 
 			apply values to an SQL query).
 			
 			While JDBC allows the control that comes with manual configuration, it is cumbersome (scomodo) compared to JPA.
@@ -298,8 +292,8 @@ What is JPA (Java Persistence API)?: - The Java ORM (Object/Relational Mapping) 
 			
 				Listing 3. Persisting George Harrison with JPA
 			
-				Musician georgeHarrison = new Musician(0, "George Harrison");
-				musicinatManager.save(georgeHarrison);
+				Musician georgeHarrison = new Musician( 0, "George Harrison" );
+				musicinatManager.save( georgeHarrison );
 				
 			The listing above replace the manual SQL from previous listing with a single line, "sessione.save()", which instructs JPA
 			to persist the object. From then one (da quel momento in poi), the SQL conversion is handled by the framework, so you never 
