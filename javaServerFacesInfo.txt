@@ -9,7 +9,7 @@
 #																							#
 #############################################################################################
 
-								Chapter:	GETTING START
+								Chapter 1:	GETTING START
 
 La programmazione web con Servlet e JavaServer Pages (JSP) è poco intuitiva e molto tediosa.
 La JavaServe Faces (JSF) invece promette di essere più friendly, permettendo ai programmatori
@@ -359,8 +359,8 @@ delle librerie:
 	
 L'implementazione JSF dinifisce due insiemi di tag. I tag HTML generano markup HTML specific.
 Se si vuole usare una tecnologia client alternativa allora si devono usare differenti tag library. 
-I tag "core" sono indipendenti dalla tecnologia di rendering, infatti il tag "f:view" viene usato sia per pagine HTML
-che per pagine che sono visualizzate via telefono cellulare.
+I tag "core" sono indipendenti dalla tecnologia di rendering ( di rappresentazione della pagina ), infatti il tag "f:view" 
+viene usato sia per pagine HTML che per pagine che sono visualizzate via telefono cellulare.
 E' possibile usare qualsiasi prefisso si voglia per i tag ( basta dichiarali all'inizio della pagina ):
 
 	- f:view or faces:view
@@ -551,7 +551,7 @@ AUTOMATION OF THE BUILD PROCESS WITH ANT
 Il Framework JSF è responsabile dell'interazione con i device client, e fornisce gli strumenti per legare insieme la "visual presentation",
 la logica applicativa e la business logic di una applicazione web. Comunque, lo scope di JSF è ristretto allo strato di presentazione.
 
-Figura 1-12 High-level overview of JSF Framework
+( Figura 1-12 ) High-level overview of JSF Framework
 
 La peristenza del DataBase, i Web service e le altre connessioni con il backend sono fuori dallo scope di JSF.
 Di seguito i più importanti servizi che il Framework JSF fornisce:
@@ -618,9 +618,9 @@ L'albero dei componenti è una struttura dati che contiene oggetti Java per tutt
 Per esempio i due oggetti Java "UIInput" corrispondono ai campi "h:inputText" e "h:inputSecret" presenti nel file JSF.
 
 RENDERING PAGES
-Successivamente, la pagina HTML viene renderizzata ( rappresentata ). Tutto il testo che non è un tag JSF viene ignorato. I tag "h:form", "h:inputTest" e
+Successivamente, la pagina HTML viene renderizzata ( rappresentata ). Tutto il testo che non è un tag JSF viene ignorato. I tag "h:form", "h:inputText" e
 "h:commandButton" vengono convertiti in tag HTML. Come si è appena discusso, ognuno di questi tag da origine ad un componente associato. Ognuno di questi
-componenti ( che sono oggetti Java ) ha un suo "renderer" ( visualizzatore ) che produce l'output HTML, che riflette lo stato del componente. 
+componenti ( che sono oggetti Java ) ha un suo "renderer" ( visualizzatore/rasppresentatore ) che produce l'output HTML, che riflette lo stato del componente. 
 Per esempio, il "renderer" per il componente che corrisponde al tag "h:inputText" produce il seguente output:
 
 	<input type="text" name="unique ID" value="current value"/>
@@ -628,9 +628,134 @@ Per esempio, il "renderer" per il componente che corrisponde al tag "h:inputText
 Questo processo viene cbhiamato "encoding" ( codifica ). Il "renderer" dell'oggetto "UIInput" chiede al framework di cercare l'ID univoco e il valore corrente
 dell'espressione "user.name". Di default, le stringhe ID vengono assegnate dal framework. Gli ID possono sembrare piuttosto randomici, come per esempio
 "_id_id12:_id_id21".
-La pagina codificata ( encoded ) viene spedita al browser, e il browser la visualizza.
+La pagina codificata in stile HTML ( encoded ) viene spedita al browser, e il browser la visualizza.
+
+( Figura 1-14 ) Encoding and decoding JSF pages
 
 DECODING REQUEST
+Dopo che la pagina è stata visualizzata dal browser, l'utente inserisce i valori nei campi del form e lo sottomette cliccando sul pulsante "Submit". 
+Il browser allora spedisce di nuovo al server web i dati del form ( form data ), formattati come una richiesta POST. Questa richiesta ha uno speciale formato,
+definito come parte del protocollo HTTP. La richiesta POST contiene l'URL della pagina contenente il form ( /login/index.faces ) e anche i dati del form.
 
-THE LIFE CYCLE 
+Note:  L'URL della richiesta POST è la stessa della richiesta di rendering ( rappresentazione ) della pagina del form. La navigazione verso una 
+	   nuova pagina avviene dopo che il form è stato sottomesso.
+	   
+I dati del form sono una stringa di coppie ID/valore, come la seguente:
 
+	id1=me&id2=secret&id3=Login
+	
+Come parte della normale elaborazione / processo delle Servlet, i dati del form vengono posizionato in una "hash table" alla quale tutti i componenti possono accedere.
+Successivamente, il JSF framework permette ad ognuno dei componenti di ispezionare questa "hash table" ( questo processo viene chiamato "decoding" ).
+Ognuno dei componenti decide autonomamente come interpretare i dati del form.
+Il form di "login" ha tre componenti ( oggetti ): - due oggetti "UIInput" che corrispondono ai campi di inserimento testo del form e 
+- un'oggetto "UICommand" che corrisponde al bottone di "Submit" del form.
+
+- I due componenti "UIInput" aggiornano le proprietà del bean referenziate dall'attributo "value": questo attributo invoca il metodo
+setter passando i valore che l'utente ha fornito nel campo testuale del form.
+
+- Il componente "UICommand" controlla se il pulsante è stato cliccato. Se così fosse, allora il componente attiva un "action event" per lanciare
+l'azione "login" referenziata dal suo attributo "action". Quell'evento dice al gestore della navigazione di cercare qual'è la pagina successiva, "welcome.jsp".
+
+Si è appena visto quali sono i due principali passi di processo del JSF framework: "encodind" ( codifica ) e "decoding" ( decodifica ).
+
+
+THE LIFE CYCLE ( la Sequenza di processo o "ciclo di vita" )
+La specifica JSF definisce sei distinte fasi come mostrato in Figura 1-16 ( pagina 32 ). 
+
+La fase di "Restore View" recupera l'albero dei componenti per la pagina richiesta se la pagina è già stata visualizzata in precedenza
+altrimenti costruisce un nuvo albero dei componenti se la pagina viene visualizzata per la prima volta. Se la pagina è già stata precedentemente 
+visualizzata tutti i componenti sono settati/impostati al loro precedente stato. Questo significa che JSF conserva automaticamente le informazioni
+del form/modulo. Per esempio, quando l'utente inserisce dati non corretti che vengono rigettati/rifiutati durante la decodifica, gli stessi input
+vengono visualizzati nuovamente in modo che l'utente possa correggerli.
+
+Se la "request" non ha dati di interrogazione, l'implementazione JSF passa alla fase di "Render Response". Questo succede quando la pagina
+viene visualizzata per la prima volta. 
+
+Altrimenti la fase successiva è quella di "Apply Request Values". In questa fase, l'implementazione JSF itera sugli oggetti componente nell'albero
+dei componenti. Ogni oggetto componente controlla quali valori della richiesta gli appartengono e li memorizza.
+
+Nella fase di "Process Validation", i valori della stringa sottomessa/inviata come request ( submit ) sono convertiti in "variabili locali" 
+le quali possono essere oggetti di qualsiasi tipo.  Quando si progetta una pagina JSF è possibile allegare validatori che eseguono controlli
+di correttezza sui valori locali. Se la validazione viene superata, il JSF "life cycle" prosegue normalmente. Tuttavia, quando si verificano
+errori di conversione o di validazione l'implementazione JSF invoca direttamente la fase di "Render Response", visualizzando nuovamente
+la pagina corrente in modo che l'utente abbia un'altra possibilità di fornire gli input corretti.
+
+Dopo che la conversione e la validazione hanno conlcuso il loro lavoro, si presume che sia sicuro aggiornare i dati del modello.
+Durante la fase di "Update Model Values" le variabili locali vengono usate per aggiornare i bean che sono legati al componente. 
+
+Nella fase di "Invoke Application" il metodo "action" del componente pulsante/bottone che ha causato l'invio del form verrà eseguito.
+Restituisce una stringa di risultati che viene passata al gestore della navigazione ( navigation handler ), il quale cerca la pagina 
+successiva. 
+
+Infine, la fase "Render Response" codifica ( encode ) la risposta e la spedisce la browser. Quando un'utente sottomette un form, 
+clicca su un link o altrimenti genera una nuova richiesta, tutto questo ciclo ricomincia da capo.
+
+*****************************************************************************************************************************************
+ 
+								Chapter 2:	MANAGED BEAN
+
+Il tema centrale della progettazione di applicazioni web è la separazione della parte di "presentation" da quella di "business logic".
+JSF usa i "Beans" per ottenere questa separazione. Le pagine JSF si riferiscono alle properità del bean, e la logica del
+programma è contenuta all'interno del codice implementato sempre nel bean. Visto che i bean sono così fondamentali nella
+programmazione JSF verranno trattati in modo approfondito.
+
+La prima parte discuterà le caratterstiche essenziali dei bean che è necessario sapere. Sarà presentato un'esempio di 
+implementazione del bean e per finire il resto del capitolo coprirà aspetti più tecnici circa la configurazione
+e il valore delle espressioni. 
+
+
+//--------------------------------------------- Definition of a Bean ---------------------------------//
+
+Un Java Bean è un componente software riusabile che può essere manipolato e vengono usati per una varietà di scopi.
+A prima vista i bean sembrano essere simili ad un'oggetto. Inoltre i bean servono anche ad un'altro scopo.
+Gli oggetti sono creati e manipolati dentro ad un programma Java quando il programma chiama il loro
+costruttore e invoca i suoi metodi.
+
+All'interno del contesto JSF si usano i bean ogni volta che è necessario collegare classi Java con le pagine web o con
+file di configurazione. 
+Si consideri l'applicazione "login" del capitolo 1 "GETTING START" ( A simple Example ). Un'istanza "UserBean" è configurata
+nel file "faces-config.xml":
+
+	<managed-bean>
+		<managed-bean-name>user</managed-bean-name>
+		<managed-bean-class>com.corejsf.UserBean</managed-bean-class>
+		<managed-bean-scope>session</managed-bean-scope>
+	</managed-bean>
+	
+Questo significa: costruire un'oggetto della classe "com.corejsf.UserBean", dargli il nome "user" e renderlo vivo per tutta
+la durata della sessione - cioè per tutte le richieste che provengono dallo stesso client.
+
+Una volta che il bena è stato definito può essere acceduto dai componenti JSF. Per esempio, il seguente campo di input legge e aggiorna 
+la proprietà "password" del bean "user":
+
+	<h:inputSecret value="#{user.password}"/>
+	
+Come si può vedere, lo sviluppatore JSF non ha bisogno di scrivere alcun codice per costruire e manipolare il bean.
+L'implementazione JSF costruisce i beans secondo gli elementi "managed-bean" presenti nel file di configurazione.
+
+In una applicazione JSF i bean sono comunemente usati per i seguenti scopi:
+
+	- i componeneti dell'interfaccia utente;
+	- legare insieme il comportamente di un form web ( "backing bean" );
+	- oggetti di business le cui proprietà sono visualizzate su una pagina web;
+	- servizi come una fonte di dati esterna che devono essere configurati al momento dell'assemblaggio dell'applicazione;
+	
+
+BEAN PROPERTIES
+
+//--------------------------------------------- Message Bundles ---------------------------------//
+
+
+//--------------------------------------------- A sample Application ---------------------------------//
+
+
+//--------------------------------------------- Backing Beans ---------------------------------//
+
+
+//--------------------------------------------- Bean Scopes ---------------------------------//
+
+
+//--------------------------------------------- Configuring Beans ---------------------------------//
+
+
+//--------------------------------------------- The Syntax of Value Expression ---------------------------------//
