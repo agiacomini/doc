@@ -194,8 +194,10 @@ Nome file: login/web/welcome.jsp ( Listato1-3 )
 		</f:view>
 	</html>
 
-
-INGREDIENTS - L'esempio precedente consiste in:
+*****************
+** INGREDIENTS **
+*****************
+L'esempio precedente consiste in:
 
 	- Un'insieme di pagine web:
 		
@@ -229,8 +231,10 @@ Nome file: login/src/java/com/corejsf/UserBean.java ( Listato1-2 )
 		public void setPassword(String newValue) { password = newValue; }
 	}
 
-
-DIRECTORY STRUCTURE - Un'applicazione JSF viene deploiata ( deploy ) come un file WAR: è un file zippato con estensione ".war" e 
+*************************
+** DIRECTORY STRUCTURE **
+*************************
+Un'applicazione JSF viene deploiata ( deploy ) come un file WAR: è un file zippato con estensione ".war" e 
 una struttura di directory che segue il seguente standard:
 
 	WEB_INF/
@@ -320,8 +324,10 @@ da quella di business logic.
 In JSF il codice applicativo è contanuto nei bean mentre il design è contenuto nelle pagine web.
 
 
-
-BEANS - Un Java Bean è una classe Java che espone proprietà e eventi ad un'ambiente come JSF. Una proprietà è un
+***********
+** BEANS **
+***********
+Un Java Bean è una classe Java che espone proprietà e eventi ad un'ambiente come JSF. Una proprietà è un
 valore di un certo tipo identificato da un nome ( variabile ) che può essere letta e/o scritta.
 Il modo più semplice di definire una proprietà è usare una "naming convention standard" per i metodi che leggono
 e scrivono, più comunemente conosciuti come "getter/setter convention".
@@ -342,8 +348,10 @@ Nelle applicazioni JSF i Beans vengono usati per tutti quei dati che necessitano
 I Beans sono il canale di comunicazione tra l'interfaccia utente e il backend dell'applicazione.
 
 
-
-JSF PAGES - Le pagine JSF tipicamente hanno l'estensione ".jsp" o ".jsf" ( L'estensione ".jsp" richiede meno forzo per 
+***************
+** JSF PAGES **
+***************
+Le pagine JSF tipicamente hanno l'estensione ".jsp" o ".jsf" ( L'estensione ".jsp" richiede meno forzo per 
 la configurazione ) anche se l'estensione delle pagine URLs è ".faces". Quando il browser richiede 
 l'URL http://localhost:8080/login/index.faces l'estensione ".faces" dell'URL viene mappato sull'estensione ".jsp" e il 
 servelt container carica la pagina ".jsp". Questo processo è conseguenza dell'implementazione della tecnologia 
@@ -390,8 +398,10 @@ di navigazione. Mentre invece l'attributo "value" specifica la stringa visualizz
 Nel Listato1-3 viene usato "h:outputText" per visualizzare il nome dell'utente che l'utente ha inserito nella pagina "login.jsp".
 
 
-
-NAVIGATION - Una regola di navigazione indica all'implementazione JSF quale pagina far visualizzare al browser dopo che
+****************
+** NAVIGATION **
+****************
+Una regola di navigazione indica all'implementazione JSF quale pagina far visualizzare al browser dopo che
 un form è stato spedito/sottomesso.
 Nell'esempio riportato sopra, quando l'utente fa click sul pulsante di login si vuole che la navigazione porti dalla pagina
 "login.jsp" alla pagina "welcome.jsp". Questa regola di navigazione viene specificata nel file "faces-config.xml":
@@ -478,8 +488,10 @@ Nome file: login/web/WEB-INF/faces-config.xml ( JSF Version 2.2 )
 		</managed-bean>
 	</faces-config>
 	
-	
-SERVLET CONFIGURATION - Quando viene deployata un'applicazione JSF dentro ad un "Application Server" si deve fornire un file di
+***************************
+** SERVLET CONFIGURATION **
+***************************
+Quando viene deployata un'applicazione JSF dentro ad un "Application Server" si deve fornire un file di
 configurazione chiamato "web.xml". Fortunatamente, si può usare lo stesso file "web.xml" per più applicazioni JSF.
 
 Nome file: login/web/WEB-INF/web.xml ( Listato1-5 )
@@ -516,8 +528,10 @@ Non è possibile far puntare il browser direttamente a "http://localhost:8080/lo
 per attivare la servelet JSF, la quale sostituisce il suffisso ".faces" e carica la pagina ".jsp".
 
 
-
-THE WELCOME FILE - Quando l'utente inserisce una directory URL come "http://localhost:8080/login" all'interno del browser l'application 
+**********************
+** THE WELCOME FILE **
+**********************
+Quando l'utente inserisce una directory URL come "http://localhost:8080/login" all'interno del browser l'application 
 server carica automaticamente la pagina "index.jsp" quando presente. Sfortunatamente, questo meccanismo non funziona con la pagine JSF.
 Per superare questo problema, è possibile fornire un file "index.html" che automaticamente redirect l'utente alla pagina JSF.
 
@@ -617,7 +631,9 @@ per costruire un'albero dei componenti ( Figura 1-3 ).
 L'albero dei componenti è una struttura dati che contiene oggetti Java per tutti gli elementi delle interfacce utente presenti nelle pagine JSF.
 Per esempio i due oggetti Java "UIInput" corrispondono ai campi "h:inputText" e "h:inputSecret" presenti nel file JSF.
 
-RENDERING PAGES
+*********************
+** RENDERING PAGES **
+*********************
 Successivamente, la pagina HTML viene renderizzata ( rappresentata ). Tutto il testo che non è un tag JSF viene ignorato. I tag "h:form", "h:inputText" e
 "h:commandButton" vengono convertiti in tag HTML. Come si è appena discusso, ognuno di questi tag da origine ad un componente associato. Ognuno di questi
 componenti ( che sono oggetti Java ) ha un suo "renderer" ( visualizzatore/rasppresentatore ) che produce l'output HTML, che riflette lo stato del componente. 
@@ -632,7 +648,9 @@ La pagina codificata in stile HTML ( encoded ) viene spedita al browser, e il br
 
 ( Figura 1-14 ) Encoding and decoding JSF pages
 
-DECODING REQUEST
+**********************
+** DECODING REQUEST **
+**********************
 Dopo che la pagina è stata visualizzata dal browser, l'utente inserisce i valori nei campi del form e lo sottomette cliccando sul pulsante "Submit". 
 Il browser allora spedisce di nuovo al server web i dati del form ( form data ), formattati come una richiesta POST. Questa richiesta ha uno speciale formato,
 definito come parte del protocollo HTTP. La richiesta POST contiene l'URL della pagina contenente il form ( /login/index.faces ) e anche i dati del form.
@@ -658,8 +676,9 @@ l'azione "login" referenziata dal suo attributo "action". Quell'evento dice al g
 
 Si è appena visto quali sono i due principali passi di processo del JSF framework: "encodind" ( codifica ) e "decoding" ( decodifica ).
 
-
-THE LIFE CYCLE ( la Sequenza di processo o "ciclo di vita" )
+******************************************************************
+** THE LIFE CYCLE ( la Sequenza di processo o "ciclo di vita" ) **
+******************************************************************
 La specifica JSF definisce sei distinte fasi come mostrato in Figura 1-16 ( pagina 32 ). 
 
 La fase di "Restore View" recupera l'albero dei componenti per la pagina richiesta se la pagina è già stata visualizzata in precedenza
@@ -706,7 +725,7 @@ e il valore delle espressioni.
 
 //--------------------------------------------- Definition of a Bean ---------------------------------//
 
-Un Java Bean è un componente software riusabile che può essere manipolato e vengono usati per una varietà di scopi.
+Un Java Bean è un componente software riusabile che può essere manipolato. Vengono usati per una varietà di scopi.
 A prima vista i bean sembrano essere simili ad un'oggetto. Inoltre i bean servono anche ad un'altro scopo.
 Gli oggetti sono creati e manipolati dentro ad un programma Java quando il programma chiama il loro
 costruttore e invoca i suoi metodi.
@@ -725,13 +744,13 @@ nel file "faces-config.xml":
 Questo significa: costruire un'oggetto della classe "com.corejsf.UserBean", dargli il nome "user" e renderlo vivo per tutta
 la durata della sessione - cioè per tutte le richieste che provengono dallo stesso client.
 
-Una volta che il bena è stato definito può essere acceduto dai componenti JSF. Per esempio, il seguente campo di input legge e aggiorna 
+Una volta che il bean è stato definito può essere acceduto dai componenti JSF. Per esempio, il seguente campo di input legge e aggiorna 
 la proprietà "password" del bean "user":
 
 	<h:inputSecret value="#{user.password}"/>
 	
 Come si può vedere, lo sviluppatore JSF non ha bisogno di scrivere alcun codice per costruire e manipolare il bean.
-L'implementazione JSF costruisce i beans secondo gli elementi "managed-bean" presenti nel file di configurazione.
+L'implementazione JSF costruisce i beans secondo gli elementi ( tag ) "managed-bean" presenti nel file di configurazione "faces-config.xml".
 
 In una applicazione JSF i bean sono comunemente usati per i seguenti scopi:
 
@@ -740,10 +759,115 @@ In una applicazione JSF i bean sono comunemente usati per i seguenti scopi:
 	- oggetti di business le cui proprietà sono visualizzate su una pagina web;
 	- servizi come una fonte di dati esterna che devono essere configurati al momento dell'assemblaggio dell'applicazione;
 	
+*********************
+** BEAN PROPERTIES **
+*********************
+La classi bean necessitano di seguire specifiche convenzioni di programmazione per esporre le proprie caratterstiche che 
+il tool in seguito potrà usare.
+Le caratterstiche più importanti di un bean sono le proprietà che espone. Una "proprietà" è qualsiasi attributo del bean che ha:
 
-BEAN PROPERTIES
+	- un nome;
+	- un tipo;
+	- metodi getter/setter;
+
+Per esempio, la classe "UserBean" del precedente capitolo 1 "GETTING START" ( A simple Example ) ha una proprietà di nome "password" e di
+tipo "String". I metodo "getPassword()" e "setPassword()" accedono al valore della proprietà.
+
+In Java una bean è semplicemente una classe che segue certe covenzioni di codifica ( coding ).
+
+La specifica JavaBeans pone una singola richiesta affinchè una classe sia una classe bean: deve avere un costruttore public di default ( ciaoè senza argomenti ).
+Inoltre, per definire le proprietà, il bean deve usare una "naming patter" per i metodi getter e setter.
+Definire le proprietà con la "naming patter" è semplice e intuitivo. Si consideri la seguente coppia di metodi:
+
+	- public T getFoo()
+	
+	- public void setFoo( T newValue )
+	
+La coppia di metodi corrisponde ai metodi read-write della proprietà di tipo T e di nome "foo". Se si ha solo il primo metodo, allora
+la proprietà è solo "read-only". Se si ha solo il secondo metodo, la proprietà è "write-only".
+
+I nomi e le firme dei metodi devono match con il patter precisamente. Il nome del metodo deve iniziare con "get" o "set".
+Un metodo "get" non deve eavere parametri. Un metodo "set" deve avere un solo parametro e non deve ritornare valori. 
+Una classe bean può avere anche altri metodi oltre ai metodi getter e setter, ma questi metodi non producono le proprietà del bean.
+
+Si noti che il nome della proprietà è la forma "decapitalized" della parte del nome del metodo che segue il prefisso "get" o "set".
+Per esempio, "getFoo" da origine ad una proprietà chiamata "foo", con la prima lettera trasformata in maiuscola. Inoltre, se le prime 
+due lettere dopo il prefisso sono maiuscole, allora la prima lettera rimane tale. Per esempio, il nome di metodo "getURL" dinisce
+una proprietà "URL" e non "uRL".
+
+Per le proprietà di tipo "boolean", si ha la possibilità di scegliere il prefisso del nome del metodo che legge la proprietà.
+Sia 
+
+	- public boolean isConnected()
+	
+	- public boolean getConnected()
+	
+sono nomi di metodi validi per il metodo che legge la proprietà "connected". 
+
+La specifica dei Java beans non dice nulla sul comportamento dei metodi "getter" e "setter". In molte situazioni, questi metodi manipolano
+semplicemente un campo d'istanza. Ma possono anche svolgere operazioni più sofisticate, come la ricerca nel database, la conversione dei dati,
+la convalida dei dati e così via.
+
+Una classe bean può anche avere altri metodi oltre ai "getter" e "setter", ma naturalmente questi metodi non danno origine ad altre proprietà
+del bean.
+
+**********************
+** VALUE EXPRESSION **
+**********************
+Molti componenti dell'interfaccia utente JSF hanno un'attribbuto "value" che consente di specificare un valore o di legarlo ( binding )
+al valore di una proprietà del bean. Per esempio, è possibile specificare un valore diretto:
+
+	<h:outputText value="Hello, World!"/>
+	
+Oppure è possibile specificare una "value expression":
+
+	<h:outputText value="#{user.name}"/>
+	
+In molte situazioni, una "value expression" come "#{user.name}" descrive una proprietà. Si noti che l'espressione può essere usata
+sia per leggere che per scrivere quando viene usata in un componente di input, come
+
+	<h:inputText value="#{user.name}"/>
+	
+Il metodo "getter" della proprietà viene invocato quando il componente viene renderizzato ( rappresentato ). Il metodo "setter"
+della proprietà viene invocato invece quando viene processata la risposta ( response ) diretta all'utente che ha fatto richiesta ( request ).
+
 
 //--------------------------------------------- Message Bundles ---------------------------------//
+
+Quando si implementa un'applicazione web, è una buona idea raccogliere tutte le stringhe di messaggi possibili in un'unica posizione.
+Questo processo rende più facile mantenere la coerenza dei messaggi.
+Si possono collezzionare tutti le stringhe di messaggi all'interno di un'unico file di proprietà:
+
+	guessNext=Guess the next number in the sequence!
+	answer=Your answer:
+	
+Salvarlo insieme a tutte le altre classi ( "com/corejsf/messages.properties" ) e posizionarlo e nomiralo come si vuole, basta che 
+l'estensione del file sia ".properties".
+
+E' possibile dichiarare il "message bundle" in due differenti modi. Il modo più semplice ( e più consigliato) è quello di includerre i seguenti elementi
+nel proprio file di configurazione JSF "faces-config.xml":
+	
+	<application>
+		<resource-bundle>
+			<base-name>com.corejsf.messages</base-name>
+			<var>msgs</var>
+		</resource-bundle>
+	</application>
+	
+Oppure è possibile aggiungere l'elemento "f:loadBundle" per ogni pagina JSF che necessità di accedere al "message bundle":
+
+	<f:loadBundle basename="com.corejsf.messages" var="msgs"/>
+	
+In entrambi i casi i messaggi del bundle sono accedibili attraverso una mappa di variabili chiamata "msgs".
+
+E' possibile successivamente ( dopo aver integrato il message bundle nel proprio progetto ) usare le "value expressione" per accedere
+alle stringhe di messaggio:
+
+	<h:outputText value="#{msgs.guessNext}"/>
+
+*********************************
+** MESSAGES WITH VARIABLE PART **
+*********************************
 
 
 //--------------------------------------------- A sample Application ---------------------------------//
