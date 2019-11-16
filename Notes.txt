@@ -160,12 +160,12 @@ What is JPA (Java Persistence API)?: - The Java ORM (Object/Relational Mapping) 
 	What is Java ORM?
 		While they differ in execution, every JPA implementation provides some kind of ORM layer. In order to understand JPA and JPA-compatible tools,
 		you need to have a good grasp (comprensione) on ORM.
-		Object-relational mapping (ORM) is a task-one that developers have good reason to avoid doin manually. A framework like Hibernate ORM or
+		Object-relational mapping (ORM) is a task-one that developers have good reason to avoid doing manually. A framework like Hibernate ORM or
 		EclipseLink codifies the task into a library or framework, an ORM layer. As part of the application architecture, the ORM layer is
 		responsible for managing the conversion of software objects to interact with the tables and columns in a relational database.
 		In Java, the ORM layer converts Java classes and objects so that they can be stored and managed in a relational database.
 		By default, the name of the object being persisted (che viene persistito) becomes the name of the table, and fields become columns.
-		One the table is set up, each table row correspond to an object in the application.
+		Once the table is set up, each table row correspond to an object in the application.
 		
 		Note: JPA with NoSQL -
 			  Now a variety of NoSQL databases are available to Java developers. Soma JPA implementations have evolved to embrace (abbracciare)
