@@ -241,7 +241,7 @@ What is JPA (Java Persistence API)?: - The Java ORM (Object/Relational Mapping) 
 		
 		Data Persistence with JDBC (Java DataBase Connectivity API) -
 			One way to save an instance of the "Musician" class to a relational database would be to use the JDBC library.
-			JDBC is a layer of abstraction that lets (permette) an application issue (emettere) SQL commands without thinking about 
+			JDBC is a layer of abstraction that lets (permette) an application issue (emettere/eseguire) SQL commands without thinking about 
 			the underlying database	implementation.
 			
 			Below we show how you could persist the "Musician" class using JDBC (JDBC inserting a record).
@@ -293,7 +293,7 @@ What is JPA (Java Persistence API)?: - The Java ORM (Object/Relational Mapping) 
 				Listing 3. Persisting George Harrison with JPA
 			
 				Musician georgeHarrison = new Musician( 0, "George Harrison" );
-				musicinatManager.save( georgeHarrison );
+				musiciantManager.save( georgeHarrison );
 				
 			The listing above replace the manual SQL from previous listing with a single line, "sessione.save()", which instructs JPA
 			to persist the object. From then one (da quel momento in poi), the SQL conversion is handled by the framework, so you never 
@@ -313,11 +313,11 @@ What is JPA (Java Persistence API)?: - The Java ORM (Object/Relational Mapping) 
 					// ..class body
 				}
 
-		Persistent objects are sometimes called "entities", Attaching "@Entity" to a class like "Musician" informs JPA that
+		Persistent objects are sometimes called "entities". Attaching "@Entity" to a class like "Musician" informs JPA that
 		this class and its objects should be persisted.
 		
 		Note: XML Vs annotation-based configuration -
-			  JPA also supports using external XML files, instead of annotations, to define class metadata.But why would you do
+			  JPA also supports using external XML files, instead of annotations, to define class metadata. But why would you do
 			  that to yourself?
 			  
 	Configuring JPA
