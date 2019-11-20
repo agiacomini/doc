@@ -127,11 +127,14 @@ Examples of "log4j.properties" file:
 
 //--------------------------------------------- ./log4j-1.2.17 --------------------------------------------------//
 
-// ------
+// ------------------------------------- JPA ( Java Persistence API ) -------------------------------------------//
 
 (https://www.javaworld.com/article/3379043/what-is-jpa-introduction-to-the-java-persistence-api.html?page=1)
 What is JPA (Java Persistence API)?: - The Java ORM (Object/Relational Mapping) standard for storing, accessing, 
 									   and managing Java objects in a relational database.
+	
+	The Java Persistence API (JPA) is a Java specification that bridges the gap between relational databases and
+	object-oriented programming. 
 	
 	The Java Persistence API (JPA) is concerned with persistence, which loosely means (riguarda) any mechanism by which Java object outlive (sopravvivono)
 	the application process that created them. Not all Java object need to be persisted. The JPA specification lets you define which 
@@ -410,8 +413,8 @@ What is JPA (Java Persistence API)?: - The Java ORM (Object/Relational Mapping) 
 	Fetching strategies (strategie di recupero) in JPA
 		In addition to knowing "where" to place related entities in the database, JPA needs to know "how" you want them loaded.
 		"Fetching strategies" tell JPA how to load related entities. When loading and saving objects, a JPA framework must
-		provide the ability to finetune () how object graphs are handled. For instance, if the "Musician" class has a "bandMate"
-		fileds (as shown in Listing 7), loading "george" could cause the entire "Musician" table to be loaded from the database!
+		provide the ability to fine-tune (regolare) how object graphs are handled. For instance, if the "Musician" class has a "bandMate"
+		filed (as shown in Listing 7), loading "george" could cause the entire "Musician" table to be loaded from the database!
 		
 		What is needed is the ability to define "lazy loading" of related entities -- recognizing, of course, that "relationships in 
 		JPA can be eager or lazy". You can use annotations to customize your fetching strategies, but JPA's default configuration
@@ -431,7 +434,7 @@ What is JPA (Java Persistence API)?: - The Java ORM (Object/Relational Mapping) 
 	JPA installation and setup
 		We'll conclude with a quick look at installing and setting up JPA for your Java applications. For this demostration i'll
 		use "EclipseLink", the JPA reference implementation.
-		The common way to install JPA is to include a JPA provider into your project. Listing 8 shows how you would include
+		The common way to install JPA is to include a JPA provider (framework) into your project. Listing 8 shows how you would include
 		"EclipseLink" as a dependency in your Maven "pom.xml" file.
 		
 			Listing 8. Include EclipseLink as a Maven dependency
@@ -465,11 +468,11 @@ What is JPA (Java Persistence API)?: - The Java ORM (Object/Relational Mapping) 
 				</persistence>
 				
 		There are other ways to provide this information to the system, including programmatically. I recommend using the
-		"persistence.xml" file because storing dependencies this way makes it very easy ti update your application without 
+		"persistence.xml" file because storing dependencies this way makes it very easy to update your application without 
 		modifying code.
 		
 		Spring configuration for JPA
-			Using "Spring" will greatly ease the integration of JPA into your application. As an example, placing the
+			Using "Spring" will greatly (assai) ease the integration of JPA into your application. As an example, placing the
 			@SpringBootApplication annotation in your application header instructs "Spring" to automatically scan for
 			classes and inject the "EntityManager" as required, based on the configuration you've specified.
 			
@@ -487,12 +490,13 @@ What is JPA (Java Persistence API)?: - The Java ORM (Object/Relational Mapping) 
 				
 	Conclusion
 		Every application that deals with a database should define an application layer whose sole purpose is to isolate
-		persistence code. As you've seen in this article, the Java Persistence API (JPA) introdices a range of capabilities 
+		persistence code. As you've seen in this article, the Java Persistence API (JPA) introduces a range of capabilities 
 		and support for Java object persistence. Simple applications may not require all of JPA's capabilities, and in some case
 		the overhead of configuring the framework may not be merited. As an application grows, however, JPA's structure and
-		encapsulation really earn their keep. Using JPA keeps your object code simple and provides a conventional framework
+		encapsulation really earn their keep. Using JPA keeps (mantiene) your object code simple and provides a conventional framework
 		for accessing data in Java application.
 			
+// ------------------------------------ ./JPA ( Java Persistence API ) ------------------------------------------//
 
 //------------------------------------ JDBC (Java DataBase Connectivity) ----------------------------------------//
 
@@ -504,14 +508,14 @@ What is JDBC (Java DataBase Connectivity)? - Get to Know Java's low-level API fo
 	and handling result sets obtained from database. Released as part of JDK 1.1 in 1997, JDBC was one of the first
 	components developed for the Java persistence layer.
 
-	JDBS was initially conceived as a client-side API, enabling a Java client to interact with a data source. 
+	JDBS was initially conceived (concepito) as a client-side API, enabling a Java client to interact with a data source. 
 	That changed with JDBC 2.0, which included an optional package supporting server-side JDBC connections. 
 	Every new JDBC release since then has featured updates to both the client-side package (java.sql) and the 
 	server-side package (javax.sql). JDBC 4.3, the most current version as of this writing, was released as part of
 	Java SE 9 in September 2017.
 	
 	This article presents an overview of JDBC, followed by a hands-on introduction to using the JDBC API to connect
-	a Java client with SQLLite , a lightweight relational databse.
+	a Java client with SQLLite, a lightweight relational databse.
 	
 	How JDBC works
 		Developed as an alternative to the C-based ODBC (Open DataBase Connectivity) API, JDBC offers a programming-level
@@ -614,7 +618,7 @@ What is JDBC (Java DataBase Connectivity)? - Get to Know Java's low-level API fo
 				}
 				
 			Now compile the code by entering the command: javac WhatIsJdbc.java 
-			Compiling will output the WhatIsJdbc.class file. Execute this file from the command line with the call: java WhatIsJdbc
+			Compiling will output the "WhatIsJdbc.class" file. Execute this file from the command line with the call: java WhatIsJdbc
 			
 			Once you have a basic Java program, you can include the JDBC libraries. Paste in the code from Listing 2 at the head
 			of your simple Java program.
@@ -709,14 +713,179 @@ What is JDBC (Java DataBase Connectivity)? - Get to Know Java's low-level API fo
 				  If you've received an error that looks like "No suitable driver found for jdbc:sqlite",
 				  then you need to revisit the classpath and make sure it points to the driver you downloaded.
 				  Failed driver connection is the most common stumbling block for beginners using JDBC.
-				  Don't swea it; just for fix.
+				  Don't swea it (non ignorarlo); just for fix.
 				  
 			Now we're ready for some SQL commands.
+		
+		Step 5. Query the database
+			With live connection object in hand, we can do somethig useful, like quering the databse.
+			Listing 5 shows how to query SQLite using the JDBC "Connecction" and "Statement" objects.
+			
+			Listing 5. Querying the database with JDBC
+			
+				import java.sql.Connection;
+				import java.sql.DriverManager;
+				import java.sql.SQLException;
+				import java.sql.ResultSet;
+				import java.sql.Statement;
+
+				class WhatIsJdbc
+				{
+					public static void main( String[] args ) 
+					{
+						Connection conn = null;
+						try 
+						{
+							String url = "jdbc:sqlite:path-to-db-file/chinook/chinook.db";
+							conn = DriverManager.getConnection( url );
+
+							Statement stmt = null;
+							String query = "SELECT * FROM albums";
+							try 
+							{
+								stmt = conn.createStatement();
+								ResultSet rs = stmt.executeQuery( query );
+								while ( rs.next() ) 
+								{
+									String name = rs.getString( "title" );
+									System.out.println( name );
+								}
+							} 
+							catch ( SQLException e ) 
+							{
+								throw new Error( "Problem", e );
+							} 
+							finally 
+							{
+								if ( stmt != null ) 
+								{ 
+									stmt.close(); 
+								}
+							}
+
+						} 
+						catch ( SQLException e ) 
+						{
+							throw new Error( "Problem", e );
+						} 
+						finally 
+						{
+							try 
+							{
+								if ( conn != null ) 
+								{
+									conn.close();
+								}
+							} 
+							catch ( SQLException ex ) 
+							{
+								System.out.println( ex.getMessage() );
+							}
+						}
+					}
+				}
+				
+			In Listing 5 we use our "Connection" object to obtain a "Statement" object: "conn.createStatement()".
+			We then use this object to execute an SQL query: "stmt.executeQuery( query )".
+			
+			The "executeQuery" command returns a "ResultSet" object, which we then use to iterate over the data with
+			"while( rs.next())". In this example, you should see the album titles we've queried on as output. 
+			
+			Notice that we also closed the connection, via call to "conn.close()".
+			
+			Note: Network connections with JDBC
+				  The database connection string in Listing 5 is for a local connection: "jdbc:sqlite:path-to-db-file/chinook/chinook.db".
+				  To access the database via a network, the connection string would need to include the network URL 
+				  and (usually) credentials for accessing it (exe: "jdbc:oracle:thin:@192.168.2.163:1521:dbmizar").
+				  
+	Doing more with JDBC
+		So far we've covered the basics of using JDBC to connect to a database and issue SQL commands.
+		While "Statements" and "ResultSet" work well for common scenarios, you'll likely need additional options 
+		for larger or more complex applications. Fortunately, the JDBC library continues evolving to meet most
+		database access needs.
+		
+		PreparedStatements
+			One easy way to increase the flexibility of your code is to replace the "Statement" class with "PreparedStatements",
+			as show in Listing 6.
+			
+			Listing 6. Using JDBC PreparedStatements
+			
+				String querySQL = "insert into albums values (?, ?);";
+
+				PreparedStatement  prepState  =	connection.prepareStatement(querySQL);
+
+				prepState.setString(1, "Uprising");
+				prepState.setString(2, "Bob Marley and the Wailers  ");
+
+				int rowsAffected = preparedStatement.executeUpdate();
+				
+			"PreparedStatement" replace "Statement"'s hard-coded values with question marks ( ? ).
+			Using "PreparedStatement" optimizes your code for reuse: a "PreparedStatement" is compiled only once,
+			and can then be reused with a variety of parameters. As your code base grows, you simply insert new 
+			values into the statement, instead of hacking the string object itself.
+			
+		Batch updates
+			Whenever an application has several updates to issue, doing them in batches can greatly benefit
+			performance. The essence of "batching" is to take the multiple updates and collect them together,
+			then issue them all at once. Listing 7 uses JDBC's batch methods to perform a batch update of several 
+			"PreparedStatement".
+			
+			Listing 7. Batching with PreparedStatement
+			
+				prepState.setString( 1, "Uprising" );
+				prepState.setString( 2, "Bob Marley and the Wailers" );
+				preparedStatement.addBatch();
+
+				prepState.setString( 1, "Wildflowers" );
+				prepState.setString( 2, "Tom Petty and the Heartbreakers" );
+				preparedStatement.addBatch();
+
+				int[] rowsAffected = preparedStatement.executeBatch();
+				
+		JDBC transactions
+			Transactions in relational databases allow for a set of updates to be wrapped in an interaction that
+			either succeeds or fails altogether (tutti insieme). The basic of using a transaction via JDBC are 
+			to tell the system to turn "off" auto-commit, and then manually tell the system to commit when you
+			are done. By default, auto-commit is "on", which means whenever an "executeUpdate" or "executeInsert"
+			is run, the command is committed. 
+			
+			Listing 8 shows a small slice (fetta/pezzo) of a JDBC transaction.
+			
+			Listing 8. JDBC transactions
+			
+				connection.setAutoCommit(false);
+				// Use executeUpdate multiple times
+				connection.commit();
+				
+			When "connection.commit()" is encountered, all the updates wrapped inside will be attempted, and if
+			any fail, they all will be rolled back.
+			
+			There are many more features in JDBC 4.3 worth exploring, including using "CallableStatement" for
+			store procedures, using "DataSource" objects for improved application performance (especially via 
+			connection pooling), and converting a JDBC ResultSet to a Java Stream.
+			
+		Database-specific features
+			Although every JDBC-compliant database offers the same core features for connecting and interacting
+			with a database via SQL, some database do more than others. As an example, Oracle DB offers result 
+			caching, which is not required by the JDBC specification. Here's an example:
+			
+				conn.prepareStatement ("select /*+ result_cache */ * from employees where employee_id < : 1");
+			
+	Conclusion
+		JDBC is one of Java's oldest APIs, providing an easy-to-use solution for one of the perennial (costanti) 
+		needs of Java application development. Knowing just the few JDBC calls demonstrated in this article 
+		will get you started using JDBC to connect to virtually any database. Once you've got those commands down, 
+		you can begin to explore some of the more sophisticated options that have been built into JDBC.
+		
+		While JDBC is sufficient for simpler applications, most developers will eventually look to the Java Persistence
+		API (JPA) in order to develop a more formal data access layer. JPA requires more up-front work and a more 
+		sophisticated understanding of the application architecture, but it nets you a more consistent, isolated,
+		and well-defined data access layer. 
 			
 //----------------------------------- ./JDBC (Java DataBase Connectivity) ---------------------------------------//			
 
 //--------------------------------------------- Hibernate ORM ---------------------------------------------------//		
-
+								( https://hibernate.org/orm/what-is-an-orm/ )
 Introduction:  
 	
 	- Hibernate is an ORM library for Java. Hibernate ORM is one of the most mature JPA implementation. 
