@@ -280,6 +280,8 @@ What is JPA (Java Persistence API)?: - The Java ORM (Object/Relational Mapping) 
 			value of an SQL "INSERT" statement. (The "PreparedStatement" class is part of JDBC, offering a way to safely (in modo sicuro) 
 			apply values to an SQL query).
 			
+			PROVA/PROVA
+			
 			While JDBC allows the control that comes with manual configuration, it is cumbersome (scomodo) compared to JPA.
 			In order to modify the database, your first need to create an SQL query that maps from your java object to the tables in a relational
 			database. You then have to modify the SQL whenever (ogni volta che) an object signature change. With JDBC, maintaining the SQL 
