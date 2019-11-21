@@ -143,9 +143,14 @@ What is JPA (Java Persistence API)?: - The Java ORM (Object/Relational Mapping) 
 	JPA is not a tool or framework; rather, it define a set of concepts that can be implemented by any tool or framework. While JPA's Object-Relationsl 
 	Mapping (ORM) was originally based on Hibernate, it has since (da allora/ da quel momento) evolved.
 
+		Note: Evolution of JPA -
+			  The first release of JPA, version 1.0, was published in 2006 through the Java Community Process (JCP) as
+			  Java Specification Request (JSR) 220. Version 2.0 (JSR 317) was published in 2009, version 2.1 (JSR 338)
+			  in 2013, and version 2.2 was published in 2017.
+
 		Note: JPA 2.2 in Jakarta EE -
-			  The Java Persistence API (JPA) was first released as a subset of the EJB 3.0 specification in Java EE 5. It has since evolved as its 
-			  own spec, starting with the release of JPA 2.0 in Java EE 6.
+			  The Java Persistence API (JPA) was first released as a subset of the EJB 3.0 specification in Java EE 5. 
+			  It has since evolved as its own spec, starting with the release of JPA 2.0 in Java EE 6.
 			  
 	JPA and Hibernate
 		Hibernate and JPA are frequently conflated (fusi tra loro). JPA has spawned (ha generato) many compatible tools and framework; 
@@ -999,6 +1004,328 @@ Steps to use Hibernate Librarie:
 	
 
 //--------------------------------------------- ./Hibernate ORM -------------------------------------------------//
+
+// ------------------------------------------- JPA And Hibernate ------------------------------------------------//
+
+https://www.javaworld.com/article/3373652/java-persistence-with-jpa-and-hibernate-part-1-entities-and-relationships.html
+
+Object relations in JPA
+	Relationsl database have existed as a means for storing program data since the 1970s. This type of database is
+	scalable and well understood, and is still widely used in small-and large-scale software development.
+
+	Java objects in a relational database context are defined as "entities". Entities are placed in table where they
+	occupy columns and rows. Programmers use "foreign keys" and "join tables" to define the relationships between 
+	entities --namely one-to-one, one-to-many, and many-to-many relationships. We can also use SQL (Structured Query Language)
+	to retrive and interact with data in individual tables and cross multiple tables, using foreign key constraints.
+	The relational model is flat, but developers can write queries to retrieve data and construct objects from that 
+	data. 
+	
+	Object-relations impedance mismatch (disaccordo)
+		You may be familiar with term "object-relations impedance mismatch", which refers to the challenge of mapping
+		data objects to a relational database. This mismatch occuprs because object-oriented design is not limited
+		to one-to-one, one-to-many, and many-to-many relationships. Instead, in object-oriented design, we think of 
+		objects, their attributes and behavior, and how objects relate. 
+		Two examples are encapsulation and inheritance:
+		
+			- If an object contains another object, we define this through "encapsulation"-- a "has-a" relationship;
+			
+			- If an object is a specialization of another object, we define this through "inheritance"-- an "is-a"
+			  relationship;
+			  
+		Association, aggregation, composition, abstraction, generalization, realization, and dependecies are all
+		object-oriented programming concept that can be challenging (difficili) to map to a relational model.
+		
+	ORM: Object-relational mapping
+		This mismatch (disaccordo) between object-oriented design and relational database modeling has led (portato)
+		to a class of tools developed specifically for object-relational mapping (ORM). ORM tools like "Hibernate",
+		"EclipseLink", and "iBatis" translate relational database models, including entities and their relationships,
+		into object-oriented models. Many of these tools existed before the JPA specification, but without a standard
+		their features were vendor dependent. 
+		
+		First released as part of EJB 3.0 in 2006, the Java Persistence API (JPA) offers a standard way to annotate
+		objects so that they can be mapped and stored in a relational database. The specification also defines a 
+		common construct for interacting with databases. Having an ORM standard for Java brings consistency to
+		vendor implementations, while also allowing for flexibility and add-ons. As an example, while the original
+		JPA specification is applicable to relational database, some vendor implementations have extended JPA for
+		use with NoSQL databases. 
+		
+
+
+Getting started with JPA
+	The Java Persistence API (JPA) is a specification, not a implementation: it defines a common abstraction that 
+	you can use in your code to interact with ORM products. This section reviews some of the important part of the
+	JPA specification.
+	
+	You'll learn how to:
+	
+		- Define entities, fields, and primary keys in the database;
+		
+		- Create relationships between entites in the database;
+		
+		- Work with the "EntityManager" and its methods.
+		
+	Defining entities
+		In order to define an entity, you must create a class that is annotated with the "@Entity" annotation.
+		The "@Entity" annotation is a "marker annotation", which is used to discover (trovare/scroprire) 
+		persistence entities. For example, if you wanted to create a book entity, you would annotate it 
+		as follows:
+		
+			@Entity
+			public class Book { ... }
+			
+		By default, this entity will be mapped to the "Book" table, as determined by the gives class name.
+		If you wanted to map this entity to another table (and, optionally, a specific schema) you could use 
+		the "@Table" annotation to do that. Here's how you would map the "Book" class to BOOKS table:
+		
+			@Entity
+			@Table( name="BOOKS" )
+			public class Book { ... }
+			
+		If the "BOOKS" table was in the "PUBLISHING" schema, you could add the schema to the "@Table" annotation:
+		
+			@Table( name="BOOKS", schema="PUBLISHING" )
+			
+	Mapping fields to columns
+		With the entity mapped to a table, your next task is to define its fields. "Fields" are defined as member
+		variable in the class, with the name of each field being mapped to a column name in the table. 
+		You can override this default mapping by using the "@Column" annotation, as show here:
+
+			@Entity
+			@Table( name="BOOKS" )
+			public class Book
+			{
+				private String name;
+				
+				@Column( name="ISBN_NUMBER" )
+				private String isbn;
+				
+				...
+			}
+
+		In this example, we've accepted the default mapping for the "name" attribute but specified a custom mapping
+		for the "isbn" attribute. The "name" attribute will be mapped to the "name" column, but the "isbn" attribute
+		will be mapped to the "ISBN_NUMBER" column.
+		
+		The "@Column" annotation allows us to define additional properties of the field/column, including length,
+		whether it is nullable, whether it must be unique, its prcision and scale (if it's a dedimal value), 
+		whether it is insertable and updatable, and so forth (e così via).
+		
+	Specifying the primary key
+		One of the requirements for a relational database table is that it must contain a "primary key", or a key
+		that uniquely identifies a specific row in the database. In JPA, we use the "@Id" annotation to designate
+		a filed to be the table's primary key. The primary key is required to be a Java primitive type, a primitive
+		wrapper, such as "Integer" or "Long", a "String", a "Date", a "BigInteger", or a "BigDecimal".
+		
+		In this example, we map the "id" attribute, which is an "Integer", to the "ID" column in the "BOOKS" table:
+
+			@Entity
+			@Table( name="BOOKS" )
+			public class Book
+			{
+				@Id
+				private Integer id;
+				private String name;
+				@Column( name="ISBN_NUMBER" )
+				private String isbn;
+				
+				...
+			}
+
+		It is also possible to combine the "@Id" annotation with the "@Column" annotation to overwrite the 
+		primary key's column-name mapping.
+
+
+
+Relationships between entities
+	Now that you konw how to define an entity, let's look at how to create relationships between entities. 
+	JPA defines four annotations for defining entities:
+	
+		- @OneToOne
+		
+		- @OneToMany
+		
+		- @ManyToMany
+		
+		- @ManyToOne
+
+
+	One-to-one relationships
+		The "@OneToOne" annotation is used to define a one-to-one relationship between two entities.
+		For example, you may have a "User" entity that contains a user's name, email, and password, but you may 
+		want to maintain additional information about a user (such as age, gender, and favorite color) in a 
+		separate "UserProfile" entity. The "@OneToOne" annotation facilitates breaking down your data and
+		entities this way.
+		
+		The "User" class below has a single "UserProfile" instance. The "UserProfile" maps to a single "User"
+		instance.
+		
+			@Entity
+			public class User
+			{
+				@Id
+				private Integer id;
+				private String email;
+				private String name;
+				private String password;
+				
+				@OneToOne(mappedBy="user")
+				private UserProfile profile;
+			}
+			
+			@Entity
+			public class UserProfile
+			{
+				@Id 
+				private Integer id;
+				private int age;
+				private String gender;
+				private String favoriteColor;
+				
+				@OneToOne
+				private User user;
+			}
+			
+		The JPA provider uses "UserProfile"'s "user" filed to map "UserProfile" to "User".
+		The mapping is specified in the "mappedBy" attribute in the "@OneToOne" annotation.
+
+
+	One-to-many and many-to-one relationships
+		The "@OneToMsny" and "@ManyToOne" annotations facilitate both sides of the same relationship.
+		Consider an example where a "Book" can have only one "Author", but an "Author" may have many books.
+		The "Book" entity would define a "@ManyToOne" relationship with "Author" and the "Author" entity
+		would define a "@OneToMany" relationship with "Book".
+		
+			@Entity
+			public class Book
+			{
+				@Id
+				private Integer id;
+				private string name;
+				
+				@ManyToOne
+				@JoinColumn( name="AUTHOR_ID" )
+				private Author author;
+				
+				...
+			}
+			
+			@Entity
+			public class Author
+			{
+				@Id
+				@GeneratedValue
+				private Integer id;
+				private String name;
+				
+				@OneToMany( mappedBy="author" )
+				private List<Book> books = new ArrayList<>();
+				
+				...
+			}
+			
+		In this case, the "Author" class maintains a list of all books written by that author and the "Book" class
+		maintains a reference to its single author.
+		Additionally, the "@JoinColumn" annotation specifies the name of the column in the "Book" table to store the
+		ID of the "Author".
+
+
+	Many-to-many relationships
+		Finally, the "@ManyToMany" annotation facilitates a many-to-many relationship between entities.
+		Here's a case where a "Book" entity has multiple "Authors":
+		
+			@Entity
+			public class Book
+			{
+				@Id
+				private Integer id;
+				private String name;
+				
+				@ManyToMany
+				@JoinTable( name="BOOK_AUTHORS", joinColumns=@JoinColumn( name="BOOK_ID" ), inverseJoinColumns=@JoinColumn( name="AUTHOR_ID" ) )
+				private Set<Author> authors = new HashSet<>();
+				
+				...
+			}
+			
+			@Entity
+			public class Author
+			{
+				@Id
+				@GeneratedValue
+				private Integer id;
+				private String name;
+				
+				@ManyToMany( mappedBy="author" )
+				private Set<Book> books = new HashSet<>();
+				
+				...
+			}
+			
+		In this example, we create a new table, "BOOK_AUTHORS", with two columns: "BOOK_ID" and "AUTHOR_ID".
+		Using "joinColumns" and "inverseJoinColumns" attribute (of "@JoinTable" annotation) tells your JPA framework
+		how to map these classes in a many-to-many relationship. 
+		The "@ManyToMany" annotation in the "Author" class references the filed in the "Book" class that manages 
+		the relationship; namely the "authors" property.
+		
+		That's a quick demo for a fairly complex topic. We'll dive further (ulteriormente) into the "@JoinTable" 
+		and "@JoinClumn" annotations in the next article.
+		
+Working with the EntityManager
+	"EntityManager" is the class that performs database interactions in JPA. It si initialized through a configuration
+	file named "persistence.xml". this file is found in the "META-INF" folder in your "CLASSPATH", which is typically
+	packaged in your JAR o WAR file. 
+	The "persistence.xml" file contains:
+	
+		- The named "persistence unit", which specifies the persistence framework you're using, such as "Hibernate"
+		  or "EclipseLink";
+		  
+		- A collection of property specifying how to connect to your database, as well as any customizations in the
+		  persistence framework;
+		  
+		- A list of entity classes in your project;
+
+	Let's look at an example.
+	
+	Configuring the EntityManager
+		First, we create an "EntityManager" usign the "EntityManagerFactory" retrieved from the "Persistence" class:
+		
+			EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("Books");
+			EntityManager entityManager = entityManagerFactory.createEntityManager();
+			
+		In this case we've created an "EntityManager" that is connected to the "Books" peristence unit, which
+		we've configured in the "persistence.xml" file.
+		
+		The "EntityManager" class defines how our software will interact with the database through JPA entities. 
+		Here are some of the methods used by "EntityManager":
+		
+			- "find" retrieves an entity by its primary key;
+			
+			- "createQuery" creates a "Query" instance that can be used to retrieve entities from the database;
+
+			- "createNamedQuery" loads a "Query" that has been defined in a "@NamedQuery" annotation inside one of 
+			  the persistence entities. "Named queries" provide a clean mechanism for centralizing JPA query in
+			  the definition of the persistence class on which the query will execute;
+			  
+			- "getTransaction" define an "EntityTransaction" to use in your database interactions. Just like
+			  database transactions, you will typically begin the transaction, perform your operation, and
+			  then either commit or rollback your transaction. The "getTransaction" method lets you access this 
+			  behavior at the level of the "EntityManager", rather than the database;
+			  
+			- "merge()" adds an entity to the persistence context, so that when the transaction is committed, 
+			  the enetity will be persisted to the database. When using "merge()", objects are not managed;
+			  
+			- "persist" adds an entity to the persistence context, so that when the transaction is committed,
+			  the entity will be persisted to the database. When using "persist()", objects are managed;
+			  
+			- "refresh" refreshs the state of the current entity from the database;
+			
+			- "flush" synchronizes the state of the persistence context with the database;
+			
+		Don't worry about integrating all of these methods at once. You'll get to know them by working directly 
+		with the "EntityManager", which we'll do more in the next section.
+			
+
+// ------------------------------------------ ./JPA And Hibernate -----------------------------------------------//
 
 //--------------------------------------------------- Eclipse ---------------------------------------------------//
 
