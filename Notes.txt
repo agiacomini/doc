@@ -1336,7 +1336,7 @@ Working with the EntityManager
 JPA with Hibernate
 	In this section we move past concepts and start writing code that persist data to and from a relational database 
 	using JPA with Hibernate. We'll start by configuring an external application to use Hibernate as the JPA provider,
-	then we'l quickly configure the "EntityManager" and write two classes that we want to persist to the database:
+	then we'll quickly configure the "EntityManager" and write two classes that we want to persist to the database:
 	"Book" and "Author". Finally, we'll write a simple application that pulls togheter all of the application components 
 	and successfully persist our two entities to the database.
 	
@@ -1355,9 +1355,484 @@ JPA with Hibernate
 	You'll also get started with JPA Query Language (JPQL - Java Persistence Query Language) and use it to execute a
 	few simple database operation on the example application.
 	
-	
+	Configuring Hibernate
+		To keep things simple, we're going to use the embedded "H2 database" for both development and runtime examples. 
+		You can change the JDBC URL in the "persistence.xml" file to point to any database you wish.
+		Start by reviewing the Maven POM file for the project, shown in Listing 1.
+		
+		Listing 1. pom.xml
+		
+			<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+					 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+				
+				<modelVersion>4.0.0</modelVersion>
+				<groupId>com.geekcap.javaworld</groupId>
+				<artifactId>jpa-example</artifactId>
+				<packaging>jar</packaging>
+				<version>1.0-SNAPSHOT</version>
+				<name>jpa-example</name>
+				<url>http://maven.apache.org</url>
+				
+				<properties>
+					<java.version>1.8</java.version>
+					<hibernate.version>5.3.6.Final</hibernate.version>
+				</properties>
+				
+				<build>
+					<plugins>
+						<plugin>
+							<groupId>org.apache.maven.plugins</groupId>
+							<artifactId>maven-compiler-plugin</artifactId>
+							<version>2.0.2</version>
+							<configuration>
+								<source>${java.version}</source>
+								<target>${java.version}</target>
+							</configuration>
+						</plugin>
+						
+						<plugin>
+							<groupId>org.apache.maven.plugins</groupId>
+							<artifactId>maven-jar-plugin</artifactId>
+							<configuration>
+								<archive>
+									<manifest>
+										<addClasspath>true</addClasspath>
+										<classpathPrefix>lib/</classpathPrefix>
+										<mainClass>com.geekcap.javaworld.jpa.JpaExample</mainClass>
+									</manifest>
+								</archive>
+							</configuration>
+						</plugin>
+						
+						<plugin>
+							<groupId>org.apache.maven.plugins</groupId>
+							<artifactId>maven-dependency-plugin</artifactId>
+							<executions>
+								<execution>
+									<id>copy</id>
+									<phase>install</phase>
+									<goals>
+										<goal>copy-dependencies</goal>
+									</goals>
+									<configuration>
+										<outputDirectory>${project.build.directory}/lib</outputDirectory>
+									</configuration>
+								</execution>
+							</executions>
+						</plugin>
+					</plugins>
+				</build>
+				
+				<dependencies>
+					<dependency>
+						<groupId>org.hibernate</groupId>
+						<artifactId>hibernate-core</artifactId>
+						<version>${hibernate.version}</version>
+					</dependency>
+					
+					<dependency>
+						<groupId>org.hibernate</groupId>
+						<artifactId>hibernate-entitymanager</artifactId>
+						<version>${hibernate.version}</version>
+					</dependency>
+					
+					<dependency>
+						<groupId>org.hibernate.javax.persistence</groupId>
+						<artifactId>hibernate-jpa-2.1-api</artifactId>
+						<version>1.0.2.Final</version>
+					</dependency>
+					
+					<dependency>
+						<groupId>com.h2database</groupId>
+						<artifactId>h2</artifactId>
+						<version>1.4.197</version>
+						<scope>runtime</scope>
+					</dependency>
+				</dependencies>
+			</project>
 			
+		We'll build this project using Java 8 and "Hibernate version 5.3.6 Final", which is the latest version as of
+		this writing. Plug-ins in the "build" note will set the Java compilation version, make the resultant JAR file
+		executable, and ensure that all dependencies are copied to a "lib" folder, so that the executable JAR can run.
+		We include four dependencies:
+		
+			- "hibernate-core": Hibernate's core functionality;
+			
+			- "hibernate-entitymanager": Hibernate's support for an "EntityManager";
+			
+			- "hibernate-jpa-2.1-api": the JPA API;
+			
+			- "h2": the embedded H2 database. Note that its scope is set to "runtime" so that we can use it when run our code;
+			
+		Note: Hibernate with JDK 11
+			  ...
+			  
+	Configuring the EntityManager
+		Recall that JPA's "EntityManager" is driven by the "persistence.xml" file. Listing 2 shows the contents of this file.
+		
+		Listing 2. EntityManager config in persistence.xml
+			
+			<persistence xmlns="http://java.sun.com/xml/ns/persistence"
+						 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+						 xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd"
+						 version="2.0">
+						 
+				<persistence-unit name="Books" transaction-type="RESOURCE_LOCAL">
+				
+					<!-- Persistence provider -->
+					<provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
+					
+					<!-- Entity classes -->
+					<class>com.geekcap.javaworld.jpa.model.Book</class>
+					<class>com.geekcap.javaworld.jpa.model.Author</class>
+					
+					<!-- Database Configuration -->
+					<properties>
+						<property name="javax.persistence.jdbc.driver" value="org.h2.Driver" />
+						<property name="javax.persistence.jdbc.url"    value="jdbc:h2:mem:bookstore" />
+						<property name="javax.persistence.jdbc.user" value="sa" />
+						<property name="javax.persistence.jdbc.password" value="" />
+						<property name="hibernate.dialect" value="org.hibernate.dialect.H2Dialect"/>
+						<property name="hibernate.hbm2ddl.auto" value="update" />
+						<property name="show_sql" value="true"/>
+						<property name="hibernate.temp.use_jdbc_metadata_defaults" value="false"/>
+						<property name="hibernate.format_sql" value="true"/>
+						<property name="hibernate.use_sql_comments" value="true"/>
+					</properties>
+					
+				</persistence-unit>
+			</persistence>
+		
+		The "persistence.xml" file begins with a "peristence" node that can contain one or more "persistence-unit"s.
+		A "persistence-unit" has a name, which we'll use later when we create the "EntityManager", and it defines
+		the attributes of that unit. In this case, we configure properties in this unit to do the following:
 
+			- Specify "HibernatePersistenceProvider", so the application knows we're using Hibernate as our JPA provider;
+			
+			- Define two entities: a "Book" class and an "Author" class;
+			
+			- Define the database configuration via JDBC. In this case, we're using an inmemory H2 instance;
+			
+			- Configure Hibernate, including setting the Hibernate dialect to "H2Dialet", so that Hibernate knows how
+			  to communicate with the H2 database;
+			  
+The domain model
+	For this application, we're modeling a "Book" class and an "Author" class. These entities have a "one-to-many"
+	relationship, meaning that a book can only be written by a single author, but an author can write many books.
+	This domain model is shown in Figure 1.
+	
+		---------------------							-------------------------
+		|	 	AUTHOR		|							|		BOOK			|
+		---------------------							-------------------------
+		|	PK	|	id		| ||---------------------<	|	PK	|	id			|
+		---------------------							-------------------------
+		|		|	name	|							|		|	name		|	
+		---------------------							|	FK	|	AUTHOR_ID	|
+														-------------------------
+															
+	Note: When we talk about database table we typically speak about a "data model", but when we talk about
+		  Java entities and their relationships we typically refer to it as a "domani model".
+		  
+	Modeling the Book class
+		Let's begin with our entities. Listing 3 shows the source code for the "Book" class.
+		
+		Listing 3. Book.java
+			
+			package com.geekcap.javaworld.jpa.model;
+			
+			import javax.persistence.Entity;
+			import javax.persistence.GeneratedValue;
+			import javax.persistence.Id;
+			import javax.persistence.JoinColumn;
+			import javax.persistence.ManyToOne;
+			import javax.persistence.NamedQueries;
+			import javax.persistence.NamedQuery;
+			import javax.persistence.Table;
+			
+			@Entity
+			@Table( name = "BOOK" )
+			@NamedQueries({
+					@NamedQuery( name = "Book.findByName", query = "SELECT b FROM Book b WHERE b.name = :name"),
+					@NamedQuery( name = "Book.findAll",	query = "SELECT b FROM Book b")
+			})
+			public class Book 
+			{
+				@Id
+				@GeneratedValue
+				private Integer id;
+				
+				private String name;
+				
+				@ManyToOne
+				@JoinColumn( name = "AUTHOR_ID" )
+				private Author author;
+				
+				public Book() {	}
+				
+				public Book( Integer id, String name ) { this.id = id; this.name = name; }
+				
+				public Book( String name ) { this.name = name; }
+				
+				public Integer getId() { return id; }
+				
+				public void setId( Integer id ) { this.id = id; }
+				
+				public String getName() { return name; }
+				
+				public void setName( String name ) { this.name = name; }
+				
+				public Author getAuthor() { return author; }
+				
+				public void setAuthor( Author author ) { this.author = author; }
+				
+				@Override
+				public String toString() 
+				{
+					return "Book{" + "id=" + id + ", name='" + name + '\'' + ", author=" + author.getName() + '}';
+				}
+			}
+			
+		The "Book" class is a simple POJO (plain old Java object) that manages three properties:
+		
+			- "id": The primary Key, or identifier, of the book;
+			
+			- "name": the name, or title, of the book;
+			
+			- "author": the author who wrote the book;
+			
+		The class itself is annotated with three annotations:
+		
+			- "@Entity": identifies the "Book" class as a JPA entity;
+			
+			- "@Table": overrides the name of the table to which this entity will be persisted. In this case 
+			   we define the table name as "BOOK";
+			   
+			- "@NamedQueries": allows you to define JPA Query Language queries that can later be retrieved and
+			   executed by the "EntityManager";
+			   
+		Note: About JPA Query Language ( JPQL )
+			  JPQL is similar to SQL, but it operates on entities, their fileds, and their relationships, rather than
+			  on database column names. JPA ferers to these queries as running on top of an "abstract schema", which
+			  gets translated to a proper database schema. Entities are mapped to that database schema. 
+			  Here's the format for a simple JPQL query:
+			  
+				-----------------------------------------------------------------------------------------------------
+			  
+				SELECT returnedEntity FROM entityName var WHERE whereClause
+				
+				-----------------------------------------------------------------------------------------------------
+				
+				The "Book".findAll query is defined as "SELECT b FROM Book b", in which "Book" is the name of entity
+				and "b" is the variable name assigned to "Book". This is equivalent to SQL "SELECT * FROM BOOK".
+				
+				The "Book.findByName" use a named parameter, "name", as in:
+				
+				----------------------------------------------------------------------------------------------------
+				
+				SELECT b FROM Book b WHERE n.name = :name
+				
+				----------------------------------------------------------------------------------------------------
+				
+				Paramters can be referenced by name or by position. When referencing a parameter by name, you specify 
+				the name your query expects, such as "name" or "bookName", prefaced by a ":".
+				If, instead, you wanted to reference the name by position, you cluld replace ":name" with "?1".
+				When executing the query, you would set the parameter with position "1". Binding the book name 
+				to "MyBook" is equivalent to the following SQL:
+				
+				----------------------------------------------------------------------------------------------------
+				
+				SELECT * FROM BOOK WHERE name = 'MyBook'
+				
+				----------------------------------------------------------------------------------------------------
+				
+		The "Book"'s "id" attribute is annotated with both the "@Id" and "@GeneratedValue". The "@Id" annotation 
+		identifies the "id" as the primary key of the "Book", which will resolve to the primary key of the underlying 
+		database. The "@GeneratedValue" annotation tells JPA that the database should generate the primary key when 
+		the entity is persisted to the database. Because we have not specified a "@Column" annotation, the "id" will
+		be mapped to the same column name "ID".
+		
+		The "Book"'s "name" attribute will be mapped to the "NAME" column in the "BOOK" table.
+		
+		Finally, the "author" field is annotated with the "@ManyToOne" and "@JoinColumn" annotation.
+		Recall that the "@ManyToOne" is one side of a "one-to-many" relationship. This annotation tells the JPA
+		provider that there can be many books to one author.
+		
+	Modeling the Author class
+		Listing 4 shows the source code for the "Author" class:
+		
+		Listing 4. Author.java
+		
+			package com.geekcap.javaworld.jpa.model;
+			
+			import javax.persistence.CascadeType;
+			import javax.persistence.Entity;
+			import javax.persistence.GeneratedValue;
+			import javax.persistence.Id;
+			import javax.persistence.NamedQueries;
+			import javax.persistence.NamedQuery;
+			import javax.persistence.OneToMany;
+			import javax.persistence.Table;
+			import java.util.ArrayList;
+			import java.util.List;
+			
+			@Entity
+			@Table( name = "AUTHOR" )
+			@NamedQueries( { @NamedQuery(name = "Author.findByName", query = "SELECT a FROM Author a WHERE a.name = :name")	} )
+			public class Author 
+			{
+				@Id
+				@GeneratedValue
+				private Integer id;
+				
+				private String name;
+				
+				@OneToMany( mappedBy = "author", cascade = CascadeType.ALL )
+				private List<Book> books = new ArrayList<>();
+				
+				public Author() { }
+				
+				public Author( String name ) { this.name = name; }
+				
+				public Author( Integer id, String name ) { this.id = id; this.name = name; }
+				
+				public Integer getId() { return id; }
+				
+				public void setId( Integer id ) { this.id = id; }
+				
+				public String getName() { return name; }
+				
+				public void setName( String name ) { this.name = name; }
+				
+				public List<Book> getBooks() { return books; }
+				
+				public void addBook( Book book ) 
+				{ 
+					books.add( book ); 
+					book.setAuthor( this ); 
+				}
+				
+				@Override
+				public String toString() 
+				{
+					return "Author{" + "id=" + id +	", name='" + name + '\'' + ", books=" + books +	'}';
+				}
+			}
+			
+		The "Author" class isn't much different from the "Book" class:
+		
+			- The "@Entity" annotation identifies "Author" as a JPA entity;
+			
+			- The "@Table" annotation tells Hibernate (JPA provider) that this entity should be stored in AUTHOR table;
+			
+			- The "@NamedQueries" annotation also defines an "Author.findByName" named query;
+			
+		The "Author" class maintains a list of books written by the given author, which is annotated with the
+		"@OneToMany" annotation. "Author"'s "@OneToMany" annotation matches the "@ManyToOne" annotation on the 
+		"Book" class. The "mappedBy" filed tells Hibernate that field is stored in the "Book"'s "author" property.
+		
+	CascadeType
+		You might note the "CascadeType" in the "@OneToMany" annotation. "CascadeType" is an enumerated type that defines
+		cascading operations to be applied in a given relationship. In this case, "CascadeType" defines operations 
+		performed on the author, that should be propagated to the book. "CascadeType" include the folowing:
+		
+			- DETACH: When an entity is detached (staccato/separato) from the "EntityManager", detach the entities on the 
+					  other side of the operation, as well;
+					  
+			- MERGE: When an entity is merged into the "EntityManager", merge the entities on the other side of the
+					 operation, as well;
+					 
+			- PERSIST: When an entity is persisted to the "EntityManager", persist the entities on the other side of 
+					   operation, as well;
+					   
+			- REFRESH: When an entity is refreshed from the "EntityManager", also refresh the entities on the other 
+					   side of the operation;
+					   
+			- FLUSH: When an entity is flushed to the "EntityManager", flush its corresponding entities;
+			
+			- ALL: Includes all of the aforementioned operations types;
+			
+		When any operation is performed on an author, its books shoulds be updated. This makes sense because a book
+		cannot exist whitout its author.
+		
+Repositories in JPA
+	We could create an "EntityManager" and do everything inside the sample application class, but using external repository
+	classes will make the code cleaner. As defined by the "Repository pattern", creating a "BookRepository" and 
+	"AuthorRepository" isolated the persistence logic for each entity. Listing 5 shows source code for the "BookRepository".
+	
+	Listing 5. BookRepository.java
+	
+		package com.geekcap.javaworld.jpa.repository;
+		
+		import com.geekcap.javaworld.jpa.model.Book;
+		import javax.persistence.EntityManager;
+		import java.util.List;
+		import java.util.Optional;
+		
+		public class BookRepository 
+		{
+			private EntityManager entityManager;
+			
+			public BookRepository( EntityManager entityManager ) 
+			{
+				this.entityManager = entityManager;
+			}
+			
+			public Optional<Book> findById( Integer id ) 
+			{
+				Book book = entityManager.find( Book.class, id );
+				return book != null ? Optional.of( book ) : Optional.empty();
+			}
+			public List<Book> findAll() 
+			{
+				return entityManager.createQuery( "from Book" ).getResultList();
+			}
+			
+			public Optional<Book> findByName( String name ) 
+			{
+				Book book = entityManager.createQuery( "SELECT b FROM Book b WHERE b.name = :name", Book.class )
+										 .setParameter( "name", name )
+										 .getSingleResult();
+						
+				return book != null ? Optional.of( book ) : Optional.empty();
+			}
+			
+			public Optional<Book> findByNameNamedQuery( String name ) 
+			{
+				Book book = entityManager.createNamedQuery( "Book.findByName", Book.class )
+										 .setParameter( "name", name )
+										 .getSingleResult();
+										 
+				return book != null ? Optional.of( book ) : Optional.empty();
+			}
+			
+			public Optional<Book> save( Book book ) 
+			{
+				try 
+				{
+					entityManager.getTransaction().begin();
+					entityManager.persist( book );
+					entityManager.getTransaction().commit();
+					return Optional.of( book );
+				} 
+				catch ( Exception e ) 
+				{
+					e.printStackTrace();
+				}
+				return Optional.empty();
+			}
+		}
+	
+	The "BookRepository" class is initialized with an "EntityManager", which we'll create in our sample application.
+	The first method, "findById()", invokes "EntityMenager"'s "find()" method, which retrieves an entity of a given
+	class with its given primary key. If, for example, we add a new book and its primary key is generated as "1", 
+	then "entityManager.find( Book,class, 1 )" will return the "Book" with an ID of 1. If a "Book" with the requested
+	primary key is not found in the database, then the "find()" method returns null. Because we want our code to be 
+	resilient and not pass nulls around , it checks the value for null and return either a valid book, wrapped in an 
+	"Optional", or "Optional.empty()".
+	
+	A closer look at EntityManager's methods
+		Looking at the code in Listing 5, the "find()" method
+		
 // ------------------------------------------ ./JPA And Hibernate -----------------------------------------------//
 
 //--------------------------------------------------- Eclipse ---------------------------------------------------//
