@@ -1323,6 +1323,39 @@ Working with the EntityManager
 			
 		Don't worry about integrating all of these methods at once. You'll get to know them by working directly 
 		with the "EntityManager", which we'll do more in the next section.
+		
+		Note: merge() or persist()?
+			  The difference between "merge()" and "persist()" is that "merge()" adds the entity to the persistence
+			  context, but your reference to the object is not "managed". If you make changes to your object after
+			  invoking "merge()", those changes will not be sent to the database. The "persist()" method marks 
+			  your object as "managed". Any changes you make to your object after invoking "persist()" will 
+			  be sent to the database.
+
+
+			  
+JPA with Hibernate
+	In this section we move past concepts and start writing code that persist data to and from a relational database 
+	using JPA with Hibernate. We'll start by configuring an external application to use Hibernate as the JPA provider,
+	then we'l quickly configure the "EntityManager" and write two classes that we want to persist to the database:
+	"Book" and "Author". Finally, we'll write a simple application that pulls togheter all of the application components 
+	and successfully persist our two entities to the database.
+	
+	In this section you'll learn how to:
+	
+		- Configure a Java application to use Hibernate as your JPA provider;
+		
+		- Configure JPA's "EntityManager" in a "persistence.xml" file;
+		
+		- Create a simple JPA domain model representing logic from your application code;
+		
+		- Use repositories to cleanly separate persistence logic from your application code;
+		
+		- Write, build, and run the example application using JPA to connect with a relational database;
+		
+	You'll also get started with JPA Query Language (JPQL - Java Persistence Query Language) and use it to execute a
+	few simple database operation on the example application.
+	
+	
 			
 
 // ------------------------------------------ ./JPA And Hibernate -----------------------------------------------//
