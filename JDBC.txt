@@ -1,0 +1,385 @@
+//------------------------------------ JDBC (Java DataBase Connectivity) ----------------------------------------//
+
+(https://www.javaworld.com/article/3388036/what-is-jdbc-introduction-to-java-database-connectivity.html)
+What is JDBC (Java DataBase Connectivity)? - Get to Know Java's low-level API for making databse connections and handling SQL
+											 queries and responses
+											 
+	JDBC (Jaca DataBase Connectivity) is the Java API that manages connecting to a databse, issuing queries and commands,
+	and handling result sets obtained from database. Released as part of JDK 1.1 in 1997, JDBC was one of the first
+	components developed for the Java persistence layer.
+
+	JDBS was initially conceived (concepito) as a client-side API, enabling a Java client to interact with a data source. 
+	That changed with JDBC 2.0, which included an optional package supporting server-side JDBC connections. 
+	Every new JDBC release since then has featured updates to both the client-side package (java.sql) and the 
+	server-side package (javax.sql). JDBC 4.3, the most current version as of this writing, was released as part of
+	Java SE 9 in September 2017.
+	
+	This article presents an overview of JDBC, followed by a hands-on introduction to using the JDBC API to connect
+	a Java client with SQLLite, a lightweight relational databse.
+	
+	How JDBC works
+		Developed as an alternative to the C-based ODBC (Open DataBase Connectivity) API, JDBC offers a programming-level
+		interface that handles the mechanism of Java application communicating with a database or RDBMS. The JDBC interface
+		consists of two layers:
+		
+			1- The JDBC API supports communication between the Java application and the JDBC manager;
+			
+			2- The JDBC driver support communications between the JDBC manager and databse driver;
+			
+		JDBC is the common API that your application code interacts with. Beneath (al di sotto) that is the JDBC-compliant driver
+		for the database you are using.
+		
+		Figure 1 - Is an architectural overview of JDBC in the Java persistence layer.
+		
+				*****************************************
+				*										*
+				*			Application Code			*
+				*										*
+				*				JDBC API				*
+				*										*
+				*			JDBC DB driver				*
+				*										*				
+				*				 ˄˄˄					*
+				*										*
+				*  		  SQL Commands + Data			*
+				*										*
+				*				 ˅˅˅					*
+				*										*
+				*    MySQL / PostGres / Oracle / Etc.	*
+				*										*
+				*****************************************
+				
+	Using JDBC to connect to a DataBase
+		One of the fortunate facts of programming in the Java ecosystem is that you will likely find a stable JDBC databse connector
+		for whatever databse you choose. In this tutorial we'll use SQLite to get to know JDBC, mainly because it's so easy
+		to use.
+		
+		The steps for connecting to a databse with JDBC are as follows:
+
+			1. Install or locate the database you want to access;
+			
+			2. Include the JDBC library;
+			
+			3. Ensure the JDBC driver you need is on your classpath;
+			
+			4. Use the JDBC library to obtain a connecttion to the databse;
+			
+			5. Use the connecttion to issue (fornire / emettere) SQL command;
+			
+			6. Close the connecttion when  you'are finished;
+			
+		We'll go through these steps together.
+		
+			Note: Finding a JDBC driver -
+				  To find a driver for the database you want to use, simply do a web search for your database and JDBC.
+				  For instance, typing in "mysql jdbc driver" will turn up a driver for MySQL (MySQL Connector/J 8.0 is a JDBC driver
+				  for communicating with MySQL servers). If you want installing Connector/J you can also use Maven dependencies manager
+				  to install and configure the Connector/J in your project.
+				  
+					<dependency>
+						<groupId>mysql</groupId>
+						<artifactId>mysql-connector-java</artifactId>
+						<version>x.y.z</version>
+					</dependency>
+					
+				  I challenge you to find a Java-compatible database without a JDBC driver.
+				   
+		Step 1. Downloading and install SQLite
+			SQLite is a very compact database. It isn't intended for production use, but is a great choice for quickly trying things out.
+			SQLite use a file as its functional database, without requiring any service or daemon installations.
+			
+			To get started with this demo, go ahead and download the SQLite sample database. Unzip the .db file and save it somewhere
+			you won't forget.
+			
+			This file contains both a functional file-based database and sample schema and data we can use.
+			
+			Note: SQL and JDBC
+				  NoSQL has grown popular over the past decade, but relational databases remain the most common type of datastore in use.
+				  A "relational database" is a structured repository consisting of tables with columns and rows. SQL (Structured Query
+				  Language) is the language data architects use to do things like create, read, update, and delete new records in a
+				  relational database. JDBC is an adapter layer form Java to SQL: it gives Java developers a common interface for connecting
+				  to a database, issuing queries and commands, and managing responses.
+		
+		Step 2. Import JDBC Into your Java application
+			We could do our coding in a IDE, but coding directly in a text editor will better demostrate JDBC's simplicity.
+			To begin, you will need to have a compatible JDK (Java Development Kit) installation for your operating system.
+			
+			Assuming you have the Java platform developer tools installed, we can start by creating a simple Java program. 
+			In your text editor, paste in the code shown in Listing 1. Call this file "WhatIsJdbc.java".
+			
+			Listing 1. A simple Java Program
+			
+				class WhatIsJdbc
+				{
+					public static void main ( String args[] )
+					{
+						System.out.println( "Hello JavaWorld" );
+					}
+				}
+				
+			Now compile the code by entering the command: javac WhatIsJdbc.java 
+			Compiling will output the "WhatIsJdbc.class" file. Execute this file from the command line with the call: java WhatIsJdbc
+			
+			Once you have a basic Java program, you can include the JDBC libraries. Paste in the code from Listing 2 at the head
+			of your simple Java program.
+				
+			Listing 2. JDBC imports
+			
+				import java.sql.Connection;
+				import java.sql.DriverManager;
+				import java.sql.SQLException;
+				import java.sql.ResultSet;
+				import java.sql.Statement;
+				
+			Each of these imports provides access to a class that facilitates the standard Java database connection:
+			
+				- Connection: represent the connecction to the database;
+				
+				- DriverManager: obtain the connection to the database. (Another option is "DataSource", used for connection pooling.)
+				
+				- SQLException: handle SQL errors between the Java application and the database;
+				
+				- ResultSet and Statement: model the data result sets and SQL statements;
+				
+			
+			We'll see each of these in action shortly.
+			
+		Step 3. Add the JDBC driver to your "classpath"
+			Next, you'll add the SQLite driver to your classpath. A JDBC driver is a class that implements the JDBC API
+			for a specific database.
+			
+			Downloading the SQLite driver for GitHub. Be sure to get the most recent .jar file and store it somewhere
+			you'll remember.
+			
+			The next time you execute your Java program, you will pull  that .jar file in via the classpath. 
+			There are several ways to set the classpath. Listing 3 shows how to do it using a command-line switch.
+			
+			Listing 3. Executing SQLite driver on the Java classpath
+			
+				java.exe -classpath /path-to-driver/sqlite-jdbc-3.23.1.jar:. WhatIsJdbc
+				
+			Notice that we've set the classpath to point at the driver and the local directory; this way Java will 
+			still find our class file.
+			
+		Step 4. Obtain a database connection
+			The classpath now has access to the driver. Now, change your simple java application file to look like
+			the programm in Listing 4.
+			
+			Listing 4. Using the JDBC Connection class to connect to SQLite
+			
+				import java.sql.Connection;
+				import java.sql.DriverManager;
+				import java.sql.SQLException;
+				import java.sql.ResultSet;
+				import java.sql.Statement;
+				
+				class WhatIsJdbc 
+				{
+					public static void main( String args[] )
+					{
+						Connection conn = null;
+						
+						try
+						{
+							String url = "jdbc:sqlite:path-to-db/chinook/chinook.db";
+							conn = DriverManager.getConnection( url );
+							
+							System.out.println( "Got it!" );
+						}
+						catch( SQLException e )
+						{
+							throw new Error( "Problem", e );
+						}
+						finally
+						{
+							try
+							{
+								if( conn != null )
+								{
+									conn.close();
+								}
+							}
+							catch( SQLException ex )
+							{
+								System.out.println( ex.getMessage() );
+							}
+						}
+					}
+				}
+				
+			Compile and execute this code. Assuming all goes well, you will get an affirming message.
+			
+			Note: No Suitable driver found?
+				  If you've received an error that looks like "No suitable driver found for jdbc:sqlite",
+				  then you need to revisit the classpath and make sure it points to the driver you downloaded.
+				  Failed driver connection is the most common stumbling block for beginners using JDBC.
+				  Don't swea it (non ignorarlo); just for fix.
+				  
+			Now we're ready for some SQL commands.
+		
+		Step 5. Query the database
+			With live connection object in hand, we can do somethig useful, like quering the databse.
+			Listing 5 shows how to query SQLite using the JDBC "Connecction" and "Statement" objects.
+			
+			Listing 5. Querying the database with JDBC
+			
+				import java.sql.Connection;
+				import java.sql.DriverManager;
+				import java.sql.SQLException;
+				import java.sql.ResultSet;
+				import java.sql.Statement;
+
+				class WhatIsJdbc
+				{
+					public static void main( String[] args ) 
+					{
+						Connection conn = null;
+						try 
+						{
+							String url = "jdbc:sqlite:path-to-db-file/chinook/chinook.db";
+							conn = DriverManager.getConnection( url );
+
+							Statement stmt = null;
+							String query = "SELECT * FROM albums";
+							try 
+							{
+								stmt = conn.createStatement();
+								ResultSet rs = stmt.executeQuery( query );
+								while ( rs.next() ) 
+								{
+									String name = rs.getString( "title" );
+									System.out.println( name );
+								}
+							} 
+							catch ( SQLException e ) 
+							{
+								throw new Error( "Problem", e );
+							} 
+							finally 
+							{
+								if ( stmt != null ) 
+								{ 
+									stmt.close(); 
+								}
+							}
+
+						} 
+						catch ( SQLException e ) 
+						{
+							throw new Error( "Problem", e );
+						} 
+						finally 
+						{
+							try 
+							{
+								if ( conn != null ) 
+								{
+									conn.close();
+								}
+							} 
+							catch ( SQLException ex ) 
+							{
+								System.out.println( ex.getMessage() );
+							}
+						}
+					}
+				}
+				
+			In Listing 5 we use our "Connection" object to obtain a "Statement" object: "conn.createStatement()".
+			We then use this object to execute an SQL query: "stmt.executeQuery( query )".
+			
+			The "executeQuery" command returns a "ResultSet" object, which we then use to iterate over the data with
+			"while( rs.next())". In this example, you should see the album titles we've queried on as output. 
+			
+			Notice that we also closed the connection, via call to "conn.close()".
+			
+			Note: Network connections with JDBC
+				  The database connection string in Listing 5 is for a local connection: "jdbc:sqlite:path-to-db-file/chinook/chinook.db".
+				  To access the database via a network, the connection string would need to include the network URL 
+				  and (usually) credentials for accessing it (exe: "jdbc:oracle:thin:@192.168.2.163:1521:dbmizar").
+				  
+	Doing more with JDBC
+		So far we've covered the basics of using JDBC to connect to a database and issue SQL commands.
+		While "Statements" and "ResultSet" work well for common scenarios, you'll likely need additional options 
+		for larger or more complex applications. Fortunately, the JDBC library continues evolving to meet most
+		database access needs.
+		
+		PreparedStatements
+			One easy way to increase the flexibility of your code is to replace the "Statement" class with "PreparedStatements",
+			as show in Listing 6.
+			
+			Listing 6. Using JDBC PreparedStatements
+			
+				String querySQL = "insert into albums values (?, ?);";
+
+				PreparedStatement  prepState  =	connection.prepareStatement(querySQL);
+
+				prepState.setString(1, "Uprising");
+				prepState.setString(2, "Bob Marley and the Wailers  ");
+
+				int rowsAffected = preparedStatement.executeUpdate();
+				
+			"PreparedStatement" replace "Statement"'s hard-coded values with question marks ( ? ).
+			Using "PreparedStatement" optimizes your code for reuse: a "PreparedStatement" is compiled only once,
+			and can then be reused with a variety of parameters. As your code base grows, you simply insert new 
+			values into the statement, instead of hacking the string object itself.
+			
+		Batch updates
+			Whenever an application has several updates to issue, doing them in batches can greatly benefit
+			performance. The essence of "batching" is to take the multiple updates and collect them together,
+			then issue them all at once. Listing 7 uses JDBC's batch methods to perform a batch update of several 
+			"PreparedStatement".
+			
+			Listing 7. Batching with PreparedStatement
+			
+				prepState.setString( 1, "Uprising" );
+				prepState.setString( 2, "Bob Marley and the Wailers" );
+				preparedStatement.addBatch();
+
+				prepState.setString( 1, "Wildflowers" );
+				prepState.setString( 2, "Tom Petty and the Heartbreakers" );
+				preparedStatement.addBatch();
+
+				int[] rowsAffected = preparedStatement.executeBatch();
+				
+		JDBC transactions
+			Transactions in relational databases allow for a set of updates to be wrapped in an interaction that
+			either succeeds or fails altogether (tutti insieme). The basic of using a transaction via JDBC are 
+			to tell the system to turn "off" auto-commit, and then manually tell the system to commit when you
+			are done. By default, auto-commit is "on", which means whenever an "executeUpdate" or "executeInsert"
+			is run, the command is committed. 
+			
+			Listing 8 shows a small slice (fetta/pezzo) of a JDBC transaction.
+			
+			Listing 8. JDBC transactions
+			
+				connection.setAutoCommit(false);
+				// Use executeUpdate multiple times
+				connection.commit();
+				
+			When "connection.commit()" is encountered, all the updates wrapped inside will be attempted, and if
+			any fail, they all will be rolled back.
+			
+			There are many more features in JDBC 4.3 worth exploring, including using "CallableStatement" for
+			store procedures, using "DataSource" objects for improved application performance (especially via 
+			connection pooling), and converting a JDBC ResultSet to a Java Stream.
+			
+		Database-specific features
+			Although every JDBC-compliant database offers the same core features for connecting and interacting
+			with a database via SQL, some database do more than others. As an example, Oracle DB offers result 
+			caching, which is not required by the JDBC specification. Here's an example:
+			
+				conn.prepareStatement ("select /*+ result_cache */ * from employees where employee_id < : 1");
+			
+	Conclusion
+		JDBC is one of Java's oldest APIs, providing an easy-to-use solution for one of the perennial (costanti) 
+		needs of Java application development. Knowing just the few JDBC calls demonstrated in this article 
+		will get you started using JDBC to connect to virtually any database. Once you've got those commands down, 
+		you can begin to explore some of the more sophisticated options that have been built into JDBC.
+		
+		While JDBC is sufficient for simpler applications, most developers will eventually look to the Java Persistence
+		API (JPA) in order to develop a more formal data access layer. JPA requires more up-front work and a more 
+		sophisticated understanding of the application architecture, but it nets you a more consistent, isolated,
+		and well-defined data access layer. 
+			
+//----------------------------------- ./JDBC (Java DataBase Connectivity) ---------------------------------------//	
