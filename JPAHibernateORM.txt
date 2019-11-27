@@ -1,6 +1,6 @@
 // ------------------------------------- JPA ( Java Persistence API ) -------------------------------------------//
-
-(https://www.javaworld.com/article/3379043/what-is-jpa-introduction-to-the-java-persistence-api.html?page=1)
+	(https://www.javaworld.com/article/3379043/what-is-jpa-introduction-to-the-java-persistence-api.html?page=1)
+	
 What is JPA (Java Persistence API)?: - The Java ORM (Object/Relational Mapping) standard for storing, accessing, 
 									   and managing Java objects in a relational database.
 	
@@ -492,6 +492,7 @@ Steps to use Hibernate Librarie:
 
 // ------------------------------------------- JPA And Hibernate ------------------------------------------------//
 
+---- PART 1 - Entities and Relationships: Modeling entities and relationships for Java data persistence ---------
 https://www.javaworld.com/article/3373652/java-persistence-with-jpa-and-hibernate-part-1-entities-and-relationships.html
 
 Object relations in JPA
@@ -1619,6 +1620,292 @@ Conclusion
 	practice and deepen what you already know about entity relationships and the "EntityManager". 
 	You'll also learn about "lazy" and "eager" fetching (prendere/riportare) strategies, working with join tables, 
 	and how to choose the right "CascadeType".
+	
+
+
+---- PART 2 - Many-To-Many relationships: Many-to-many relationships and cascade type strategies in JPA and Hibernate ----
+(https://www.javaworld.com/article/3387643/java-persistence-with-jpa-and-hibernate-part-2-many-to-many-relationships.html)
+
+
+You'll learn how to model a many-to-many relationship between "Movie" and "SuperHero" entities, set up individual 
+repositories for these entities, and persist the entities to the "H2 in-memory database". You'll also learn more 
+about the role of cascade operations in JPA, and get tips for choosing a "CascadeType" strategy for entities in 
+the database. Finally, we'll pull togheter a working application that you can run in your IDE or on the command line.
+
+This tutorial focuses on JPA fundamentals, but be sure to check out these Java tips introducing more advanced topics 
+in JPA:
+
+	- Inheritance relationships in JPA and Hibernate;
+	  (https://www.javaworld.com/article/3390983/java-tip-inheritance-relationships-in-jpa-and-hibernate.html?nsdr=true)
+	  
+		Choosing a JPA inheritance strategy that supports polymorphism
+		
+			Inheritance is a common pattern in object-oriented programming, but it's not easily in a database.
+			This Java tip shows you how to model inheritance relationships in JPA with Hibernate.
 			
+			Learn the pros and cons of four different ORM inheritance strategies and get tips for choosing the 
+			one that best supports your application needs.
+			
+			The inheritance patter in ORM
+				"Inheritance" is an object-oriented pattern in which ine class extends (or specializes) another
+				class in order to borrow (prendere in prestito) (or inherit - eredita) some of its functionality.
+				For example, let's say we have a class named "Car" that represts all cars, including a make, model, 
+				and year. But now we want to create some more specialized types of car, such as "SportsCar" and 
+				"SportsUtilityVehicle". These cars would have all the features of original "Car" class, but with 
+				some additional funztionality. A "SportCar" might need special parameters for designating speed. 
+				A "SportUtilityVehicle" might need flags for seating and towing capacity.
+				
+				Databases have no notion of inheritance between entities, so JPA providers like Hibernate must 
+				provide special features for defining object-oriented inheritance relationships in the database.
+				
+				JPA specifies four strategies for defining an inheritance relationship:
+				
+					- Mapped Superclass
+					
+					- Table Per Class
+					
+					- Single Table
+					
+					- Joined
+					
+				We'll look at each of these strategies as they're implemented by Hibernate.
+				
+				Note: Inheritance and polymorphism 
+					  One of the benefits of inheritance is that it allows you ti perform operations on subclasses 
+					  through their superclass, which is known as "polymorphism". For example, if you have a "Car"
+					  base class, with a "diver()" method, and two subclasses of "Car": "SportCar" and "SportsUtilityVehicle",
+					  then you are free to store "SportCar" and "SportsUtilityVehicle" in a collection of "Car"s 
+					  and invoke the "driver()" method--all without knowning if you're driving a "Sportcar" or a 
+					  "SportsUtilityVehicle". We'll review the JPA inheritance strategies that support polumorphism.
+					  
+				Inheritance strategy #1: Mapped Superclass
+					The Mapped Superclass is the simplest inheritance strategy. It allows you to define common 
+					attribute in a base class, then extend that superclass in your other classes. Here's an example
+					based on our "Car" class:
+					
+						@MappedSuperclass
+						public abstract class Car 
+						{
+							@Id
+							@GeneratedValue
+							private Integer id;
+							
+							private String make;
+							private String model;
+							private Integer year;
+							...
+						}
+						
+					The "Car" class is annotated with the "@MappedSuperclass" annotation and defines common car 
+					attributes, such as the make, model, and year, as well as the autogenerated "id" of the car.
+					
+					Now let's see what happens when we define a "SportsCar" class and "SportsUtilityVehicle" 
+					class extending "Car":
+					
+						@Entity
+						@Table( name = "SPORTSCAR" )
+						public class SportsCar extends Car 
+						{
+							private Integer topSpeed;
+							private Double zeroToSixty;
+							...
+						}
+
+						@Entity
+						@Table( name = "SUV" )
+						public class SportsUtilityVehicle extends Car 
+						{
+							private Integer towingCapacity;
+							private Boolean thirdRowSeating;
+							...
+						}
+						
+					The Mapped Superclass strategy is simple but limited, in that both of these classes will 
+					map to tables that contains "all" of the car attributes: both the original "Car" attributes 
+					and new, specialized class attributes.
+
+					Using this pattern means Hibernate won'be able (NON sarà in grado) to run polymorphic queries 
+					against individual cars. If we define a "CarDealer" class that manages different types of 
+					cars, there's not way to maintaing a list of "Cars" in the "CarDealer";	instead we would need 
+					to create a list of "SportsCar"s and a list of "SportUtilityVehicle".
+					
+					We might do better with a slightly more complex inheritance strategy.
+					
+				Inheritance strategy #2: Table Per Class
+					The next strategy for implementing inheritance is called Table Per Class. This strategy stores
+					all data in its specialized class tables, just like we did with the mapped superclass, 
+					but it maintains the relationships between specialized classes and their base class.
+					
+					In this case, the specialized classes, "SportsCar" and "SportsUtilityVehicle", stay the same, 
+					but the base class is treated as an entity.
+					
+						@Entity
+						@Inheritance( strategy = InheritanceType.TABLE_PER_CLASS )
+						public abstract class Car 
+						{
+							@Id
+							@GeneratedValue
+							private Integer id;
+							
+							private String make;
+							private String model;
+							private Integer year;
+							...
+						}
+					
+					We define the base class as an entity, using the @Entity annotation. We then introduce the 
+					"Inheritance" annotation, specifying the "InheritanceType.TABLE_PER_CLASS" strategy.
+					
+					With this strategy, we're able to execute polymorphic queries, so we can map a list of "Car"
+					to a "CarDealer". 
+					
+					A complicated union
+						While Table Per Class provides the functionality we're looking for, its generated queries 
+						are complex. There are also potential performance issues with this strategy, because we 
+						have to perform a union of all the "Car" subclass tables, then resolve the result set from that.
+						
+						As an example, say we were to add two cars to our application code: one "SUV" and one ports car.
+						The resultant database tables would contain the following:
+						
+							Table: CAR
+							
+							Table: SPORTSCAR
+							  {ID: 1, MAKE: Carrera, MODEL: Porche, YEAR: 2018, TOPSPEED: 150, ZEROTOSIXTY: 4.5}
+							  
+							Table: SUV
+							  {ID: 2, MAKE: CX-9,	 MODEL: Mazda, 	YEAR: 2017, THIRDROW: true, TOWINGCAPACITY: 3000}
+							  
+				
+				Inheritance strategy #3: Single Table
+					The next strategy maps all fields from all entities to a single table, with a discriminator column 
+					to identity the instance type:
+					
+						@Entity
+						@Inheritance( strategy = InheritanceType.SINGLE_TABLE )
+						@DiscriminatorColumn( name = "Car_Type" )
+						public abstract class Car 
+						{
+							@Id
+							@GeneratedValue
+							private Integer id;
+							
+							private String make;
+							private String model;
+							private Integer year;
+							...
+						}
+
+						@Entity
+						@Table( name = "SPORTSCAR" )
+						@DiscriminatorValue( "SportsCar" )
+						public class SportsCar extends Car 
+						{
+							private Integer topSpeed;
+							private Double zeroToSixty;
+							...
+						}
+
+						@Entity
+						@Table( name = "SUV" )
+						@DiscriminatorValue( "SUV" )
+						public class SportsUtilityVehicle extends Car 
+						{
+							private Integer towingCapacity;
+							private Boolean thirdRowSeating;
+							...
+						}
+					
+					The single table strategy is implemented using the "@Inheritance" annotation with 
+					"InheritanceType.SINGLE_TABLE". We add to this a "@DiscriminatorColumn" annotation,
+					which defines a column name we'll use to "discriminate" between specific class types.
+					The specialized classes, such as "SportsCar" and "SportsUtilityVehicle", extend the 
+					base class and add a "@DiscriminatorValue" annotation, which specifies the name to 
+					identify its instance in the database.
+					
+					The challenge with this implementation is that each table maintains all fields for 
+					all attributes for all specialized classes. You also lose the ability to define
+					specialized fields to be non-null, because they will be null for other specialized
+					classes. For example, a row representing a "SportsCar" will have "topSpeed" and 
+					"zeroToSixty" values, but will have null "towingCapacity" and "thirdRowSeating"
+					column values. 
+					
+					Based on our implementation of this patter, the contents of the batabase would be 
+					as follows:
+					
+						Table: CAR
+						  {CAR_TYPE: SportsCar, ID: 1, MAKE: Carrera, MODEL: Porche, YEAR: 2018, TOPSPEED: 150,  ZEROTOSIXTY: 4.5,  THIRDROW: null, TOWINGCAPACITY: null},
+						  {CAR_TYPE: SUV, 		ID: 2, MAKE: CX-9, 	  MODEL: Mazda,  YEAR: 2017, TOPSPEED: null, ZEROTOSIXTY: null, THIRDROW: true, TOWINGCAPACITY: 3000},
+						  
+					Note that both cars are stored in the "CAR" table and each table [has a] "CAR_TYPE"
+					attribute (from the "@DiscriminatorColumn") that tells Hibernate the type of car
+					(from the "@DiscriminatorValue"). Also note that each row contains all column values,
+					with the unused ones being set to null.
+					
+					This strategy allows for efficient and polymorphic queries. On the downside, it could 
+					require maintaining many null and unnecessary columns.
+					
+					
+					
+				Inheritance strategy #4: Joined
+					The final JPA inheritance strategy separates data between the base class and s
+					pecialized classes into their own tables. The base class table contains all of the 
+					common attribute defined in the base class, while the specialized class tables contain 
+					only their specific attributes. We accomplish (raggiungere) this separation by using 
+					the "InstanceType.JOINED" inheritance strategy:
+					
+						@Entity
+						@Inheritance( strategy = InheritanceType.JOINED )
+						public abstract class Car 
+						{
+							@Id
+							@GeneratedValue
+							private Integer id;
+							
+							private String make;
+							private String model;
+							private Integer year;
+							...
+						}
+						
+					This effect of this type of inheritance is probably what you most expect when defining
+					an inheritance relationship. For our example, the database contains the following values:
+					
+						Table: CAR
+						  {ID: 1, MAKE: Carrera, MODEL: Porche, YEAR: 2018}
+						  {ID: 2, MAKE: CX-9, MODEL: Mazda, YEAR: 2017}
+						  
+						Table: SPORTSCAR
+						  {TOPSPEED: 150, ZEROTOSIXTY: 4.5, ID: 1}
+						  
+						Table: SUV
+						  {THIRDROW: true, TOWINGCAPACITY: 3000, ID: 2}
+						  
+					Using this strategy results in tables that don't have a lot of null values, as they did
+					with the "SINGLE_TABLE" strategy. You also don't have to write the full set of table unions
+					that the "TABLE_PER_CLASS" requires. On the downside, Hibernate has to perform a join between 
+					the base class table and the specialized class tables, which makes queries considerably more
+					complex.
+					
+				Choosing a JPA inheritance strategy
+					With four choices, the decision of which strategy to use depends on your use case.
+					In general, I recommend avoiding the "TABLE_PER_CLASS" strategy because of the query overhead. 
+					I also suggest avoiding the "MAPPED_SUPERCLASS" strategy-- or using it only for cases where 
+					you don't need to use your classes polymorphically.
+					
+					That leaves the "SINGLE_TABLE" and "JOINED" strategies:
+					
+						- if you need fast queries and don't mind (non ti dispiace) maintaining extra, unused 
+						  null columns in a single table, then go with the "SINGLE_TABLE" stategy;
+						  
+						- If you don't want to maintain unused columns and you want to model your inheritance
+						  relationship more like would when thinking about a database model, then use the 
+						  "JOINED" strategy;
+						  
+					Personally, I almost always use "JOINED" for inheritance relationships in JPA.
+					
+	
+	- Composite keys in JPA and Hibernate;
+	
+Many-to-Many relationships in JPA
 		
 // ------------------------------------------ ./JPA And Hibernate -----------------------------------------------//
