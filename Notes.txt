@@ -134,7 +134,11 @@ Add new Libraries to Project Java:
 	- Create (if not existi yet) a "lib" folder (right click on project name: New -> Folder);
 	- Copy&Paste libraries into this folder;
 	- Select all libraries just copied e right click on these (Build Path -> Add to Build Path);
-	- Under "JRE System Library" it will appears a new folder "Referenced Libraries"; 
+	- Under "JRE System Library" it will appears a new folder "Referenced Libraries";
+	
+Maven Integeration for Eclipse (m2e):
+
+	Help -> Install New Software ->	https://download.eclipse.org/technology/m2e/releases
 
 //------------------------------------------------- ./Eclipse ---------------------------------------------------//
 
@@ -164,6 +168,13 @@ Add new Libraries to Project Java:
 		File -> Project Structure -> Libraries -> + (New Project Libraries) -> Java
 	
 //---------------------------------- (Apache) Maven Archetype --------------------------------------------------//
+
+
+Environment Variable:
+
+	- Name: MAVEN_OPTS 
+	- Value: valore: -Xms512m -Xmx1024m -XX:PermSize=64m -XX:MaxPermSize=256m -Djava.awt.headless=true -XX:+CMSClassUnloadingEnabled -XX:+UseConcMarkSweepGC
+
 
 mvn archetype:generate 
 	-DarchetypeGroupId=org.apache.maven.archetypes 
