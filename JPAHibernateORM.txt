@@ -1905,7 +1905,475 @@ in JPA:
 					
 	
 	- Composite keys in JPA and Hibernate;
+	  (https://www.javaworld.com/article/3391019/java-tip-composite-keys-in-jpa-and-hibernate.html)
+	  
+		Use embeddable objects to join two primary keys into one composite key.
+		
+			Every JPA entity has a primary key, but some entities have more than one value as their primary key. 
+			In this case, you need to use a composite key. This Java tip introduces you to using composite keys 
+			in JPA and Hibernate.
+			
+			When you need a composite key
+				Consider a product pricing table that store prices based on both a region name and a product ID.
+				In this case, your table could include multiple rows with the same product ID, but each associated 
+				with a different region. You'll need both the product ID and the region name to uniquely differentiate
+				between product prices in different regions.
+				
+				We'll use two JPA constructs to solve this problem:
+				
+					- Embeddable Object: 
+						We'll create a new class, "ProductPriceId", that is annotated with the "@Embeddable" annotation
+						and holds both the product ID and the region name, which represents the primary key of a product
+						price;
+					
+					- Embedded ID: 
+						We'll create the "ProductPrice" entity and reference the "ProductPriceId" as its "id", using the 
+						"@EmbeddableId" annotation;
+						
+				To get started, study the source code for the "ProductPriceId" and "ProductPrice" classes shown below:
+				
+					Listing 1. ProductPriceId.java
+					
+						package com.geekcap.javaworld.jpa.model;
+
+						import javax.persistence.Embeddable;
+						import java.io.Serializable;
+
+						@Embeddable
+						public class ProductPriceId implements Serializable 
+						{
+							private String region;
+							private Integer productId;
+
+							public ProductPriceId() {	}
+
+							public ProductPriceId( String region, Integer productId ) 
+							{
+								this.region = region;
+								this.productId = productId;
+							}
+
+							public String getRegion() { return region; }
+
+							public void setRegion( String region ) { this.region = region; }
+
+							public Integer getProductId() { return productId; }
+
+							public void setProductId( Integer productId ) { this.productId = productId; }
+
+							@Override
+							public String toString() 
+							{
+								return "ProductPriceId{" + "region='" + region + '\'' +	", productId=" + productId + '}';
+							}
+						}
+					
+					
+					Listing 2. ProductPrice.java
+					
+						package com.geekcap.javaworld.jpa.model;
+
+						import javax.persistence.EmbeddedId;
+						import javax.persistence.Entity;
+						import javax.persistence.Table;
+
+						@Entity
+						@Table( name = "PRODUCT_PRICE" )
+						public class ProductPrice 
+						{
+							@EmbeddedId
+							private ProductPriceId id;
+							
+							private Double price;
+
+							public ProductPrice() {	}
+
+							public ProductPrice( ProductPriceId id, Double price ) 
+							{
+								this.id = id;
+								this.price = price;
+							}
+
+							public ProductPriceId getId() { return id; }
+
+							public void setId( ProductPriceId id ) { this.id = id; }
+
+							public Double getPrice() { return price; }
+
+							public void setPrice( Double price ) { this.price = price; }
+
+							@Override
+							public String toString() 
+							{
+								return "ProductPrice{" + "id=" + id + ", price=" + price + '}';
+							}
+						}
+				
+				The "ProductPriceId" class (Listing 1) is a simple Java class that has two member variables: 
+				"region" and "productId". It is annotated with the "@Embeddable" annotation.
+				
+				The "ProductPrice" class (Listing 2) is a JPA entity that is mapped to the "PRODUCT_PRICE" table
+				and define an "id" field of type "ProductPriceId". The "ProductPriceId" field type is annotated
+				with the "@EmbeddedId" annotation.
+				
+			
+			Example application with composite keys
+				Listin 3 shows the source code for an example application that creates four different product prices, 
+				executes a query for a product by its "ProductPriceId", queries for all product prices, and then 
+				dumps the contents of the "PRODUCT_PRICE" table so that we can see how Hibernate represents the data.
+				
+				Lsiting 3. JpaExampleCompositeKey.java
+				
+					package com.geekcap.javaworld.jpa;
+
+					import com.geekcap.javaworld.jpa.model.ProductPrice;
+					import com.geekcap.javaworld.jpa.model.ProductPriceId;
+					import org.hibernate.Session;
+
+					import javax.persistence.EntityManager;
+					import javax.persistence.EntityManagerFactory;
+					import javax.persistence.Persistence;
+
+					public class JpaExampleCompositeKey 
+					{
+						public static void main( String[] args ) 
+						{
+							// Create our entity manager
+							EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory( "SuperHeroes" );
+							EntityManager entityManager = entityManagerFactory.createEntityManager();
+
+							// Create a product price
+							ProductPrice productPrice1 = new ProductPrice(new ProductPriceId( "EAST", 1 ), 500.0d );
+							ProductPrice productPrice2 = new ProductPrice(new ProductPriceId( "WEST", 1 ), 400.0d );
+							ProductPrice productPrice3 = new ProductPrice(new ProductPriceId( "EAST", 2 ), 200.0d );
+							ProductPrice productPrice4 = new ProductPrice(new ProductPriceId( "WEST", 2 ), 150.0d );
+
+							try 
+							{
+								// Save the product prices to the database
+								entityManager.getTransaction().begin();
+								entityManager.persist( productPrice1 );
+								entityManager.persist( productPrice2 );
+								entityManager.persist( productPrice3 );
+								entityManager.persist( productPrice4 );
+								entityManager.getTransaction().commit();
+							} 
+							catch ( Exception e ) 
+							{
+								e.printStackTrace();
+							}
+
+							// Query for product1 by its ID
+							ProductPrice productPrice = entityManager.find( ProductPrice.class, new ProductPriceId( "EAST", 1 ) );
+							System.out.println( productPrice );
+
+							// Find all product prices
+							List<ProductPrice> productPrices = entityManager.createQuery( "from ProductPrice" ).getResultList();
+							System.out.println( "\nAll Product Prices:" );
+							productPrices.forEach( System.out::println );
+
+							// DEBUG, dump our tables
+							entityManager.unwrap( Session.class ).doWork( connection ->
+									JdbcUtils.dumpTables( connection, "PRODUCT_PRICE" ) );
+
+
+							// Close the entity manager and associated factory
+							entityManager.close();
+							entityManagerFactory.close();
+						}
+					}
+					
+				This application creates a new "EntityManagerFactory" that references the "SuperHeroes" persistence unit, which
+				contains the "ProductPrice" entity. It then creates an "EntityManager" from that persistence unit. 
+				It creates four product prices, two for product (id) 1 and two for product (id) 2, but in two different regions:
+				"EAST" and "WEST". It then persist them to the database using "EntityManager::persist" method.
+				
+				Nwxt, it queries for a "ProductPrice" using the "EntityManager::find" method, which requires the class name of
+				the netity to retrive and its primary key. Because we're using a composite key, we pass it a new "ProductPriceId"
+				instance with the region name set to "EAST" and the product ID set to 1. This yields (produce) the following 
+				output:
+				
+					ProductPrice{ id = ProductPriceId{ egion = 'EAST', productId = 1 }, price = 500.0 }
+					
+			
+			Querying with composite keys
+				Querying for an entity using a composite key is just what you would expect: simply pass the primary key to 
+				the "find()" method. The only difference is that in this case we're not passing a "String" or an "Integer",
+				but rather a "ProductPriceId".
+				
+				The sample application then queries for all product prices, using the JPQL query "from ProductPrice", which 
+				yields the following output:
+				
+					ProductPrice{ id = ProductPriceId{ region = 'EAST', productId = 1 }, price = 500.0 }
+					ProductPrice{ id = ProductPriceId{ region = 'WEST', productId = 1 }, price = 400.0 }
+					ProductPrice{ id = ProductPriceId{ region = 'EAST', productId = 2 }, price = 200.0 }
+					ProductPrice{ id = ProductPriceId{ region = 'WEST', productId = 2 }, price = 150.0 }
+					
+				We see all four of the product prices that we've persisted to the database. The "PRODUCT_PRICE" table 
+				contains the following data, from our "JdbcUtils::dumpTables" method call:
+				
+					Table: PRODUCT_PRICE
+					  { PRODUCTID: 1, REGION: EAST, PRICE: 500.0 },
+					  { PRODUCTID: 1, REGION: WEST, PRICE: 400.0 },
+					  { PRODUCTID: 2, REGION: EAST, PRICE: 200.0 },
+					  { PRODUCTID: 2, REGION: WEST, PRICE: 150.0 },
+					  
+				The fields from the "ProductPriceId" are written directly to database columns in the "PRODUCT_PRICE" table,
+				along with (insieme) our addition "ProductPrice" attribute: "price". Hibernate handles populating the fields 
+				into the appropriate classes.
+
+
+
+Many-to-many relationships in JPA
+	"Many-to-many" relationships define entites for which both side of the relationship can have multiple references to each other.
+	For our example, we're going to model movies and superheroes. Unlike the "Authors & Books" example, a movie can have
+	multiple superheroes, and a superhero can appear in multiple movies. Our superheros, Ironman and Thor, both appera in two
+	movies, "The Avengers" and "Avengers: Infinity War".
 	
-Many-to-Many relationships in JPA
+	To model this many-to-many relationship using JPA, we will need three tables: 
+	
+		- MOVIE
+		
+		- SUPER_HERO
+		
+		- SUPERHERO_MOVIES
+		
+	Figure 1 shows the domain model with the three tables.
+	
+		---------------------			---------------------------------			---------------------
+		|		Movie		|			|		SuperHero_Movies		|			|		SuperHero	|
+		---------------------			---------------------------------			---------------------
+		|	PK	|	id		|----------<|	PK,FK1	|	movie_id		|	   -----|	PK	|	id		|
+		---------------------			|			|					|	   |	---------------------
+		|		|	title	|			|	PK,FK2	|	superhero_id	|>-----|	|		|	name	|
+		---------------------			---------------------------------			---------------------
+		
+	Note that "SuperHero_Movies" table is a "join table" between the "Movie" and "SuperHero" tables. In JPA, a join is a special
+	kind of table that facilities the many-to-many relationship.
+	
+	
+		Unidirectional or bidirectional?
+			In JPA we use the "@ManyToMany" annotation to model many-to-many relationship. This type of relationship can be 
+			unidirectional or bidirectional:
+			
+				- In a "unidirectional relationship" only one entity in the relationship points the other;
+				
+				- In a "bidirectional relationship" both entities point to each other;
+				
+			Our example is bidirectional, meaning that a movie points to all of its superheroes, and a superhero points to
+			all of their movies. In a bidirectional, many-to-many relationship, one entity "owns" the relationship and the
+			other is "mapped to" the relationship. We use the "mappedBy" attribute of the "ManyToMany" annotation to create 
+			this mapping.
+			
+			Listing 1 shows the source code for the "SuperHero" class.
+			
+				Listing 1. SuperHero.java
+				
+					package com.geekcap.javaworld.jpa.model;
+
+					import javax.persistence.CascadeType;
+					import javax.persistence.Entity;
+					import javax.persistence.FetchType;
+					import javax.persistence.GeneratedValue;
+					import javax.persistence.Id;
+					import javax.persistence.JoinColumn;
+					import javax.persistence.JoinTable;
+					import javax.persistence.ManyToMany;
+					import javax.persistence.Table;
+					import java.util.HashSet;
+					import java.util.Set;
+					import java.util.stream.Collectors;
+
+					@Entity
+					@Table( name = "SUPER_HERO" )
+					public class SuperHero 
+					{
+						@Id
+						@GeneratedValue
+						private Integer id;
+						
+						private String name;
+
+						@ManyToMany( fetch = FetchType.EAGER, cascade = CascadeType.PERSIST )
+						@JoinTable( name = "SuperHero_Movies",
+									joinColumns = { @JoinColumn( name = "superhero_id" ) },
+									inverseJoinColumns = { @JoinColumn( name = "movie_id" ) }
+						)
+						private Set<Movie> movies = new HashSet<>();
+
+						public SuperHero() { }
+
+						public SuperHero( Integer id, String name ) 
+						{
+							this.id = id;
+							this.name = name;
+						}
+
+						public SuperHero( String name ) 
+						{ 
+							this.name = name;	
+						}
+
+						public Integer getId() { return id;	}
+
+						public void setId( Integer id ) { this.id = id;	}
+
+						public String getName() { return name; }
+
+						public void setName( String name ) { this.name = name; }
+
+						public Set<Movie> getMovies() { return movies; }
+
+						@Override
+						public String toString() 
+						{
+							return "SuperHero{" + "id=" + id +	", name='" + name + '\'' +
+									", movies='" + movies.stream().map(Movie::getTitle).collect(Collectors.toList()) + '\'' +
+									'}';
+						}
+					}
+			
+			The "SuperHero" class has a couple of annotations that should be familiar from Part 1:
+			
+				- "@Entity" annotation identifies "SuperHero" class as a JPA entity;
+				
+				- "@Table" annotation maps the "SuperHero" entity class to the "SUPER_HERO" table;
+				
+			Also note the "Integer id" field, which specifies that the table's primary key will be autocatically generated.
+			
+			Next we'll look at the "@ManyToMany" and "@JoinTable" annotations.
+			
+			
+		Fetching strategies
+			The thing to notice in the "ManyToMany" annotation is how we configure the "fetching strategy", which can be 
+			lazy or eager. In this case, we're set the "fetch" to "EAGER", so that when we retrieve a "SuperHero" from the
+			database, we'll also automatically retrieves all of its corresponding "Movies".
+			
+			If we choose to perform a "LAZY" fetch instead, we would only retrieve each "Movie" as it was specifically accessed.
+			Lazy fetching is only possible while the "SuperHero" is attached (allegato/unito/collegato) to the "EntityManager"; 
+			otherwise accessing a superhero's movies will throw an exception. We want to be able to access a superHero's movies
+			on demand (su richiesta), so in this case we chhoese the "EAGER" fetching strategy.
+			
+			Note: CascadeType.PERSIST
+				  "Cascade operations" define how superheroes and their corresponding movies are persisted to and
+				  from the database. There are a number of cascade type configuration to choose from, and we'll talk
+				  more about them later in this tutorial. For now, just note that we've set the "cascade" attribute to
+				  "CascadeType-PERSIST", which means that when we save a superhero, its movies will also be saved. 
+				
+		Join tables
+			"JoinTable" is a class that facilities the many-to-many relationship between "SuperHero" and "Movie".
+			In this class, we define the table that will store the primary keys for both the "SuperHero" and the 
+			"Movie" entities.
+			
+			Listing 1 specifies that the table name will be "SuperHero_Movies". The "join column" will be "superhero_id",
+			and the "inverse join column" will be "movie_id". The "SuperHero" entity owns the relationship, so the join column 
+			will be populated with "SuperHero"'s primary key. The inverse join column then references the entity on the
+			other side of the relationship, which is "Movie".
+			
+			Based on these definitions in Listing 1, we would expect a new table created, named "SuperHero_Movies". 
+			The table will have two columns: "superhero_id", which references the "id" column of the "SUPERHERO" table,
+			and "movie_id", which references the "id" column of the "MOVIE" table.
+			
+		The Movie class
+			Listing 2 shows the source code for the "Movie" class. Recall that in a bidirectional relationship, one entity
+			owns the relationship (in this case, "SuperHero") while the other is mapped to the relationship.
+			The code in Listing 2 includes the relationship mapping applied to the "Movie" class.
+			
+				Listing 2. Movie.java
+				
+					package com.geekcap.javaworld.jpa.model;
+
+					import javax.persistence.CascadeType;
+					import javax.persistence.Entity;
+					import javax.persistence.FetchType;
+					import javax.persistence.GeneratedValue;
+					import javax.persistence.Id;
+					import javax.persistence.ManyToMany;
+					import javax.persistence.Table;
+					import java.util.HashSet;
+					import java.util.Set;
+
+					@Entity
+					@Table( name = "MOVIE" )
+					public class Movie 
+					{
+						@Id
+						@GeneratedValue
+						private Integer id;
+						
+						private String title;
+
+						@ManyToMany( mappedBy = "movies", cascade = CascadeType.PERSIST, fetch = FetchType.EAGER )
+						private Set<SuperHero> superHeroes = new HashSet<>();
+
+						public Movie() { }
+
+						public Movie( Integer id, String title ) 
+						{
+							this.id = id;
+							this.title = title;
+						}
+
+						public Movie( String title ) 
+						{
+							this.title = title;
+						}
+
+						public Integer getId() { return id;	}
+
+						public void setId( Integer id ) { this.id = id; }
+
+						public String getTitle() { return title; }
+
+						public void setTitle( String title ) { this.title = title; }
+
+						public Set<SuperHero> getSuperHeroes() { return superHeroes; }
+
+						public void addSuperHero( SuperHero superHero )
+						{
+							superHeroes.add( superHero );
+							superHero.getMovies().add( this );
+						}
+
+						@Override
+						public String toString() 
+						{
+							return "Movie{" + "id=" + id + ", title='" + title + '\'' +	'}';
+						}
+					}
+					
+			The following properties are applied to the "@ManyToMany" annotation in Listing 2:
+			
+				- "mappedBy" references the field name on the "SuperHero" class that manages, the many-to-many 
+				  relationship. In this case, it references the "movies" field, which we defined in Listing 1
+				  with the corresponding "JoinTable";
+				  
+				- "cascade" is configured to "CascadeType.PERSIST", which means that when a "Movie" is saved
+				  its corresponding "SuperHero" entities should also be saved;
+				  
+				- "fetch" tells the "EntityManager" that it should retireve a movie's superheroes "eagerly":
+				  when it loads a "Movie", it should also load all corresponding "SuperHero" entites;
+				  
+			Something else to note about the "Movie" class is its "addSuperHero()" method.
+			
+			When configuring entities for persistence, it isn't enough to simply add a superhero to a movie;
+			we also need to update the other side of the relationship. This means we need to add the movie 
+			to the superhero. 
+			When both sides of the relationship are configured properly, so that the movie has a reference 
+			to the superhero and the superhero has a reference to the movie, then the join table will also 
+			be properly populated.
+			
+			We've defined our two entities. Now let's look at the repositories we'll use to persist them 
+			to and from the database.
+			
+			Note: Tip! Set both sides of the table
+				  It's a common mistake to only set one side of the relationship, persist the entity, and 
+				  then observe that the join table is empty. Setting both sides of the relationship will 
+				  fix this.
+
+JPA repositories
+	
+			
+			
 		
 // ------------------------------------------ ./JPA And Hibernate -----------------------------------------------//
