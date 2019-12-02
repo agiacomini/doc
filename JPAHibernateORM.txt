@@ -2372,8 +2372,486 @@ Many-to-many relationships in JPA
 				  fix this.
 
 JPA repositories
+	We could implement all of our persistence code directly in the sample application, but creating repository 
+	classes allows us to separate persistence code from application code (Implementing the Repository pattern).
+	Just like we did with the Books & Authors appllication in Part 1, we'll create an "EntityManager" and 
+	then use it to initialize two repositories, one for each entity we're persiting.
 	
+	Listing 3 shows the source code for the "MovieRepository" class.
+	
+	Listing 3. MovieRepository.java
+	
+		import com.geekcap.javaworld.jpa.model.Movie;
+
+		import javax.persistence.EntityManager;
+		import java.util.List;
+		import java.util.Optional;
+
+		public class MovieRepository 
+		{
+			private EntityManager entityManager;
+
+			public MovieRepository( EntityManager entityManager ) 
+			{
+				this.entityManager = entityManager;
+			}
+
+			public Optional<Movie> save( Movie movie ) 
+			{
+				try 
+				{
+					entityManager.getTransaction().begin();
+					entityManager.persist( movie );
+					entityManager.getTransaction().commit();
+					return Optional.of( movie );
+				} 
+				catch ( Exception e ) 
+				{
+					e.printStackTrace();
+				}
+				return Optional.empty();
+			}
+
+			public Optional<Movie> findById( Integer id ) 
+			{
+				Movie movie = entityManager.find( Movie.class, id );
+				return movie != null ? Optional.of( movie ) : Optional.empty();
+			}
+
+			public List<Movie> findAll() 
+			{
+				return entityManager.createQuery( "from Movie" ).getResultList();
+			}
+
+			public void deleteById( Integer id ) 
+			{
+				// Retrieve the movie with this ID
+				Movie movie = entityManager.find( Movie.class, id );
+				if ( movie != null ) 
+				{
+					try {
+						// Start a transaction because we're going to change the database
+						entityManager.getTransaction().begin();
+
+						// Remove all references to this movie by superheroes
+						movie.getSuperHeroes().forEach( superHero -> {
+							superHero.getMovies().remove( movie );
+						});
+
+						// Now remove the movie
+						entityManager.remove( movie );
+
+						// Commit the transaction
+						entityManager.getTransaction().commit();
+					} 
+					catch ( Exception e ) 
+					{
+						e.printStackTrace();
+					}
+				}
+			}
+		}
+	
+	The "MovieRepository" is initialized with an "EntityManager", then saves it to a member variable to use in 
+	its persistence methods. We'll consider each of these methods.
+	
+	Persistence methods
+		Let's review "MovieRepository"'s persistence methods and see how they interact with the "EntityManager"'s
+		persistence methods.
+		
+			- the "save()" method persist a "Movie" to the database. All operations that change the database 
+			  need to be executed in a transaction, so the "save()" method wraps the "persist()" call in 
+			  between two transaction method calls:
+			  "begin()" and "commit()". We persist the "Movie" to the database using the "EntityManager::persist"
+			  method, which makes the movie "managed" by the "EntityManager" and saves it to the database;
+			  
+			- The alternative to "perist" would be "merge()", which saves the entity in an "unmanaged" state--
+			  meaning that it would save a copy of the entity to the database. When the transaction is committed, 
+			  the "id" is automatically generated, so using the "persist()" method ensures that we will see that
+			  new, automatically generated key. Because the cascade type for "SuperHero" is set to "PERSIST",
+			  saving a "Movie" also automatically aves its "SuperHeroes";
+			  
+			- The "findById()" method executes the "EntityManager::find" method, which retrieves an entity of the
+			  specified class by its primary key. In this case, we query for the "Movie.class" with the specified 
+			  "id". If the movie is found, then it returns it; otherwise it return null. Rather than dealing with 
+			  potential null values, the "findById()" method wraps the movie in an "Optional", or returns 
+			  "Optional.empty()" if the "EntityManager" has returned null;
+			  
+			- The "findAll()" method executes the JPQL query "from Movie", which is shothand for the more explicit
+			  query: "SELECT m FROM Movie m". This query returns a list containing all "Movies" in the database;
+			  
+			- The final method, "deleteById()", is critical to successfully managing many-to-many relationships.
+			  It's worth (merita) a closer look below;
+			  
+	How to correctly delete entities in a many-to-many relationship
+		The steps to delete a "Movie" entity are as follows:
+		
+			1- Retrieve the "Movie" with the specific "id" from the "EntityManager";
 			
+			2- Begin a transaction;
 			
+			3- Removes all references to "Movie" from each of its "SuperHeroes";
+			
+			4- Remove the "Movie";
+			
+			5- Commit the transaction;
+			
+		The first thing to note is that we can only remove an entity that is managed by the "EntityManager".
+		If we have an unmanaged entity (such as a "Movie" instance that we created with the correct "id")
+		then the "EntityManager::remove" method will fail. This is important to understand because you 
+		might be tempted to pass in a "Movie" instance that has been detached from the "EntityManager"--
+		such as the result of a "findById()" method call-- but unless it is managed by the "EntityManager",
+		the "remove()" will not work.
+		
+		Assuming we're looking for an entity that is managed by the "EntityManager", our first step is to 
+		retrieve the "Movie" using its specified "id". Next, we need to remove all references to the "Movie"
+		in all of the "SuperHero" entities. If we forget this step then the join table will not be properly
+		cleaned up. In fact, those relationships will stop the "Movie" from being deleted.
+		
+		Finally, once we have a managed "Movie" that does not have any references to it, we can safely call 
+		the "EntityManager::remove" method.
+		
+		Note: A note about cascade type stategy
+			  The cascade type strategy you choose will impact the behavior of the "EntityManager::remove"
+			  method. The steps outlined here are required for the "CasacadeType.PERSIST" setting, which 
+			  is probably the safest way of implementing a many-to-many relationship. We'll talk more 
+			  about cascade type stategies later in this tutorial. 
+	
+	
+	The SuperHero repository
+		The "SuperHeroRepository" class is the same as the "MovieRepository", only it manages "SuperHero"s.
+		
+		Listin 4. SuperHeroRepository.java
+		
+			package com.geekcap.javaworld.jpa.repository;
+
+			import com.geekcap.javaworld.jpa.model.SuperHero;
+
+			import javax.persistence.EntityManager;
+			import java.util.List;
+			import java.util.Optional;
+
+			public class SuperHeroRepository 
+			{
+				private EntityManager entityManager;
+
+				public SuperHeroRepository( EntityManager entityManager ) 
+				{
+					this.entityManager = entityManager;
+				}
+
+				public Optional<SuperHero> save( SuperHero superHero ) 
+				{
+					try 
+					{
+						entityManager.getTransaction().begin();
+						entityManager.persist( superHero );
+						entityManager.getTransaction().commit();
+						return Optional.of( superHero );
+					} 
+					catch ( Exception e )
+					{
+						e.printStackTrace();
+					}
+					return Optional.empty();
+				}
+
+				public Optional<SuperHero> findById( Integer id ) 
+				{
+					SuperHero superHero = entityManager.find( SuperHero.class, id );
+					return superHero != null ? Optional.of( superHero ) : Optional.empty();
+				}
+
+				public List<SuperHero> findAll() 
+				{
+					return entityManager.createQuery( "from SuperHero" ).getResultList();
+				}
+
+				public void deleteById( Integer id ) 
+				{
+					// Retrieve the movie with this ID
+					SuperHero superHero = entityManager.find( SuperHero.class, id );
+					if ( superHero != null ) 
+					{
+						try 
+						{
+							// Start a transaction because we're going to change the database
+							entityManager.getTransaction().begin();
+
+							// Remove all references to this superhero in its movies
+							superHero.getMovies().forEach( movie -> {
+								movie.getSuperHeroes().remove( superHero );
+							});
+
+							// Now remove the superhero
+							entityManager.remove( superHero );
+
+							// Commit the transaction
+							entityManager.getTransaction().commit();
+						} 
+						catch ( Exception e ) 
+						{
+							e.printStackTrace();
+						}
+					}
+				}
+			}
+		
+		The "SuperHeroRepository" provides the same functionality, in the same way, as the "MovieRepository".
+		The "deleteById()" method follows the same steps, but in this case its actions are to remove "SuperHero"s
+		from all of its associated "Movie"s.
+		
+Cascade type strategies: The case for PERSIST
+	Cascade type strategies tell the JPA provider (such as Hibernate) how to handle entities on the other side of
+	a relationship. In essence, the cascade type strategy porpagates database operations to related entites in a 
+	relationship, as defined by the relationship itself. In a many-to-many, bidirectional relationship, an 
+	operation on one entity would cascade to all other entities in the relationship. Choosing the correct cascade
+	type strategy (or casacde operation) for your domain model is important.
+	
+	I introduced the available casacde type strategies in Part 1; here they are again:
+	
+		- DETACH: When an entity is detached from the "EntityManager", detach the entities on the other side
+				  of the operation as well;
+				  
+		- MERGE: When an entity is merged into the "EntityManager", merge the entites on the other side of the
+				 operation as well;
+				 
+		- PERSIST: When an entity is persisted to the "EntityManager", persist the entities on the other side 
+				   of the operation as well;
+				   
+		- REFRESH: When an entity is refreshed from the "EntityManager", also refresh the entities on the other 
+				   side of the operation;
+				   
+		- FLUSH: When an entity is flushed to the "EntityManager", flush its corresponding entities;
+		
+		- REMOVE: When an entity is removed from the "EntityManager", remove the entities on the other side of 
+				  the operation as well;
+				  
+		- ALL: Includes all of the aforementioned (suddette) operation types;
+		
+	Reading through these strategies, you might think "CascadeType.REMOVE" looks like a good option. After all, 
+	if we remove a "Movie" then we might want to remove its "SuperHeroe"s too, and vice versa. The problem is that
+	the "REMOVE" action could have unintended effects. To understand these unintended effects, consider the 
+	relationships in our current domain model. As shown in Figure 2, we have two movies, "The Avengers" and 
+	"Avengers: Infinity War", and both of these movies contain our two superheroes, "Ironman" and "Thor".
+	
+	
+		Figure 2. Understanding cascading operations in a many-to-many relationship
+		
+			-----------------------------					---------------------
+			|	Avengers:Infinity War	|  |-------------|	|		Ironman		|
+			-----------------------------  \	   		 /	---------------------
+											\			/
+											 \		   /
+											  \		  /
+											   \	 /
+												\	/
+												 \ /
+												  /\
+												 /	\
+												/	 \
+											   /	  \
+											  /		   \
+											 /			\		
+			-----------------------------	/			 \	---------------------
+			|		The Avengers		|	|------------|	|		Thor		|
+			-----------------------------					---------------------
+			
+	Now, there are plenty (pieno) of examples on the Internet of many-to-many relationships that use "CascadeType.ALL"
+	as a shortcut operation for relationship persistence. So, let's say we sent the casacede type strategy to
+	"CascadeType.ALL". for both of these entities. Then, let's say we decided to delete "Avengers: Infinity War".
+	What do you think would happen?
+	
+	The answer is shown in Figure 3.
+	
+		Figure 3. Deleting "Avenegrs: Infinity War" with CascadeType.All
+		
+			[ X ]											[ X ]
+			-----------------------------		[ X ]		---------------------
+			|	Avengers:Infinity War	|  |-------------|	|		Ironman		|
+			-----------------------------  \	   		 /	---------------------
+											\			/
+											 \		   /
+										[ X ] \		  /
+											   \	 /
+												\	/
+												 \ /
+												  /\
+												 /	\
+												/	 \
+										[ X ]  /	  \
+											  /		   \
+			[ X ]							 /			\	[ X ]	
+			-----------------------------	/			 \	---------------------
+			|		The Avengers		|	|------------|	|		Thor		|
+			-----------------------------		[ X ]		---------------------
+			
+	In this configuration, deleting "Avengers:Infinity War" would cascade the delete operation to both "Ironman"
+	and "Thor". Worse (ancora peggio), because they both have cascading constraints to "The Avengers", that movie 
+	would also be deleted. Deleting one movie would end up deleting the entires database.
+	
+	That's why i recommend setting the cascade type to "PERSIST". In this case, saving a "Movie" will save its 
+	"SuperHero"es, but deleting a "Movie" will not delete its "SuperHero"es.
+	
+	The downside of "PERSIST" is that we'll need to perform a few additional steps if we ever do decide to delete 
+	an entity in our domain model. The upside is that if we delete a "Movie" entity (such as "Avenegers: Infinity War")
+	we won't also end up deleting "Thor" and "Ironman".
+	
+	The warning, therfore, is to closely examine your cascade configuration and choose the one that best meets 
+	your business objectives. If you're ever unsure what to do, opt for the more conservative option.
+	
+	Example JPA application: Movies & Superheroes
+		We're written our entities and repositories, so all that's left to do is pull them togheter in a working
+		application. Listing 5's "JpaExample2" class creates movies and superheroes and exercises our repositories.
+		
+		Listing 5. JpaExample2.java
+		
+			package com.geekcap.javaworld.jpa;
+
+			import com.geekcap.javaworld.jpa.model.Movie;
+			import com.geekcap.javaworld.jpa.model.SuperHero;
+			import com.geekcap.javaworld.jpa.repository.MovieRepository;
+			import com.geekcap.javaworld.jpa.repository.SuperHeroRepository;
+			import org.hibernate.Session;
+
+			import javax.persistence.EntityManager;
+			import javax.persistence.EntityManagerFactory;
+			import javax.persistence.Persistence;
+			import java.util.Optional;
+
+			public class JpaExample2 
+			{
+
+				public static void main( String[] args ) 
+				{
+					// Create our entity manager
+					EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory( "SuperHeroes" );
+					EntityManager entityManager = entityManagerFactory.createEntityManager();
+
+					MovieRepository movieRepository = new MovieRepository( entityManager );
+					SuperHeroRepository superHeroRepository = new SuperHeroRepository( entityManager );
+
+					// Create some superheroes
+					SuperHero ironman = new SuperHero( "Iron Man" );
+					SuperHero thor = new SuperHero( "Thor" );
+
+					// Create some movies
+					Movie avengers = new Movie( "The Avengers" );
+					avengers.addSuperHero( ironman );
+					avengers.addSuperHero( thor );
+
+					Movie infinityWar = new Movie( "Avengers: Infinity War" );
+					infinityWar.addSuperHero( ironman );
+					infinityWar.addSuperHero( thor );
+
+					// Save the movies
+					movieRepository.save( avengers );
+					movieRepository.save( infinityWar );
+
+					// Find all movies
+					System.out.println( "MOVIES:" );
+					movieRepository.findAll().forEach( movie -> {
+						System.out.println( "Movie: [" + movie.getId() + "] - " + movie.getTitle() );
+						movie.getSuperHeroes().forEach( System.out::println );
+					});
+
+					// Find all superheroes
+					System.out.println( "\nsuperheroes:" );
+					superHeroRepository.findAll().forEach( superHero -> { 
+																			System.out.println( superHero );
+																			superHero.getMovies().forEach( System.out::println );
+																		}
+														 );
+
+					// Delete a movie and verify that its superheroes are not deleted
+					movieRepository.deleteById( 1 );
+					System.out.println( "\nMOVIES (AFTER DELETE):" );
+					movieRepository.findAll().forEach( movie -> {
+																	System.out.println( "Movie: [" + movie.getId() + "] - " + movie.getTitle() );
+																	movie.getSuperHeroes().forEach( System.out::println );
+																}
+													 );
+													 
+					System.out.println( "\nsuperheroes (AFTER DELETE):" );
+					superHeroRepository.findAll().forEach( superHero -> {
+																			System.out.println( superHero );
+																			superHero.getMovies().forEach( System.out::println );
+																		}
+														 );
+
+
+					// DEBUG, dump our tables
+					entityManager.unwrap( Session.class ).doWork( connection ->	JdbcUtils.dumpTables( connection, "MOVIE", "SUPER_HERO", "SUPERHERO_MOVIES" ) );
+
+					// Close the entity manager and associated factory
+					entityManager.close();
+					entityManagerFactory.close();
+				}
+			}
+		
+		The example application begins by creating an "EntityManagerFactory" that points to the "SuperHeroes" persistence
+		unit, and then constructing an "EntityManager" from that. The "SuperHeroes" persistence unit is defined in
+		the "persistence.xml" file, which is shown in Listing 6. It creates a database connecttion to an in-memory H2 
+		instance, configures Hibernate as the entity provider, and loads the "Movie" and "SuperHero" classes as entities.
+		
+		The application then constructs the two repositories, passing them the "EntityManager". With the setup complete, 
+		it creates two superheroes, "Ironman" and "Thor", and two movies, "The Avengers" and "Avengers: Infinity War".
+		It adds both superheroes to both movies, then saves the movies using the "MovieRepository".
+		It then queries for all movies and all superheroes, printing them to the system output. At this point, 
+		the output shows the following:
+		
+			MOVIES:
+				Movie: [ 1 ] - The Avengers
+					SuperHero{ id = 2, name = 'Thor', movies = '[ Avengers: Infinity War, The Avengers ]' }
+					SuperHero{ id = 4, name = 'Iron Man', movies = '[ Avengers: Infinity War, The Avengers ]' }
+				Movie: [ 3 ] - Avengers: Infinity War
+					SuperHero{ id = 2, name = 'Thor', movies = '[ Avengers: Infinity War, The Avengers ]' }
+					SuperHero{ id = 4, name = 'Iron Man', movies = '[ Avengers: Infinity War, The Avengers ]' }
+
+			superheroes:
+				SuperHero{ id = 2, name = 'Thor', movies = '[ Avengers: Infinity War, The Avengers ]' }
+					Movie{ id = 3, title = 'Avengers: Infinity War' }
+					Movie{ id = 1, title = 'The Avengers' }
+				SuperHero{ id = 4, name = 'Iron Man', movies = '[ Avengers: Infinity War, The Avengers ]' }
+					Movie{ id = 3, title = 'Avengers: Infinity War' }
+					Movie{ id = 1, title= 'The Avengers' }
+					
+					
+		Next, we delete the movie with "id" 1, which is "The Avengers". We verify that our list of movies still 
+		contains "Avenegrs: Infinity War", and that our list of superheroes still contains "Ironman" and "Thor".
+		Here's the output of these statements:
+		
+			MOVIES (AFTER DELETE):
+				Movie: [ 3 ] - Avengers: Infinity War
+					SuperHero{ id = 2, name = 'Thor', movies = '[ Avengers: Infinity War ]' }
+					SuperHero{ id = 4, name = 'Iron Man', movies = '[ Avengers: Infinity War ]' }
+
+			superheroes (AFTER DELETE):
+				SuperHero{ id = 2, name = 'Thor', movies = '[ Avengers: Infinity War ]' }
+					Movie{ id = 3, title = 'Avengers: Infinity War' }
+				SuperHero{ id = 4, name = 'Iron Man', movies = '[ Avengers: Infinity War ]' }
+					Movie{ id = 3, title = 'Avengers: Infinity War' }
+					
+		Our cascading configuration is correct and our "deleteById()" method worked properly: "The Avengers" was 
+		successfully deleted, but the other entities were left unchanged.
+		
+		Finally, because we're running an in-memory H2 database that shuts down when the program completes, 
+		I included a simple class, called "JdbcUtils" that dumps the contents of the specified tables:
+		"JdbcUtils::dumpTables". It accepts a "Connecction" and a list of table names to dump, and it prints
+		the contents of those tables to the system output:
+		
+			Table: MOVIE
+			  { ID : 3, TITLE : Avengers: Infinity War },
+			  
+			Table: SUPER_HERO
+			  { ID: 2, NAME : Thor },
+			  { ID: 4, NAME : Iron Man },
+			  
+			Table: SUPERHERO_MOVIES
+			  { SUPERHERO_ID : 2, MOVIE_ID : 3 },
+			  { SUPERHERO_ID : 4, MOVIE_ID : 3 },
+			
+	
+	
 		
 // ------------------------------------------ ./JPA And Hibernate -----------------------------------------------//
