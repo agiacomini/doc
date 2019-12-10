@@ -593,7 +593,7 @@ Getting started with JPA
 		will be mapped to the "ISBN_NUMBER" column.
 		
 		The "@Column" annotation allows us to define additional properties of the field/column, including length,
-		whether it is nullable, whether it must be unique, its prcision and scale (if it's a dedimal value), 
+		whether it is nullable, whether it must be unique, its precision and scale (if it's a dedimal value), 
 		whether it is insertable and updatable, and so forth (e così via).
 		
 	Specifying the primary key
@@ -1318,7 +1318,7 @@ Repositories in JPA
 	class with its given primary key. If, for example, we add a new book and its primary key is generated as "1", 
 	then "entityManager.find( Book,class, 1 )" will return the "Book" with an ID of 1. If a "Book" with the requested
 	primary key is not found in the database, then the "find()" method returns null. Because we want our code to be 
-	resilient and not pass nulls around , it checks the value for null and return either a valid book, wrapped in an 
+	resilient and not pass nulls around, it checks the value for null and return either a valid book, wrapped in an 
 	"Optional", or "Optional.empty()".
 	
 	A closer look at EntityManager's methods
@@ -2851,7 +2851,72 @@ Cascade type strategies: The case for PERSIST
 			  { SUPERHERO_ID : 2, MOVIE_ID : 3 },
 			  { SUPERHERO_ID : 4, MOVIE_ID : 3 },
 			
+		As you can see, the "SUPERHERO_MOVIES" join table contains the mappings of "Ironman" and "Thor" to 
+		"Avengers: Infinity War", but mappings to "The Avenegrs" gave been successfully removed. The only "magic"
+		in this code is gaining access to the underlying database "Connection" from the "EntityManager".
+		
+		The "EntityManager" class provides an "unwrap()" method to which you can specify a class type. 
+		In this case, we specify the underlying Hibernate "Session.class", which provides a "doWork()" method
+		to which you can provide a class that implements Hibernate's "Work" interface. The "Work" interface
+		has a single method, named "execute()", to which Hibernate passes a "Connection" instance. 
+		In the example application I' ve used Java 8 lambdas to simplify the implementation, but it's good
+		to know how the persistence code works under the hood (cofano).
+		
+		Listin 6 shows the "persistence.xml" file for the example application.
+		
+		Listing 6. peristence.xml
+		
+			<persistence xmlns="http://java.sun.com/xml/ns/persistence"
+						 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+						 xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd"
+						 version="2.0">
+			
+				<persistence-unit name="SuperHeroes" transaction-type="RESOURCE_LOCAL">
+					<!-- Persistence provider -->
+					<provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
+
+					<!-- Entity classes -->
+					<class>com.geekcap.javaworld.jpa.model.Movie</class>
+					<class>com.geekcap.javaworld.jpa.model.SuperHero</class>
+
+					<properties>
+						<property name="javax.persistence.jdbc.driver" value="org.h2.Driver" />
+						<property name="javax.persistence.jdbc.url"    value="jdbc:h2:mem:moviedb" />
+						<property name="javax.persistence.jdbc.user" value="sa" />
+						<property name="javax.persistence.jdbc.password" value="" />
+
+						<property name="hibernate.dialect" value="org.hibernate.dialect.H2Dialect"/>
+						<property name="hibernate.hbm2ddl.auto" value="update" />
+						<property name="show_sql" value="true"/>
+						<property name="hibernate.temp.use_jdbc_metadata_defaults" value="false"/>
+						<property name="hibernate.format_sql" value="true"/>
+						<property name="hibernate.use_sql_comments" value="true"/>
+					</properties>
+				</persistence-unit>
+				
+			</persistence>
+			
+		You can build and run the example app from your IDE, or from the command-line using Maven, as a shown:
+		
+			$ mvn clean install
+			$ cd target/
+			$ java -jar jpa-example-2-1.0-SNAPSHOT.jar
+			
+Conclusion
+	This two-part tutorial has introduced you to using JPA with Hibernate. In Part 1 you learned how to define
+	entities and their relationships, and you were introduced to the role of the "EntityManager" in JPA.
+	We created a simple domain model with two entities in a many-to-one relationship. We then created two
+	corresponding repositories and an example application that pulled it all togheter. 
 	
+	in Part 2 we've explored a more complicated persistence relationship type: the bidirectional, many-to-many
+	relationship. We once again created two entities and two repositories, and pulled them toghter in an example 
+	application. The many-to-many relationship also allowed us to explore the tradeoffs of different cascade 
+	type strategies, and I've demostrated why I believe "PERSIST" is the safest strategy for most use cases.
 	
+	This tutorial gives you plenty to think about in relation to JPA, but there's more to learn!
+	Be sure to check out my Java tips on "Inheritance relationships in JPA" and "Composite primary keys in JPA".
+	Understanding the implications of cascading strategies and the tradeoffs (compromesso) in using different 
+	inheritance strategies comes in handy because these are  common job interview questions. 
+	More importantly, your familiarity with these persistence solutions will make you much better Java programmer.
 		
 // ------------------------------------------ ./JPA And Hibernate -----------------------------------------------//
