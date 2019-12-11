@@ -382,4 +382,159 @@ What is JDBC (Java DataBase Connectivity)? - Get to Know Java's low-level API fo
 		sophisticated understanding of the application architecture, but it nets you a more consistent, isolated,
 		and well-defined data access layer. 
 			
-//----------------------------------- ./JDBC (Java DataBase Connectivity) ---------------------------------------//	
+//----------------------------------- ./JDBC (Java DataBase Connectivity) ---------------------------------------//
+
+//---------------------------------------------------- Examples -------------------------------------------------//
+														
+													>	ORACLE	<
+														
+package my.package.constants;
+
+public class Constants 
+{
+	//------------------------ Oracle JDBC Connection -------------------------------//
+	
+	public static final String ORACLEURL = "jdbc:oracle:thin:@192.168.2.163:1521:<ORACLE_DB_NAME>";
+	public static final String ORACLEUSER = "<ORACLE_USER>";
+	public static final String ORACLEPWD = "<ORACLE_PWD>";
+	public static final String ORACLEDRIVER = "oracle.jdbc.driver.OracleDriver";
+	
+	//---------------------- ./Oracle JDBC Connection -------------------------------//
+	
+	//----------------------------- Oracle Query ------------------------------------//
+	
+	public static final String ORACLEQUERY_FINDALL = "SELECT * FROM config_anag";
+	public static final String ORACLEQUERY_FINDBYID = "SELECT * FROM <table_name> WHERE <column_name> = :id";
+	
+	//---------------------------- ./Oracle Query -----------------------------------//
+}
+
+
+*****************************************************************************************************************
+
+package my.package.utils;
+
+import org.apache.log4j.Logger;
+
+public class MyLogger  
+{
+	public static transient Logger logger = Logger.getLogger( Logger.class );
+}
+
+*****************************************************************************************************************
+
+package my.package.database;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.ResultSet;
+
+import static my.package.constants.Constants.ORACLEURL;
+import static my.package.constants.Constants.ORACLEUSER;
+import static my.package.constants.Constants.ORACLEPWD;
+
+import org.apache.log4j.Logger;
+import my.package.utils.MyLogger
+
+public class JdbcConnection 
+{	
+	public static Logger logger = MyLogger.logger;
+	
+	public static Connection getConnect()
+	{
+		logger.debug( "JdbcConnection::getConnect - START" );
+		Connection connection = null;
+		try
+		{
+			connection = DriverManager.getConnection( ORACLEURL, ORACLEUSER, ORACLEPWD );
+		}
+		catch( SQLException e )
+		{
+			e.printStackTrace();
+			logger.error( "JdbcConnection::getConnect - " + e.getMessage() );
+		}
+		logger.debug( "JdbcConnection::getConnect - END" );
+		return connection;
+	}
+	
+	public static void closeConnection( Connection connection )
+	{
+		logger.debug( "JdbcConnection::closeConnection - START" );
+		try
+		{
+			if( connection != null )
+				connection.close();
+		}
+		catch( SQLException e )
+		{
+			e.printStackTrace();
+			logger.error( "JdbcConnection::closeConnection - " + e.getMessage() );
+		}
+		logger.debug( "JdbcConnection::closeConnection - END" );
+	}
+}
+
+*****************************************************************************************************************
+
+package my.package.database;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+
+import org.apache.log4j.Logger;
+import my.package.utils.MyLogger
+
+import static my.package.constants.Constants.ORACLEQUERY_FINDALL;
+import static my.package.constants.Constants.ORACLEQUERY_FINDBYID;
+
+public class JdbcQuery 
+{	
+	public static Logger logger = MyLogger.logger;
+
+	public static ResultSet findAll( Connection connection )
+	{
+		logger.debug( "JdbcQuery::findAll - START" );
+		Statement statement = null;
+		ResultSet resultSet = null;
+		try
+		{
+			statement = connection.createStatement();
+			resultSet = statement.executeQuery( ORACLEQUERY_FINDALL );
+		}
+		catch( SQLException e )
+		{
+			e.printStackTrace();
+			logger.error( "JdbcQuery::findAll - " + e.getMessage() );
+		}
+		logger.debug( "JdbcQuery::findAll - END" );
+		return resultSet;
+	}
+	
+	public static ResultSet findById( Connection connection, String queryParameter )
+	{
+		logger.debug( "JdbcQuery::findById - START" );
+		PreparedStatement preparedStatement = null;
+		ResultSet resultSet = null;
+		try
+		{
+			preparedStatement = connection.prepareStatement( ORACLEQUERY_FINDBYID );
+			preparedStatement.setString( 1, queryParameter );
+			logger.debug( "JdbcQuery::findById - query: " + ORACLEQUERY_FINDBYID + ", queryParameter: " + queryParameter );
+			resultSet = preparedStatement.executeQuery();
+		}
+		catch( SQLException e )
+		{
+			e.printStackTrace();
+			logger.error( "JdbcQuery::findById - " + e.getMessage() );
+			return null;
+		}
+		logger.debug( "JdbcQuery::findById - END" );
+		return resultSet;
+	}
+}
+
+//--------------------------------------------------- ./Examples ------------------------------------------------//
