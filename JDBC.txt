@@ -403,7 +403,7 @@ public class Constants
 	
 	//----------------------------- Oracle Query ------------------------------------//
 	
-	public static final String ORACLEQUERY_FINDALL = "SELECT * FROM config_anag";
+	public static final String ORACLEQUERY_FINDALL = "SELECT * FROM <table_name>";
 	public static final String ORACLEQUERY_FINDBYID = "SELECT * FROM <table_name> WHERE <column_name> = :id";
 	
 	//---------------------------- ./Oracle Query -----------------------------------//
