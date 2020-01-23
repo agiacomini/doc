@@ -167,7 +167,9 @@ Add new Libraries to Project Java:
 
 	Click on
 		File -> Project Structure -> Libraries -> + (New Project Libraries) -> Java
-	
+
+//---------------------------- ./(Jet Brains) Intellij IDEA Community --------------------------------------------//
+
 //---------------------------------- (Apache) Maven Archetype --------------------------------------------------//
 
 
@@ -218,6 +220,22 @@ This command generate
 	- .settings 	(folder)
 	- .classpath 	(file)
 
+
+//--------------------------------- ./(Apache) Maven Archetype -------------------------------------------------//
+
+//---------------------------------- (Apache) Tomcat --------------------------------------------------//
+
+Increase Tomcat Upload File Size Limit
+
+	- Edit file "TOMCAT_PATH/webapps/manager/WEB-INF/web.xml"
+	
+		<multipart-config>
+		   <max-file-size>52428800</max-file-size>
+		   <max-request-size>52428800</max-request-size>
+		   <file-size-threshold>0</file-size-threshold>
+		</multipart-config>
+
+//--------------------------------- ./(Apache) Tomcat -------------------------------------------------//
 
 //---------------------------------- wildfly-12.0.0.Final ----------------------------------------------------//
 
