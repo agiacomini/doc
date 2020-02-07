@@ -73,7 +73,7 @@ $ bunzip2 <nameFile>.bz2   ?????? Verificare
 
 $ sudo apt install chromium-browser
 
-//----------------------------------- ./Chrome END ------------------------------------------------//
+//----------------------------------- ./Chrome ---------------------------------------------------//
 
 //-------------------------------- Manage Processes --------------------------------------------------//
 
@@ -104,4 +104,24 @@ $ pkill <name_process>
 -- Or
 $ killall <name_process>
 
-//------------------------------- ./Manage Processes END ------------------------------------------------//
+//------------------------------- ./Manage Processes ---------------------------------------------------//
+
+//---------------------------------------- Add Users ---------------------------------------------------//
+
+# adduser <user_name>
+
+Add the "user" to the "sudo" group
+
+# usermod -aG sudo <user_name>
+
+Add the "user" to the "sudo" group - Second Approch - Editing the file /etc/sudoers.tmp
+
+# visudo
+
+N.B: Under the line that looks like the following "root ALL=(ALL) ALL" add the following row
+
+<user_name> ALL=(ALL) ALL
+
+At the end press "Ctrl+X" and press "Y"
+
+//-------------------------------------- ./Add Users ---------------------------------------------------//
