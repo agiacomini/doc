@@ -125,3 +125,13 @@ N.B: Under the line that looks like the following "root ALL=(ALL) ALL" add the f
 At the end press "Ctrl+X" and press "Y"
 
 //-------------------------------------- ./Add Users ---------------------------------------------------//
+
+//-------------------------- SSH ( Secure Shell Protocol ) Coomand -------------------------------------//
+
+Connect to a Remote Server:
+
+	- ssh -L 10000:localhost:10000 amc@10.9.250.54
+
+	- ssh root@10.9.250.54
+	
+//------------------------- ./SSH ( Secure Shell Protocol ) Coomand ------------------------------------//
