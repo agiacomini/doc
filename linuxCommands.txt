@@ -126,7 +126,7 @@ At the end press "Ctrl+X" and press "Y"
 
 //-------------------------------------- ./Add Users ---------------------------------------------------//
 
-//-------------------------- SSH ( Secure Shell Protocol ) Coomand -------------------------------------//
+//-------------------------- SSH ( Secure Shell Protocol ) Command -------------------------------------//
 
 Connect to a Remote Server:
 
@@ -134,4 +134,4 @@ Connect to a Remote Server:
 
 	- ssh root@10.9.250.54
 	
-//------------------------- ./SSH ( Secure Shell Protocol ) Coomand ------------------------------------//
+//------------------------- ./SSH ( Secure Shell Protocol ) Command ------------------------------------//
