@@ -98,4 +98,58 @@
 	</interfaces>
 
 
+#WildFly as a Service for Linux users
+
+	You can use the scripts which are located under the following folder:
+	
+		- JBOSS_HOME/docs/contrib/scripts/init.d
+		
+	You find the following files:
+	
+		- wildfly-­init­-redhat.sh
+		
+		- wildfly­-init­-debian.sh
+		
+		- wildfly.conf
+		
+	First Step - copy shell script into the folder /etc/init.d 
+	
+		$ cp wildfly-init-redhat.sh /etc/init.d/wildfly
+		
+	Now copy as well the wildfly.conf configuration file in the location where the startup script expects it:
+	
+		$ mkdir -p /etc/default
+		
+		$ cp wildfly.conf /etc/default
+		
+	Within the wildfly.conf file adjust the settings in order to fit your installation:
+
+		#Location of Java
+		JAVA_HOME=/usr/java/jdk1.8.0_45
+		# Location of WildFly
+		JBOSS_HOME=/usr/share/wildfly-10.0.0.Final
+		# The username who should own the process.
+		JBOSS_USER=wildfly
+		# The mode WildFly should start, standalone or domain
+		JBOSS_MODE=standalone
+		# Configuration for standalone mode
+		JBOSS_CONFIG=standalone.xml
+		
+	Next, we will use the  chkconfig command to install WildFly as a service: the first command will add the wildfly shell script to the chkconfig list:
+	
+		$ chkconfig --add wildfly
+		
+	The second one, sets the boot levels where the service will be started:
+	
+		$ $ chkconfig --level 2345 wildfly on
+	
+	In order to test that the service starts correctly issue from any root/sudoer user:
+
+		$ sudo service wildfly start
+		
+	And here's the corresponding service stopping:
+
+		$ sudo service wildfly stop
+	
+	
 //--------------------------------------------- ./wildfly-12.0.0.Final ---------------------------------------------------------------//
