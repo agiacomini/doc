@@ -11,7 +11,7 @@
 		- user/#123*admin
 
 		
-#Start/Stop Server
+#Start/Stop Server ( %PATH%\wildfly-10.1.0.Final/bin/ )
 
 	Start:
 	
@@ -20,6 +20,10 @@
 	Stop:
 	
 		- ./shutdown.sh
+		
+		- ./jboss-cli.sh --connect command=:shutdown
+		
+		- jboss-cli.bat --connect controller=localhost:10000 command=:shutdown
 
 
 #Configuration Server
@@ -151,5 +155,12 @@
 
 		$ sudo service wildfly stop
 	
+
+
+#Override default memory parameters in WildFly
 	
+		Edit file %PATH%/wildfly-10.1.0.Final/bin/standalone.conf
+	
+			JAVA_OPTS="$JAVA_OPTS -Xms512m -Xmx1024m -XX:MetaspaceSize=512M -XX:MaxMetaspaceSize=1024m -Djava.net.preferIPv4Stack=true"
+
 //--------------------------------------------- ./wildfly-12.0.0.Final ---------------------------------------------------------------//
