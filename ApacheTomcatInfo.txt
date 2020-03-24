@@ -1,6 +1,8 @@
 
 Vulnerabilità Ghostcat:
 
+	E' una vulnerabilità che affligge tutte le versioni di Apache Tomcat rilasciate negli ultimi 13 anni.
+
 	Si tratta di una vulnerabilità che, sfruttando una falla nel protocollo AJP di Tomcat, il cui connettore 
 	è attivo di default e in ascolto sulla porta 8009, permette ad un attaccante di leggere o processare 
 	come JSP qualunque file nelle directory webapp di Tomcat. Questo si traduce nella possibilità di leggere 
