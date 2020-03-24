@@ -1,3 +1,16 @@
+
+Vulnerabilità Ghostcat:
+
+	Si tratta di una vulnerabilità che, sfruttando una falla nel protocollo AJP di Tomcat, il cui connettore 
+	è attivo di default e in ascolto sulla porta 8009, permette ad un attaccante di leggere o processare 
+	come JSP qualunque file nelle directory webapp di Tomcat. Questo si traduce nella possibilità di leggere 
+	i contenuti dei file di configurazione e il codice sorgente di tutte le applicazioni deployate su Tomcat e, 
+	se l’applicazione permette l’upload di file all’utente, caricare sul server un qualunque tipo di file 
+	(anche immagini, video, etc.) contenente uno script JSP malevolo, processarlo ed ottenere la possibilità 
+	di eseguire codice arbitrario da remoto sulla macchina bersaglio.
+
+		- https://www.chaitin.cn/en/ghostcat
+
 //---------------------------------- (Apache) Tomcat --------------------------------------------------//
 
 Increase Tomcat Upload File Size Limit
