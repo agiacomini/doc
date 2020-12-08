@@ -172,6 +172,30 @@ Add new Libraries to Project Java:
 
 //---------------------------------- (Apache) Maven Archetype --------------------------------------------------//
 
+.m2 Folder
+
+	- repository
+	- settings.xml
+
+Maven into Eclipse
+
+	- ERROR problem into IDE ( Error Messager: “Plugin execution not covered by lifecycle configuration” ):
+	
+		- Add <pluginManagement> tag into POM.xml file to resolve the problem:
+		
+			<build>
+				<pluginManagement>
+					<plugins>
+						<plugin>
+							...
+						</plugin>
+					</plugins>
+				</pluginManagement>
+			</build>
+			
+Other problem
+
+	- Clear .m2 folder and right click on project and press "Maven -> Update Project";
 
 Environment Variable:
 
