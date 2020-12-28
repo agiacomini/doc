@@ -40,25 +40,75 @@ $ /usr/bin/mysql-workbench --help
 
 \-------------------------------------------------------------------------------------------------------------\
 
-mysql> show databases;
+Bash
 
--- istruzione per accedere ad un DB diverso - Change database
-mysql> use <database_name>;
+	bash-4.2# mysql -uroot -panypassword
+	
+		u - user
+		p - pwd
+	
+Shell Mysql
 
--- mostra le tabelle del database selezionato prima
-mysql> show tables;
+	DATABASES
+	
+		CREATE Database
+		
+			mysql> create database <nome_database>; 
 
--- mostra i campi della tabella specificata - nomi e tipi
-mysql> describe <table_name>;
+		SHOW Database 
 
--- crea un database di nome <nome_database>
-mysql> create database <nome_database>; 
+			mysql> show databases;
 
--- cancellare il database
-mysql> drop database <nome_database>
 
--- lanciare uno script sql
-mysql> source D:/Lavoro/doc/sqlScript/01_DDL_PROJECT_USER.sql
+		CHANGE Database 
+		
+			mysql> use <database_name>;
+			
+		DELETE Database
+		
+			mysql> drop database <nome_database>
+			
+	TABLES ( by SELECTING Database )
+	
+		SHOW Table
+
+			mysql> show tables;
+
+		DESCRIBE Table 
+
+			mysql> describe <table_name>;
+
+	
+	USER
+	
+		CREATE User
+		
+			mysql> CREATE USER 'newuser'@'localhost' IDENTIFIED BY 'password';
+			
+		GRANT User
+		
+			mysql> GRANT ALL PRIVILEGES ON * . * TO 'newuser'@'localhost';
+			
+		SHOW 
+		
+			ALL Users
+		
+				mysql> SELECT USER();
+				
+				
+			CURRENT User
+		
+				mysql> SELECT CURRENT_USER();
+	
+	
+	SQL SCRIPT
+	
+		EXECUTE Sql Script
+		
+			mysql> source D:/Lavoro/doc/sqlScript/01_DDL_PROJECT_USER.sql
+
+
+
 
 -- Stampare l'output del lancio di uno script sql in un file di log/txt
 -- N.B

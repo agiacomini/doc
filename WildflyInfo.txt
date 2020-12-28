@@ -1,11 +1,5 @@
 //---------------------------------- Wildfly-12.0.0.Final ----------------------------------------------------//
 
-#Link Utili
-
-	ERROR: Cannot change version of project facet Dynamic Web Module
-
-		- https://crunchify.com/how-to-fix-cannot-change-version-of-project-facet-dynamic-web-module-to-3-0-error-in-eclipse/
-
 #Add User / Update existing "Admin" User
 
 	- %PATH%\wildfly-12.0.0.Final\bin\add-user (Windows "add-user.batch" or Linux "add-user.sh" script)
