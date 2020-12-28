@@ -4,7 +4,7 @@
 ****                                                          ****
 ******************************************************************
 
-SCRIPT NAME      : 04_DDL_PROJECTNAME_USER_PROFILE.sql
+SCRIPT NAME      : 04_DDL_PROJECTNAME_USER_GROUP.sql
 
 AUTHOR           : 
 
@@ -33,38 +33,38 @@ SCHEMA           : mydatabase
 *****************************************************************
 **************************************************************** */
 
-CREATE TABLE PROJECTNAME_USER_PROFILE (
-    id 		  	  INT NOT NULL AUTO_INCREMENT UNIQUE,
-    profileId 	  INT NOT NULL,
-	projectUserId INT NOT NULL,
-	
+CREATE TABLE PROJECTNAME_USER_GROUP (
+	usergroup_id INT AUTO_INCREMENT PRIMARY KEY,
+	user_id INT NOT NULL,
+    group_id INT NOT NULL,
+    
     created 	  DATETIME DEFAULT CURRENT_TIMESTAMP,
 	createdBy	  VARCHAR(30),
     lastUpdate 	  DATETIME ON UPDATE CURRENT_TIMESTAMP,
 	lastUpdateBy  VARCHAR(30),
-	
-    PRIMARY KEY   (id),
-	FOREIGN KEY   (profileId) REFERENCES profile(id),
-	FOREIGN KEY   (projectUserId) REFERENCES project_user(id)
+    
+    CONSTRAINT fk_usergroup_user FOREIGN KEY (user_id) REFERENCES PROJECTNAME_USER (id),
+    CONSTRAINT fk_usergroup_group FOREIGN KEY (group_id) REFERENCES PROJECTNAME_GROUPS (id),
+    CONSTRAINT usergroup_unique UNIQUE (user_id, group_id)
 );
 
 DELIMITER |
-CREATE TRIGGER PROJECTNAME_USER_PROFILE_IU_TRG 
-BEFORE INSERT ON PROJECTNAME_USER_PROFILE
+CREATE TRIGGER PROJECTNAME_USERGROUP_IU_TRG 
+BEFORE INSERT ON PROJECTNAME_USER_GROUP
 FOR EACH ROW
 	BEGIN
 
 		DECLARE vUser VARCHAR(30);
 		
-		-- SELECT SUBSTRING_INDEX(USER(), '@', -1) INTO vUser;  -- localhost
-        SELECT USER() INTO vUser;								-- root@localhost
+		
+		SELECT USER() INTO vUser;
 		
 		SET NEW.created = NOW();
 		SET NEW.lastUpdate = NOW();
 		SET NEW.createdBy = vUser;
 		SET NEW.lastUpdateBy = vUser;
 		
-	END;   
+	END;
 |
 
-DESCRIBE PROJECTNAME_USER_PROFILE;
+DESCRIBE PROJECTNAME_USER;

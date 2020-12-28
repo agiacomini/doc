@@ -4,7 +4,7 @@
 ****                                                          ****
 ******************************************************************
 
-SCRIPT NAME      : 02_DDL_PROJECTNAME_PROFILE.sql
+SCRIPT NAME      : 05_DDL_PROJECTNAME_USER_PROFILE.sql
 
 AUTHOR           : 
 
@@ -33,22 +33,25 @@ SCHEMA           : mydatabase
 *****************************************************************
 **************************************************************** */
 
-CREATE TABLE PROJECTNAME_PROFILE (
-    id 		  	  INT NOT NULL AUTO_INCREMENT UNIQUE,
-    description   VARCHAR(80) NULL,
-	name 		  VARCHAR(50) NULL,
+CREATE TABLE PROJECTNAME_USER_PROFILE (
+    userprofile_id 		  	  INT NOT NULL AUTO_INCREMENT UNIQUE,
+    user_id 	  INT NOT NULL,
+	profile_id INT NOT NULL,
 	
     created 	  DATETIME DEFAULT CURRENT_TIMESTAMP,
 	createdBy	  VARCHAR(30),
     lastUpdate 	  DATETIME ON UPDATE CURRENT_TIMESTAMP,
 	lastUpdateBy  VARCHAR(30),
 	
-    PRIMARY KEY   (id)
+    PRIMARY KEY   (userprofile_id),
+	
+	CONSTRAINT fk_userprofile_user FOREIGN KEY (user_id) REFERENCES PROJECTNAME_USER (id),
+	CONSTRAINT fk_userprofile_profile FOREIGN KEY (profile_id) REFERENCES PROJECTNAME_PROFILE (id)
 );
 
 DELIMITER |
-CREATE TRIGGER PROJECTNAME_PROFILE_IU_TRG 
-BEFORE INSERT ON PROJECTNAME_PROFILE
+CREATE TRIGGER PROJECTNAME_USER_PROFILE_IU_TRG 
+BEFORE INSERT ON PROJECTNAME_USER_PROFILE
 FOR EACH ROW
 	BEGIN
 
@@ -65,4 +68,4 @@ FOR EACH ROW
 	END;   
 |
 
-DESCRIBE PROJECTNAME_PROFILE;
+DESCRIBE PROJECTNAME_USER_PROFILE;

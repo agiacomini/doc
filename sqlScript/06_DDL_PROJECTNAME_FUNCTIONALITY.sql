@@ -4,7 +4,7 @@
 ****                                                          ****
 ******************************************************************
 
-SCRIPT NAME      : 05_DDL_PROJECTNAME_FUNCTIONALITY.sql
+SCRIPT NAME      : 06_DDL_PROJECTNAME_FUNCTIONALITY.sql
 
 AUTHOR           : 
 
@@ -35,13 +35,13 @@ SCHEMA           : mydatabase
 
 CREATE TABLE PROJECTNAME_FUNCTIONALITY (
     id 		  	  		INT NOT NULL AUTO_INCREMENT UNIQUE,
-    description   		VARCHAR(80) NULL,,
-	functionalityName 	VARCHAR(50) NULL,,
+    description   		VARCHAR(80) NULL,
+	functionalityName 	VARCHAR(50) NULL,
     created 	  		DATETIME DEFAULT CURRENT_TIMESTAMP,
 	createdBy	  		VARCHAR(30),
     lastUpdate 	  		DATETIME ON UPDATE CURRENT_TIMESTAMP,
 	lastUpdateBy  		VARCHAR(30),
-    PRIMARY KEY   		(id),
+    PRIMARY KEY   		(id)
 );
 
 DELIMITER |

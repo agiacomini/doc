@@ -4,7 +4,7 @@
 ****                                                          ****
 ******************************************************************
 
-SCRIPT NAME      : 02_DDL_PROJECTNAME_USER.sql
+SCRIPT NAME      : 03_DDL_PROJECTNAME_USER.sql
 
 AUTHOR           : 
 
@@ -50,9 +50,7 @@ CREATE TABLE PROJECTNAME_USER (
     lastUpdate 	  			DATETIME ON UPDATE CURRENT_TIMESTAMP,
 	lastUpdateBy  			VARCHAR(30),
 	
-    PRIMARY KEY  			(id),
-	FOREIGN KEY 			(projectUserGroupId) REFERENCES PROJECTNAME_USER_GROUP(id),
-	FOREIGN KEY 			(projectUserProfileId) REFERENCES PROJECTNAME_USER_PROFILE(id)
+    PRIMARY KEY  			(id)
 );
 
 DELIMITER |

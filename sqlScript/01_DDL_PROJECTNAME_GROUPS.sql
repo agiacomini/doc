@@ -4,7 +4,7 @@
 ****                                                          ****
 ******************************************************************
 
-SCRIPT NAME      : 01_DDL_PROJECTNAME_USER_GROUP.sql
+SCRIPT NAME      : 01_DDL_PROJECTNAME_GROUPS.sql
 
 AUTHOR           : 
 
@@ -33,9 +33,9 @@ SCHEMA           : mydatabase
 *****************************************************************
 **************************************************************** */
 
-CREATE TABLE PROJECTNAME_USER_GROUP (
+CREATE TABLE PROJECTNAME_GROUPS (
     id 		  	  INT NOT NULL AUTO_INCREMENT UNIQUE,
-    groupName 	  VARCHAR(50) NULL,
+	groupName 	  VARCHAR(50) NULL,
     description	  VARCHAR(80) NULL,
 	isAdmin	      BOOLEAN,
 	
@@ -48,8 +48,8 @@ CREATE TABLE PROJECTNAME_USER_GROUP (
 );
 
 DELIMITER |
-CREATE TRIGGER PROJECTNAME_USER_GROUP_IU_TRG 
-BEFORE INSERT ON PROJECTNAME_USER_GROUP
+CREATE TRIGGER PROJECTNAME_GROUPS_IU_TRG 
+BEFORE INSERT ON PROJECTNAME_GROUPS
 FOR EACH ROW
 	BEGIN
 
@@ -66,4 +66,4 @@ FOR EACH ROW
 	END;   
 |
 
-DESCRIBE PROJECTNAME_USER_GROUP;
+DESCRIBE PROJECTNAME_GROUPS;
