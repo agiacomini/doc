@@ -40,8 +40,6 @@ CREATE TABLE PROJECTNAME_USER (
     userName 	  			VARCHAR(80) NULL,
     userPassword  			VARCHAR(32),
 	enabled 				BOOLEAN,
-    projectUserGroupId     	INT NOT NULL,
-	projectUserProfileId   	INT NOT NULL,
     phone 		  			INT,
     eMail   	  			VARCHAR(200),
 	

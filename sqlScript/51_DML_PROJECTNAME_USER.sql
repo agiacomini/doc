@@ -44,11 +44,11 @@ SCHEMA           : mydatabase
 SELECT 'ATTENTION This update 2 records !!!' AS ' ';
 SELECT 'Press CTRL C to interrupt' AS ' ';
 
-INSERT INTO PROJECTNAME_USER (firstName,lastName,userName,userPassword,enabled,idUserGroup,eMail) 
-VALUES ('andrea','giacomini','agiacomini',MD5('123'),true, (SELECT id FROM project_user_group Where groupName = 'admin'),'andr3a.giacomini@gmail.com');
+INSERT INTO PROJECTNAME_USER (firstName,lastName,userName,userPassword,enabled,eMail) 
+VALUES ('andrea','giacomini','agiacomini',MD5('123'),true, 'andr3a.giacomini@gmail.com');
 
-INSERT INTO PROJECTNAME_USER (firstName,lastName,userName,userPassword,enabled,idUserGroup,eMail) 
-VALUES ('mario','rossi','mrossi',MD5('123'),true, (SELECT id FROM project_user_group Where groupName = 'superUser'),'mario.rossi@gmail.com');
+INSERT INTO PROJECTNAME_USER (firstName,lastName,userName,userPassword,enabled,eMail) 
+VALUES ('mario','rossi','mrossi',MD5('123'),true, 'mario.rossi@gmail.com');
 
 
 SELECT 'REMEMBER to commit, if everything is O.K.' AS ' ';
