@@ -34,7 +34,7 @@ SCHEMA           : mydatabase
 **************************************************************** */
 
 CREATE TABLE PROJECTNAME_TRACKING (
-    trackingId 	   			INT NOT NULL AUTO_INCREMENT UNIQUE,
+    id 	   			INT NOT NULL AUTO_INCREMENT UNIQUE,
     trackingName   			VARCHAR(80),
     trackingDescription 	VARCHAR(200),
 	
@@ -43,7 +43,7 @@ CREATE TABLE PROJECTNAME_TRACKING (
     lastUpdate 	  			DATETIME ON UPDATE CURRENT_TIMESTAMP,
 	lastUpdateBy  			VARCHAR(30),
 	
-    PRIMARY KEY  (trackingId)
+    PRIMARY KEY  (id)
 );
 
 DELIMITER |

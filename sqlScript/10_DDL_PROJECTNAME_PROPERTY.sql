@@ -4,7 +4,7 @@
 ****                                                          ****
 ******************************************************************
 
-SCRIPT NAME      : 03_DDL_PROJECTNAME_PROPERTY.sql
+SCRIPT NAME      : 10_DDL_PROJECTNAME_PROPERTY.sql
 
 AUTHOR           : 
 
