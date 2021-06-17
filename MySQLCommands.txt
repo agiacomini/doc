@@ -99,6 +99,13 @@ Shell Mysql
 			CURRENT User
 		
 				mysql> SELECT CURRENT_USER();
+				
+				
+	CONSTRAINTS
+	
+		Show all constraints of schema
+		
+			mysql> SELECT * FROM information_schema.table_constraints where constraint_schema = '<nome_schema>'
 	
 	
 	SQL SCRIPT
