@@ -87,7 +87,17 @@ Shell Mysql
 			
 		GRANT User
 		
+				   GRANT ALL PRIVILEGES ON <nome_db>.<nome_schema> TO '<user_name>'@'localhost';
+		
 			mysql> GRANT ALL PRIVILEGES ON * . * TO 'newuser'@'localhost';
+			
+		Revoke GRANT
+		
+			mysql> REVOKE ALL PRIVILEGES, GRANT OPTION FROM <user_name>@localhost;
+			
+			or
+			
+			mysql> REVOKE INSERT, UPDATE ON *.* FROM tls_dms@localhost;
 			
 		SHOW 
 		
@@ -95,10 +105,16 @@ Shell Mysql
 		
 				mysql> SELECT USER();
 				
+				mysql> SELECT * FROM mysql.user;
+				
 				
 			CURRENT User
 		
 				mysql> SELECT CURRENT_USER();
+				
+			By User
+			
+				mysql> SHOW GRANTS FOR <user_name>@localhost;
 				
 				
 	CONSTRAINTS
